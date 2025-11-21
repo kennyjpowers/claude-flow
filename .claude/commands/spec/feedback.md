@@ -954,6 +954,72 @@ Implement now? → Update spec changelog
 **Cause:** Previous implementation session has incomplete tasks
 **Solution:** Review in-progress tasks. Feedback changes may affect them. Can proceed or complete tasks first.
 
+### Example: Performance Issue (Deferred)
+
+```bash
+# After implementation and testing
+/spec:feedback specs/dashboard-feature/02-specification.md
+
+# Feedback provided: "Dashboard loads slowly with 500+ items"
+# Research expert: Yes
+# Decision: Defer for Phase 2
+# Priority: High
+
+# Result:
+# - STM task created with research findings
+# - Tagged: feature:dashboard-feature,feedback,deferred,high
+# - Logged in 05-feedback.md #2
+```
+
+### Example: Out of Scope Decision
+
+```bash
+# Feedback: "Would be nice to export data as XML"
+# Research expert: No
+# Decision: Out of scope
+# Priority: Low
+
+# Result:
+# - Logged in 05-feedback.md #3
+# - No spec updates
+# - No STM tasks created
+# - Documented rationale for out-of-scope decision
+```
+
+## Edge Cases and Special Scenarios
+
+### Multiple Feedback Items
+Process ONE item at a time. For multiple issues:
+```bash
+/spec:feedback specs/my-feature/02-specification.md  # Issue 1
+/spec:feedback specs/my-feature/02-specification.md  # Issue 2
+/spec:feedback specs/my-feature/02-specification.md  # Issue 3
+```
+Each gets its own feedback number and independent decision-making.
+
+### Feedback on In-Progress Implementation
+If you have tasks still in progress, the command will warn you but allow proceeding. Consider:
+- Complete current tasks first if feedback affects them
+- Or proceed with feedback and update task context during next `/spec:execute`
+
+### STM Not Available
+Command gracefully degrades:
+- Feedback still logged in 05-feedback.md
+- Deferred decisions logged but no STM task created
+- Recommendation displayed to install STM
+- All other functionality works normally
+
+### Empty or Minimal Changelog
+If spec has no Changelog section, one is created automatically. If feedback is first, it becomes Feedback #1.
+
+### Conflicting Feedback
+If multiple feedback items conflict:
+- Process each separately
+- Log each with its own decision
+- Changelog will show both entries
+- `/spec:decompose` will create tasks for all accepted feedback
+- Implementation reconciles conflicts based on priority
+
 ## See Also
 
 - `/spec:decompose` - Breaks down specifications into tasks (supports incremental mode)

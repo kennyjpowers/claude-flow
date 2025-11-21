@@ -4,7 +4,7 @@
 
 Claude Config is a hybrid configuration system that provides a complete end-to-end feature development lifecycle for AI-assisted development. It layers custom workflow commands on top of ClaudeKit (30+ agents, 20+ commands, 25+ hooks) and Claude Code's official CLI.
 
-**Version:** 1.1.0 (November 21, 2025)
+**Version:** 1.2.0 (November 21, 2025)
 
 ## Architecture
 
@@ -15,10 +15,10 @@ Three-layer system:
 
 ## Core Workflow
 
-Complete feature lifecycle in 5 phases:
+Complete feature lifecycle in 6 phases:
 
 ```
-IDEATION → SPECIFICATION → DECOMPOSITION → IMPLEMENTATION → COMPLETION
+IDEATION → SPECIFICATION → DECOMPOSITION → IMPLEMENTATION → FEEDBACK → COMPLETION
 ```
 
 ### Phase 1: Ideation
@@ -47,17 +47,25 @@ IDEATION → SPECIFICATION → DECOMPOSITION → IMPLEMENTATION → COMPLETION
 - **Process:** For each task: implement → test → code review → fix → commit
 - **Tracks:** Progress, files modified, tests added, known issues, next steps
 
-### Phase 5: Completion
+### Phase 5: Feedback
+- **Command:** `/spec:feedback <path-to-spec>`
+- **Output:** `specs/<slug>/05-feedback.md`
+- **Purpose:** Process post-implementation feedback with structured decisions
+- **Process:** One feedback item at a time → explore code → optional research → interactive decisions → update spec or defer
+- **Integration:** Works with incremental `/spec:decompose` and resume `/spec:execute`
+
+### Phase 6: Completion
 - **Commands:** `/git:commit`, `/spec:doc-update`, `/git:push`
 - **Purpose:** Finalize changes, update documentation, push to remote
 
 ## Key Commands
 
-### Custom Commands (3)
+### Custom Commands (4)
 | Command | Purpose |
 |---------|---------|
 | `/ideate <task-brief>` | Structured investigation workflow |
 | `/ideate-to-spec <path>` | Transform ideation → validated spec |
+| `/spec:feedback <path>` | Post-implementation feedback processing |
 | `/spec:doc-update <path>` | Review docs with parallel agents |
 
 ### Command Overrides (4)
@@ -66,8 +74,8 @@ Enhanced versions of ClaudeKit commands:
 | Command | Enhancement |
 |---------|------------|
 | `/spec:create <desc>` | Feature-directory aware with output path detection |
-| `/spec:decompose <path>` | Extracts feature slug, tags STM tasks |
-| `/spec:execute <path>` | Session continuity with implementation summary |
+| `/spec:decompose <path>` | Incremental mode: preserves completed work, creates only new tasks |
+| `/spec:execute <path>` | Resume mode: continues from previous session, skips completed work |
 | `/spec:migrate` | Convert old flat structure to feature directories |
 
 ### Progress Tracking
@@ -89,7 +97,8 @@ specs/<feature-slug>/
 ├── 01-ideation.md          # Investigation & research
 ├── 02-specification.md     # Technical specification
 ├── 03-tasks.md             # Task breakdown
-└── 04-implementation.md    # Progress tracking
+├── 04-implementation.md    # Progress tracking
+└── 05-feedback.md          # Post-implementation feedback log
 ```
 
 **Benefits:**
@@ -227,6 +236,15 @@ npm install -g simple-task-master
 /spec:decompose specs/<slug>/02-specification.md
 /spec:execute specs/<slug>/02-specification.md
 stm list --pretty --tag feature:<slug>  # Track progress
+
+# After manual testing, process feedback
+/spec:feedback specs/<slug>/02-specification.md  # One item at a time
+# (Choose: implement/defer/out-of-scope)
+# If "implement": spec updated, then run:
+/spec:decompose specs/<slug>/02-specification.md  # Incremental mode
+/spec:execute specs/<slug>/02-specification.md    # Resume mode
+
+# Final steps
 /spec:doc-update specs/<slug>/02-specification.md
 /git:commit
 /git:push
@@ -271,6 +289,13 @@ stm list --pretty --tag feature:<slug>  # Track progress
 **Migration needed?** Use `/spec:migrate` to convert old structure
 
 ## Version History
+
+**v1.2.0 (Nov 21, 2025):**
+- New `/spec:feedback` command for post-implementation feedback
+- Incremental `/spec:decompose` mode (preserves completed work)
+- Resume `/spec:execute` mode (session continuity across multiple runs)
+- Feedback log format (`05-feedback.md`)
+- Integration between feedback → incremental decompose → resume execute
 
 **v1.1.0 (Nov 21, 2025):**
 - Feature-based directory structure
