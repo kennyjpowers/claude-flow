@@ -21,14 +21,19 @@ All three layers work together seamlessly in Claude Code.
 - Automated quality assurance and error prevention
 
 ### Custom Extensions (this repo)
-- 3 workflow commands:
+- 3 custom workflow commands:
   - **/ideate**: Structured ideation with comprehensive documentation
   - **/ideate-to-spec**: Transform ideation into validated specification
   - **/spec:doc-update**: Parallel documentation review based on specs
+- 4 enhanced spec command overrides (replace ClaudeKit versions):
+  - **/spec:create**: Detects output path and creates specs in feature directories
+  - **/spec:decompose**: Extracts slug and tags STM tasks with `feature:<slug>`
+  - **/spec:execute**: Creates/updates implementation summary with session history
+  - **/spec:migrate**: Migrates existing specs to feature-directory structure
 - Complete end-to-end workflow from ideation to deployment
 - Example configurations for teams and individuals
 - Uses ClaudeKit's 30+ agents for specialized tasks
-- **Task tracking**: `/spec:decompose` and `/spec:execute` integrate with [simple-task-master](https://github.com/carlrannaberg/simple-task-master) (stm) when installed globally
+- **Task tracking**: Integrates with [simple-task-master](https://github.com/carlrannaberg/simple-task-master) (stm) - use `stm list --pretty --tag feature:<slug>` to track progress
 
 ### Official Claude Code Features
 - 5-tier configuration hierarchy
@@ -181,7 +186,7 @@ claude-config/
 | Feature | Claude Code | ClaudeKit | This Repo |
 |---------|-------------|-----------|-----------|
 | **Agents** | Built-in agents | typescript-expert, react-expert, database-expert, etc. (30+) | Uses ClaudeKit agents |
-| **Commands** | `/init`, `/plugin` | /git:commit, /spec:create, /research, etc. (20+) | /ideate, /ideate-to-spec, /spec:progress, /spec:doc-update |
+| **Commands** | `/init`, `/plugin` | /git:commit, /spec:create, /research, etc. (20+) | /ideate, /ideate-to-spec, /spec:doc-update + overrides for /spec:create, /spec:decompose, /spec:execute, /spec:migrate |
 | **Hooks** | Hook system | file-guard, typecheck-changed, lint-changed, etc. (25+) | Uses ClaudeKit hooks via settings.json |
 | **Config** | .claude/ hierarchy | Integrates with .claude/ | Custom commands in .claude/ |
 
@@ -228,6 +233,32 @@ Review all documentation to identify what needs to be updated based on a new spe
 
 **Usage:** `/spec:doc-update specs/text-generator-spec.md`
 
+### Enhanced Spec Commands (Overrides)
+
+These commands override ClaudeKit's versions with enhanced feature-directory organization and STM integration:
+
+#### /spec:create
+Enhanced version that detects output paths and organizes specs in feature directories. Creates specs in `specs/<slug>/02-specification.md` format.
+
+**Usage:** `/spec:create Add user authentication with JWT tokens`
+
+#### /spec:decompose
+Enhanced version that extracts feature slugs and tags all STM tasks with `feature:<slug>` for easy filtering. Creates task breakdown in `specs/<slug>/03-tasks.md`.
+
+**Usage:** `/spec:decompose specs/add-user-auth/02-specification.md`
+
+#### /spec:execute
+Enhanced version that creates/updates implementation summaries with session history in `specs/<slug>/04-implementation.md`. Supports resuming implementation across multiple sessions.
+
+**Usage:** `/spec:execute specs/add-user-auth/02-specification.md`
+
+**Track Progress:** `stm list --pretty --tag feature:add-user-auth` (replaces removed `/spec:progress`)
+
+#### /spec:migrate
+Migrates existing specs from flat structure to feature-directory structure. Moves specs, tasks, and ideation docs into organized `specs/<slug>/` directories and tags STM tasks.
+
+**Usage:** `/spec:migrate`
+
 ### ClaudeKit Agents (30+)
 
 **Build Tools:** webpack-expert, vite-expert
@@ -250,8 +281,11 @@ Review all documentation to identify what needs to be updated based on a new spe
 
 **Git Workflow:** /git:status, /git:commit, /git:checkout, /git:push, /git:ignore-init
 
-**Specifications:** /spec:create, /spec:decompose, /spec:execute, /spec:validate
-- Note: `/spec:decompose` and `/spec:execute` integrate with stm (simple-task-master) when installed
+**Specifications:** /spec:validate
+- **Note:** This repo overrides `/spec:create`, `/spec:decompose`, `/spec:execute` with enhanced versions
+- Enhanced versions add feature-directory organization and STM task tagging
+- `/spec:migrate` is a custom addition for migrating existing specs
+- Use `stm list --pretty --tag feature:<slug>` to track progress (replaces removed `/spec:progress`)
 
 **Quality:** /code-review, /validate-and-fix
 
@@ -302,7 +336,7 @@ This repository implements a complete end-to-end workflow for feature developmen
                               │
                               ▼
             /spec:decompose <spec-file>
-            (ClaudeKit Command - uses stm if installed)
+            (Custom Override - uses stm if installed)
                               │
               Breaks spec into tasks
                               │
@@ -313,12 +347,12 @@ This repository implements a complete end-to-end workflow for feature developmen
                               │
                               ▼
             /spec:execute <spec-file>
-            (ClaudeKit Command - uses stm if installed)
+            (Custom Override - uses stm if installed)
                               │
               Implements tasks
                               │
                               ▼
-              stm list --pretty
+       stm list --pretty --tag feature:<slug>
               (Track progress)
                               │
         View task status and completion
@@ -366,8 +400,8 @@ This repository implements a complete end-to-end workflow for feature developmen
 
 1. **Ideation** → Comprehensive investigation and research
 2. **Specification** → Validated, implementation-ready spec
-3. **Decomposition** → Tasks broken down with dependencies (uses stm if installed)
-4. **Implementation** → Iterative execution with stm task tracking via `stm list --pretty`
+3. **Decomposition** → Tasks broken down with dependencies (uses stm if installed, tags with `feature:<slug>`)
+4. **Implementation** → Iterative execution with stm task tracking via `stm list --pretty --tag feature:<slug>`
 5. **Completion** → Documentation updates and git workflow
 
 ## Usage Examples
@@ -394,10 +428,10 @@ This repository implements a complete end-to-end workflow for feature developmen
 /spec:execute specs/add-user-auth-jwt/02-specification.md
 # → Implements tasks incrementally, updating stm status
 
-# Step 5: Check progress
+# Step 5: Check progress (can run anytime during implementation)
 stm list --pretty --tag feature:add-user-auth-jwt
 # → Shows: completion %, current phase, task status
-#   Note: Can run this anytime to see real-time progress for this feature
+#   Note: This replaces the removed /spec:progress command
 
 # Step 6: Continue implementing (loop back to step 4 if needed)
 /spec:execute specs/add-user-auth-jwt/02-specification.md
