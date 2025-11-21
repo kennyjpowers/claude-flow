@@ -716,6 +716,116 @@ This is a straightforward fix addressing a real usability issue. The regex chang
 ```markdown
 ## 18. Changelog
 
+### 2025-11-21 - Post-Implementation Feedback: Bash Command Complexity
+
+**Source:** Feedback #1 (see specs/add-feedback-workflow-command/05-feedback.md)
+
+**Issue:** The beginning of the feedback command workflow seems too complicated and the bash commands have lots of issues
+
+**Decision:** Implement now with minimal scope
+
+**Changes to Specification:**
+
+**Section 6.3.1: `/spec:feedback` Command - Step 1: Validation & Setup**
+
+**Current Issues:**
+- 26 bash code blocks with complex patterns (BASH_REMATCH, command substitution, heredocs)
+- Using `$(claudekit status stm)` instead of `!claudekit status stm` pattern
+- Associative arrays, nested parentheses causing parse errors
+- Variable persistence issues between Bash tool invocations
+
+**Required Changes:**
+1. **Replace complex bash blocks with declarative guidance** (lines 42-131)
+   - OLD: Prescriptive bash scripts with regex, conditionals, jq parsing
+   - NEW: Simple declarative instructions following execute.md pattern
+   - Use `!claudekit status stm` for direct command invocation
+   - Provide guidance for Claude to follow, not exact bash to execute
+
+2. **Simplify slug extraction** (lines 42-62)
+   - OLD: Complex BASH_REMATCH regex pattern matching
+   - NEW: Simple basename/dirname approach or declarative guidance
+
+3. **Simplify STM availability check** (lines 82-98)
+   - OLD: Command substitution with nested string matching
+   - NEW: Direct `!claudekit status stm` invocation with guidance
+
+4. **Remove or simplify heredocs and associative arrays** (throughout)
+   - OLD: `declare -A DECISIONS`, `cat <<'EOF'` patterns
+   - NEW: Simple variables or direct tool usage
+
+**Implementation Impact:**
+- Priority: High
+- Approach: Follow execute.md's declarative markdown pattern
+- Affected components: `.claude/commands/spec/feedback.md` (Step 1 primarily)
+- Affected sections: Lines 42-131 (Validation & Setup)
+- Secondary impact: May simplify other steps that rely on bash variables
+- Estimated blast radius: Medium (feedback.md only, may inform decompose.md refactor)
+
+**Next Steps:**
+1. Review and update Section 6.3.1 (Step 1: Validation & Setup)
+2. Run `/spec:decompose specs/add-feedback-workflow-command/02-specification.md` to update task breakdown
+3. Run `/spec:execute specs/add-feedback-workflow-command/02-specification.md` to implement changes
+
+---
+
+### 2025-11-21 - Post-Implementation Feedback: Decompose Command Bash Complexity
+
+**Source:** Feedback #2 (see specs/add-feedback-workflow-command/05-feedback.md)
+
+**Issue:** After completing bash refactoring in `/spec:feedback` command (Session 5), discovered that `/spec:decompose` command has the same bash complexity issues
+
+**Decision:** Implement now with comprehensive scope
+
+**Changes to Specification:**
+
+**Section 6.4.1: `/spec:decompose` Command - Incremental Mode Detection & Task Generation**
+
+**Current Issues:**
+- 16 bash code blocks with complex patterns (associative arrays, command substitution, heredocs)
+- Associative arrays: `declare -A PRESERVE_TASKS UPDATE_TASKS CREATE_TASKS` (line 200)
+- Heredocs: `cat <<'EOF'` patterns (lines 631, 698)
+- Extensive command substitution: `$(stm list ...)`, `$(echo ... | sed ...)` throughout
+- Variable persistence issues between Bash tool invocations
+
+**Required Changes:**
+
+1. **Refactor incremental mode detection** (lines 61-99)
+   - OLD: Complex bash with command substitution, conditionals, date parsing
+   - NEW: Declarative guidance for reading task file, checking STM, comparing dates
+   - Use Read tool + simple checks instead of complex awk/sed/grep pipelines
+
+2. **Simplify changelog parsing** (lines 150-250)
+   - OLD: Complex awk patterns with regex and command substitution
+   - NEW: Declarative instructions to Read changelog section, identify new entries
+   - Guide Claude to use Read + simple date comparison
+
+3. **Replace associative arrays for task categorization** (line 200 onwards)
+   - OLD: `declare -A PRESERVE_TASKS UPDATE_TASKS CREATE_TASKS`
+   - NEW: Declarative guidance for categorizing tasks based on status and changelog
+
+4. **Remove heredocs from STM task creation** (lines 631, 698)
+   - OLD: `--details "$(cat <<'EOF' ... EOF)"`
+   - NEW: Use Write tool to create temp file, or provide example pattern
+
+5. **Apply declarative pattern throughout**
+   - Follow execute.md and newly-refactored feedback.md patterns
+   - Provide "what to do" guidance instead of "how to do it" bash scripts
+   - Trust Claude to use appropriate tools (Read, Write, Grep, Task, etc.)
+
+**Implementation Impact:**
+- Priority: High (consistency with feedback.md refactoring, prevent parse errors)
+- Approach: Follow execute.md declarative markdown pattern (proven in Session 5)
+- Affected components: `.claude/commands/spec/decompose.md` (all sections with bash)
+- Affected lines: 61-99 (mode detection), 150-250 (changelog parsing), 200+ (task categorization), 631+ (STM creation)
+- Estimated blast radius: Medium (decompose.md only, completes bash refactoring across all 3 spec commands)
+
+**Next Steps:**
+1. Create new tasks (50-54) for decompose.md refactoring
+2. Run `/spec:execute specs/add-feedback-workflow-command/02-specification.md` to implement changes
+3. Update implementation summary with Session 6 results
+
+---
+
 ### 2025-11-21: Authentication Special Characters Fix
 **Source:** Feedback from manual testing (05-feedback.md #1)
 **Issue:** Password validation fails with special characters (!@#$%)
