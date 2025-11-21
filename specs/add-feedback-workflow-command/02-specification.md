@@ -716,6 +716,58 @@ This is a straightforward fix addressing a real usability issue. The regex chang
 ```markdown
 ## 18. Changelog
 
+### 2025-11-21 - Post-Implementation Feedback: Bash Command Complexity
+
+**Source:** Feedback #1 (see specs/add-feedback-workflow-command/05-feedback.md)
+
+**Issue:** The beginning of the feedback command workflow seems too complicated and the bash commands have lots of issues
+
+**Decision:** Implement now with minimal scope
+
+**Changes to Specification:**
+
+**Section 6.3.1: `/spec:feedback` Command - Step 1: Validation & Setup**
+
+**Current Issues:**
+- 26 bash code blocks with complex patterns (BASH_REMATCH, command substitution, heredocs)
+- Using `$(claudekit status stm)` instead of `!claudekit status stm` pattern
+- Associative arrays, nested parentheses causing parse errors
+- Variable persistence issues between Bash tool invocations
+
+**Required Changes:**
+1. **Replace complex bash blocks with declarative guidance** (lines 42-131)
+   - OLD: Prescriptive bash scripts with regex, conditionals, jq parsing
+   - NEW: Simple declarative instructions following execute.md pattern
+   - Use `!claudekit status stm` for direct command invocation
+   - Provide guidance for Claude to follow, not exact bash to execute
+
+2. **Simplify slug extraction** (lines 42-62)
+   - OLD: Complex BASH_REMATCH regex pattern matching
+   - NEW: Simple basename/dirname approach or declarative guidance
+
+3. **Simplify STM availability check** (lines 82-98)
+   - OLD: Command substitution with nested string matching
+   - NEW: Direct `!claudekit status stm` invocation with guidance
+
+4. **Remove or simplify heredocs and associative arrays** (throughout)
+   - OLD: `declare -A DECISIONS`, `cat <<'EOF'` patterns
+   - NEW: Simple variables or direct tool usage
+
+**Implementation Impact:**
+- Priority: High
+- Approach: Follow execute.md's declarative markdown pattern
+- Affected components: `.claude/commands/spec/feedback.md` (Step 1 primarily)
+- Affected sections: Lines 42-131 (Validation & Setup)
+- Secondary impact: May simplify other steps that rely on bash variables
+- Estimated blast radius: Medium (feedback.md only, may inform decompose.md refactor)
+
+**Next Steps:**
+1. Review and update Section 6.3.1 (Step 1: Validation & Setup)
+2. Run `/spec:decompose specs/add-feedback-workflow-command/02-specification.md` to update task breakdown
+3. Run `/spec:execute specs/add-feedback-workflow-command/02-specification.md` to implement changes
+
+---
+
 ### 2025-11-21: Authentication Special Characters Fix
 **Source:** Feedback from manual testing (05-feedback.md #1)
 **Issue:** Password validation fails with special characters (!@#$%)
