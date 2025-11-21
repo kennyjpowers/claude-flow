@@ -1,5 +1,38 @@
 # Changelog
 
+## [1.1.0] - 2025-11-21
+
+### Added
+
+- **Feature-Based Directory Structure** - All specification documents now organized in `specs/<slug>/` directories
+  - `01-ideation.md` - Created by `/ideate`
+  - `02-specification.md` - Created by `/ideate-to-spec`
+  - `03-tasks.md` - Created by `/spec:decompose`
+  - `04-implementation.md` - Created by `/spec:execute`
+- **STM Task Tagging** - All tasks tagged with `feature:<slug>` for easy filtering
+- **Session Continuity** - `/spec:execute` now reads previous progress from implementation summary
+- **Migration Command** - `/spec:migrate` to convert existing specs to new structure
+- **Command Overrides:**
+  - `/spec:create` - Detects output path from prompt
+  - `/spec:decompose` - Extracts slug and tags STM tasks
+  - `/spec:execute` - Creates/updates implementation summary with session history
+
+### Changed
+
+- **Replaced `/spec:progress`** - Now use `stm list --pretty --tag feature:<slug>` instead
+- **Updated `/ideate`** - Creates specs in `specs/<slug>/01-ideation.md` (was `docs/ideation/<slug>.md`)
+- **Updated `/ideate-to-spec`** - Extracts slug and passes explicit paths
+- **Updated README.md** - New document organization section and updated workflow examples
+- **Workflow Commands Count** - Reduced from 4 to 3 custom commands (removed `/spec:progress`)
+
+### Benefits
+
+- All feature documents in one directory
+- Clear lifecycle progression with numbered prefixes
+- Easy filtering of STM tasks by feature
+- Session continuity for multi-run implementations
+- Backward compatible with legacy paths
+
 ## [1.0.0] - 2025-11-12
 
 ### Initial Release
