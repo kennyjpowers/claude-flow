@@ -268,7 +268,7 @@ stm list --pretty --tag feature:<slug>  # Track progress
 |------|---------|
 | `README.md` | Comprehensive guide |
 | `CHANGELOG.md` | Version history |
-| `research.md` | Design validation and best practices |
+| `docs/DESIGN_RATIONALE.md` | Design validation and best practices |
 | `.claude/README.md` | Component documentation |
 | `docs/INSTALLATION_GUIDE.md` | Detailed installation guidance |
 | `templates/*/CLAUDE.md` | Context templates |

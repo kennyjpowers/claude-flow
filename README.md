@@ -167,7 +167,9 @@ claude-config/
 │
 ├── install.sh                        # Installation script
 ├── README.md                         # This file
-└── research.md                       # Detailed research & best practices
+└── docs/
+    ├── DESIGN_RATIONALE.md          # Design validation & best practices
+    └── ...
 ```
 
 ## Understanding the Hybrid Approach
@@ -753,7 +755,8 @@ cat .claude/settings.json | jq .
 ### This Repository
 - [Installation Guide](docs/INSTALLATION_GUIDE.md) - When to use user vs project installation
 - [Setup Guide](docs/SETUP_GUIDE.md) - Detailed setup instructions
-- [Detailed Research](research.md) - Comprehensive analysis and validation
+- [Design Rationale](docs/DESIGN_RATIONALE.md) - Design validation and best practices
+- [Feedback Workflow Guide](docs/guides/feedback-workflow-guide.md) - Complete guide to post-implementation feedback
 - [GitHub Issues](https://github.com/kennethpriester/claude-config/issues) - Report problems
 
 ### Community Resources
