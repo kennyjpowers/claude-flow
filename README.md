@@ -21,14 +21,14 @@ All three layers work together seamlessly in Claude Code.
 - Automated quality assurance and error prevention
 
 ### Custom Extensions (this repo)
-- 4 workflow commands:
+- 3 workflow commands:
   - **/ideate**: Structured ideation with comprehensive documentation
   - **/ideate-to-spec**: Transform ideation into validated specification
-  - **/spec:progress**: Track implementation progress and update task breakdowns
   - **/spec:doc-update**: Parallel documentation review based on specs
 - Complete end-to-end workflow from ideation to deployment
 - Example configurations for teams and individuals
 - Uses ClaudeKit's 30+ agents for specialized tasks
+- **Task tracking**: `/spec:decompose` and `/spec:execute` integrate with [simple-task-master](https://github.com/carlrannaberg/simple-task-master) (stm) when installed globally
 
 ### Official Claude Code Features
 - 5-tier configuration hierarchy
@@ -71,6 +71,12 @@ The script will:
 3. Copy custom workflow commands
 4. Set up configuration files
 5. Run ClaudeKit setup
+
+**Optional but recommended**: Install [simple-task-master](https://github.com/carlrannaberg/simple-task-master) for enhanced task tracking:
+```bash
+npm install -g simple-task-master
+```
+This enables `/spec:decompose` and `/spec:execute` to automatically track tasks with `stm list --pretty`.
 
 ### Option 2: Manual Installation
 
@@ -185,16 +191,6 @@ Transform an ideation document into a validated, implementation-ready specificat
 
 **Usage:** `/ideate-to-spec docs/ideation/add-proxy-config-to-figma-plugin.md`
 
-#### /spec:progress
-Track implementation progress for a specification. Bridges the gap between `/spec:decompose` and `/spec:execute` by:
-- Querying task status from STM (Simple Task Master)
-- Generating detailed progress reports
-- Updating task breakdown documents with completion status
-- Providing clear visibility into completed, in-progress, and pending work
-- Recommending next steps
-
-**Usage:** `/spec:progress specs/add-user-auth-jwt.md`
-
 #### /spec:doc-update
 Review all documentation to identify what needs to be updated based on a new specification file. Launches parallel documentation expert agents to review each doc file for:
 - Deprecated content
@@ -226,6 +222,7 @@ Review all documentation to identify what needs to be updated based on a new spe
 **Git Workflow:** /git:status, /git:commit, /git:checkout, /git:push, /git:ignore-init
 
 **Specifications:** /spec:create, /spec:decompose, /spec:execute, /spec:validate
+- Note: `/spec:decompose` and `/spec:execute` integrate with stm (simple-task-master) when installed
 
 **Quality:** /code-review, /validate-and-fix
 
@@ -276,7 +273,7 @@ This repository implements a complete end-to-end workflow for feature developmen
                               │
                               ▼
             /spec:decompose <spec-file>
-            (ClaudeKit Command)
+            (ClaudeKit Command - uses stm if installed)
                               │
               Breaks spec into tasks
                               │
@@ -287,15 +284,15 @@ This repository implements a complete end-to-end workflow for feature developmen
                               │
                               ▼
             /spec:execute <spec-file>
-            (ClaudeKit Command)
+            (ClaudeKit Command - uses stm if installed)
                               │
               Implements tasks
                               │
                               ▼
-            /spec:progress <spec-file>
-            (Custom Command)
+              stm list --pretty
+              (Track progress)
                               │
-        Tracks progress, updates task breakdown
+        View task status and completion
                               │
                    ┌──────────┴──────────┐
                    │                     │
@@ -340,8 +337,8 @@ This repository implements a complete end-to-end workflow for feature developmen
 
 1. **Ideation** → Comprehensive investigation and research
 2. **Specification** → Validated, implementation-ready spec
-3. **Decomposition** → Tasks broken down with dependencies
-4. **Implementation** → Iterative execution with progress tracking
+3. **Decomposition** → Tasks broken down with dependencies (uses stm if installed)
+4. **Implementation** → Iterative execution with stm task tracking via `stm list --pretty`
 5. **Completion** → Documentation updates and git workflow
 
 ## Usage Examples
@@ -361,23 +358,23 @@ This repository implements a complete end-to-end workflow for feature developmen
 
 # Step 3: Break down into tasks
 /spec:decompose specs/add-user-auth-jwt.md
-# → Creates: specs/add-user-auth-jwt-tasks.md
+# → Creates task breakdown and registers with stm (if installed)
 #   Includes: phased tasks with dependencies
 
 # Step 4: Start implementation
 /spec:execute specs/add-user-auth-jwt.md
-# → Implements tasks incrementally
+# → Implements tasks incrementally, updating stm status
 
 # Step 5: Check progress
-/spec:progress specs/add-user-auth-jwt.md
-# → Shows: completion %, current phase, next tasks
-# → Updates: task breakdown with status
+stm list --pretty
+# → Shows: completion %, current phase, task status
+#   Note: Can run this anytime to see real-time progress
 
 # Step 6: Continue implementing (loop back to step 4 if needed)
 /spec:execute specs/add-user-auth-jwt.md
 
 # Step 7: Final progress check (should show 100%)
-/spec:progress specs/add-user-auth-jwt.md
+stm list --pretty
 
 # Step 8: Commit implementation
 /git:commit
