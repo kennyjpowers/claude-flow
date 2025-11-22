@@ -3,6 +3,6 @@
   "version": "1.2.0",
   "description": "Workflow orchestration for Claude Code - end-to-end feature development lifecycle",
   "author": "Kenneth Priester",
-  "repository": "https://github.com/kennyjpowers/claude-flow.git",
+  "repository": "https://github.com/kennyjpowers/claude-flow",
   "keywords": ["claude-code", "workflow", "orchestration", "automation"]
 }

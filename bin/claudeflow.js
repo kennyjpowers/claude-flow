@@ -97,7 +97,7 @@ INSTALLATION METHODS:
   pnpm add -g @33strategies/claudeflow
 
 DOCUMENTATION:
-  https://github.com/kennyjpowers/claude-flow.git
+  https://github.com/kennyjpowers/claude-flow
   https://claudeflow.dev (coming soon)
 
 REPORT ISSUES:
