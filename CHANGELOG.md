@@ -1,3 +1,10 @@
+# [1.2.0](https://github.com/kennyjpowers/claude-flow/compare/v1.1.2...v1.2.0) (2025-11-22)
+
+
+### Features
+
+* improved ideate-to-spec ([33744c7](https://github.com/kennyjpowers/claude-flow/commit/33744c7150df1decfc210a1eaeff69729af7f8b4))
+
 ## [1.1.2](https://github.com/kennyjpowers/claude-flow/compare/v1.1.1...v1.1.2) (2025-11-22)
 
 
