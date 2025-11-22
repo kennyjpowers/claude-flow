@@ -1,3 +1,10 @@
+## [1.1.1](https://github.com/kennyjpowers/claude-flow/compare/v1.1.0...v1.1.1) (2025-11-22)
+
+
+### Bug Fixes
+
+* dependency params ([37ff6a5](https://github.com/kennyjpowers/claude-flow/commit/37ff6a54a2411476bfa4d5363f9d3b68e180ee06))
+
 # [1.1.0](https://github.com/kennyjpowers/claude-flow/compare/v1.0.1...v1.1.0) (2025-11-22)
 
 
