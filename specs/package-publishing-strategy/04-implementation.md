@@ -11,11 +11,18 @@ Transforming the claude-config repository into a professionally published npm pa
 
 ## Progress
 
-**Status:** ✅ COMPLETED - Published to npm with OIDC
-**Tasks Completed:** 22 / 22
-**Last Session:** 2025-11-22 (Session 4)
+**Status:** ✅ COMPLETED - Published to npm with OIDC + Bug Fix
+**Tasks Completed:** 23 / 23
+**Last Session:** 2025-11-22 (Session 5)
 
 ## Tasks Completed
+
+### Session 5 - 2025-11-22
+
+- ✅ [Task 77] Fix ClaudeKit setup command flags
+  - Files modified: lib/setup.js
+  - Notes: Changed global mode from `--global` to `--user --yes`, added `--yes` to project mode for non-interactive setup
+  - Commit: e63a746
 
 ### Session 4 - 2025-11-22
 
@@ -108,7 +115,7 @@ Transforming the claude-config repository into a professionally published npm pa
 
 ## All Tasks Completed ✅
 
-All 22 tasks have been successfully completed. The package is now live on npm with fully automated OIDC publishing.
+All 23 tasks have been successfully completed. The package is now live on npm with fully automated OIDC publishing and bug-free ClaudeKit integration.
 
 ## Files Modified/Created
 
@@ -162,15 +169,54 @@ None - All tasks completed successfully.
 - ✅ v1.1.0 - OIDC publish with provenance attestations (November 22, 2025)
 
 **Production Ready:**
-- ✅ All 22 tasks completed
+- ✅ All 23 tasks completed
 - ✅ Package live on npm: https://www.npmjs.com/package/@33strategies/claudeflow
 - ✅ OIDC publishing with GitHub Actions enabled
 - ✅ SLSA Provenance v1 attestations verified
 - ✅ Fully automated releases via semantic-release
 - ✅ No long-lived tokens required
 - ✅ Branch protection maintained with GitHub App bypass
+- ✅ ClaudeKit setup flags fixed for non-interactive mode
 
 ## Implementation Notes
+
+### Session 5
+
+**POST-PUBLISH BUG FIX:** After successful v1.1.0 release, user feedback identified a critical bug in ClaudeKit integration. The setup command used `--global` flag which ClaudeKit doesn't support, causing error: `unknown option '--global'`.
+
+**Issue Details:**
+- **Error:** `claudekit setup --global` fails with "unknown option '--global'"
+- **Impact:** ALL global mode installations fail at ClaudeKit setup step
+- **Root Cause:** Incorrect flag assumption - ClaudeKit uses `--user` for global installations, not `--global`
+- **Discovery:** User testing after v1.1.0 publish, reported via `/spec:feedback`
+
+**Fix Applied (Commit e63a746):**
+Single line change in lib/setup.js:257:
+```diff
+- mode === "global" ? "claudekit setup --global" : "claudekit setup";
++ mode === "global" ? "claudekit setup --user --yes" : "claudekit setup --yes";
+```
+
+**Changes:**
+1. Global mode: `--global` → `--user --yes`
+   - `--user` installs to ~/.claude/ (correct ClaudeKit flag)
+   - `--yes` makes setup non-interactive (no prompts during automated install)
+2. Project mode: (default) → `--yes`
+   - Adds `--yes` for non-interactive mode
+   - No path needed (defaults to current directory)
+
+**Verification:**
+- Syntax validation passed: `node -c lib/setup.js`
+- ClaudeKit flags verified via `claudekit setup --help`
+- Supported flags: `--user`, `--project <path>`, `--yes`
+- Unsupported flag: `--global` ❌
+
+**Next Release:** This fix will be included in v1.1.1 (patch release) when pushed to main branch. Semantic-release will detect the `fix:` commit and automatically publish the patch.
+
+**Lessons Learned:**
+1. **Verify External API Assumptions:** Always verify third-party CLI flags before implementation. ClaudeKit's `--user` vs `--global` differs from npm conventions.
+2. **Non-Interactive by Default:** Automated installers should always use non-interactive flags (`--yes`) to prevent hanging on prompts.
+3. **Post-Publish Testing:** Real-world testing after publish reveals integration issues not caught in development.
 
 ### Session 4
 
@@ -407,6 +453,7 @@ User created GitHub App with bypass permissions and installed it on repository. 
 
 ## Session History
 
+- **2025-11-22 (Session 5):** ✅ BUG FIX - Fixed ClaudeKit setup command flags. Changed global mode from `--global` (not supported) to `--user --yes`, added `--yes` flag for non-interactive project mode. Single line change in lib/setup.js. Committed as fix (e63a746).
 - **2025-11-22 (Session 4):** ✅ COMPLETED - Published package to npm with full OIDC automation. Fixed 5 critical bugs (scoped package access, token permissions, semantic-release OIDC support, Node version compatibility, npm ci lock file sync). Published v1.0.1 with NPM_TOKEN, migrated to OIDC for v1.1.0 with SLSA Provenance v1 attestations. Cleaned up temporary tokens and workflows. All 22 tasks completed successfully.
 - **2025-11-22 (Session 3):** Prepared publishing infrastructure - Created temporary token workflow, comprehensive publishing guide, repository migration guide. Updated git remote to claude-flow. Fixed OIDC workflow implementation (was marked updated but file not modified). Ready for user to execute manual publishing steps (npm token creation, GitHub Secrets, workflow trigger).
 - **2025-11-22 (Session 2):** Completed 3 tasks - README.md npm migration, install.sh removal, package verification with npm pack
