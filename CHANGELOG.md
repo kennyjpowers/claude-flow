@@ -1,3 +1,21 @@
+# 1.0.0 (2025-11-22)
+
+
+### Bug Fixes
+
+* add required permissions to release-token workflow ([3c37cee](https://github.com/kennyjpowers/claude-flow/commit/3c37cee0d0c24973f1ba6ecec0afdca26c158d32))
+* allow git credentials for semantic-release ([062e42d](https://github.com/kennyjpowers/claude-flow/commit/062e42da511a46392e8bc1c0b076c3db778c6fa1))
+* improved feedback workflow command using the feedback command ([#2](https://github.com/kennyjpowers/claude-flow/issues/2)) ([efce9eb](https://github.com/kennyjpowers/claude-flow/commit/efce9eb45040314501d6ae249b38e867538471a8))
+* **release:** add public access for scoped package publishing ([b7dd0a8](https://github.com/kennyjpowers/claude-flow/commit/b7dd0a82f9ed7f77702e86ea2a2c2de64586bf20))
+* **workflows:** add GitHub App token to OIDC release workflow ([5dedbfe](https://github.com/kennyjpowers/claude-flow/commit/5dedbfe7306b901508424753f8b0951048fa08d3))
+* **workflows:** use GitHub App token to bypass branch protection ([7b28f96](https://github.com/kennyjpowers/claude-flow/commit/7b28f96620c2f5d2e57c31882d52e3e7b771b24f))
+
+
+### Features
+
+* package publishing strategy ([#3](https://github.com/kennyjpowers/claude-flow/issues/3)) ([8c7546b](https://github.com/kennyjpowers/claude-flow/commit/8c7546bbb73f95366f238292109c89c8194448e3))
+* reorganize specs into feature-based directories ([8d9da77](https://github.com/kennyjpowers/claude-flow/commit/8d9da77389510dee8611dd380c87776714cf8a2b))
+
 # Changelog
 
 ## [1.2.0] - 2025-11-21
