@@ -6,3 +6,6 @@
 
 temp.txt
 node_modules
+
+# npm pack test artifacts
+*.tgz

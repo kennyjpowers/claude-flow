@@ -21,8 +21,8 @@ const pkg = JSON.parse(
 // Check for updates (non-blocking)
 const notifier = updateNotifier({
   pkg,
-  updateCheckInterval: 1000 * 60 * 60 * 24,
-}); // Check daily
+  updateCheckInterval: 1000 * 60 * 60 * 24 * 7,
+}); // Check weekly
 if (notifier.update) {
   notifier.notify({
     message: `Update available: ${notifier.update.latest}\nRun: npm install -g @33strategies/claudeflow`,

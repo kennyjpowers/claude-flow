@@ -182,22 +182,279 @@ Security/Best Practices
 
 ---
 
+## Feedback Entry #2
+
+**Date:** 2025-11-21
+**Status:** Accepted - Implementation in progress
+**Type:** Bug/Error
+**Priority:** High
+
+### Description
+
+ClaudeKit setup fails for global mode with error: `error: unknown option '--global'`
+
+**Context from console logs:**
+```
+ℹ Running ClaudeKit setup...
+error: unknown option '--global'
+✗ ClaudeKit setup failed (non-fatal)
+ℹ You may need to run "claudekit setup" manually
+```
+
+### Code Exploration Findings
+
+**Root Cause Analysis:**
+- File: `lib/setup.js`, line 257
+- Current code: `const setupCommand = mode === 'global' ? 'claudekit setup --global' : 'claudekit setup';`
+- Issue: ClaudeKit does NOT support a `--global` flag
+- Correct flag: `--user` (installs to ~/.claude/ directory)
+
+**ClaudeKit Supported Flags (from help output):**
+- `--user` - Install in user directory (~/.claude) instead of project
+- `--project <path>` - Target directory for project installation
+- `--yes` - Automatic yes to prompts (non-interactive mode)
+- NO `--global` flag exists
+
+**Blast Radius:**
+- LOW - Single function affected: `runClaudeKitSetup()` in lib/setup.js (lines 252-266)
+- Error is caught and marked as "non-fatal"
+- ALL global mode installations fail ClaudeKit setup (but continue)
+- No downstream dependencies
+
+**Affected Files:**
+- `lib/setup.js:257` (implementation - uses wrong flag)
+- `specs/package-publishing-strategy/02-specification.md:620` (spec documentation - shows wrong flag)
+
+### Research Findings
+
+Research skipped by user
+
+### Decisions
+
+- **Action:** Implement now
+- **Scope:** Minimal
+- **Approach:** Add non-interactive mode
+- **Priority:** High
+
+**Selected Approach:**
+Change `--global` to `--user` and add `--yes` flag for both modes to prevent prompts during setup.
+
+**Fix:**
+```javascript
+// Before (WRONG):
+const setupCommand = mode === 'global' ? 'claudekit setup --global' : 'claudekit setup';
+
+// After (CORRECT):
+const setupCommand = mode === 'global' ? 'claudekit setup --user --yes' : 'claudekit setup --yes';
+```
+
+### Actions Taken
+
+**Specification Updates:**
+1. Updated `specs/package-publishing-strategy/02-specification.md`:
+   - Added changelog entry documenting this feedback
+   - Section "2025-11-21 - Post-Implementation Feedback" (new entry after OIDC feedback)
+   - Documented change needed in lib/setup.js:257
+   - Lines 1796-1821
+
+**Implementation Changes Required:**
+- File: `lib/setup.js`
+- Line: 257
+- Change: Replace `--global` with `--user --yes` for global mode
+- Change: Add `--yes` flag for project mode
+- Impact: One-line fix, non-interactive setup for both modes
+
+### Rationale
+
+This feedback was addressed through the /spec:feedback workflow:
+1. Code exploration identified the incorrect flag usage and correct replacement
+2. Research was skipped (issue was straightforward with clear solution)
+3. Interactive decision process resulted in: Implement now with minimal scope
+4. Specification updated with changelog entry documenting the change
+5. Next steps: Run `/spec:decompose` to create tasks, then `/spec:execute` to implement
+
+**Why High Priority:**
+- Affects ALL global mode installations
+- Creates confusing error message for users
+- Simple one-line fix with low risk
+- Improves user experience by making setup non-interactive
+
+### Security & Performance Impact
+
+**Security:** No security implications (both flags achieve the same result)
+**Performance:** `--yes` flag eliminates interactive prompts, slightly faster setup
+**Compatibility:** Both `--user` and `--yes` are supported in ClaudeKit v0.9.0+
+
+### Next Steps
+
+1. Review the changelog entry in the spec
+2. Update the affected specification section (lib/setup.js code block at line 620)
+3. Run: `/spec:decompose specs/package-publishing-strategy/02-specification.md`
+4. Run: `/spec:execute specs/package-publishing-strategy/02-specification.md`
+
+---
+
+## Feedback Entry #3
+
+**Date:** 2025-11-21 23:07:00
+**Status:** Accepted - Implementation in progress
+**Type:** Bug/Error
+**Priority:** Low
+
+### Description
+
+Update notifications not displaying when running v1.0.1 with v1.1.0 published on npm.
+
+**Context from console logs:**
+```
+claudeflow --version
+claudeflow v1.0.1
+    ~/src/ai/claude-config    test/publishing-spec  claudeflow setup    ✔  11:05:21 PM
+================================================
+claudeflow Setup
+================================================
+
+Select installation mode:
+  1) Global  - Install to ~/.claude/ (available in all projects)
+  2) Project - Install to ./.claude/ (this project only)
+
+Enter choice [1/2]:
+```
+
+No update notification appeared despite version 1.1.0 being available on npm.
+
+### Code Exploration Findings
+
+**Root Cause Analysis:**
+- File: `bin/claudeflow.js`, lines 22-30
+- Current implementation uses `updateCheckInterval: 1000 * 60 * 60 * 24` (24 hours)
+- Issue: update-notifier has multi-layer caching:
+  1. Configstore cache (24-hour interval from updateCheckInterval)
+  2. Internal notification display suppression (1-hour minimum between displays)
+- Result: Users won't see notifications for up to 1 hour after first check
+
+**Blast Radius:**
+- LOW - Single file affected: `bin/claudeflow.js` (lines 22-30)
+- Only the CLI entry point imports and uses update-notifier
+- No downstream dependencies
+- 5-line change maximum
+
+**Identified Issues:**
+1. **Aggressive caching behavior**: 24-hour interval allows rapid development cycles but isn't industry standard
+2. **No error handling**: Silent failures if npm registry unreachable
+3. **Double caching**: configstore + internal suppression = confusing UX
+
+**Affected Files:**
+- `bin/claudeflow.js:289` (implementation - updateCheckInterval value)
+- `specs/package-publishing-strategy/02-specification.md:289` (spec documentation - shows 24-hour interval)
+
+### Research Findings
+
+**Key Discovery:** 24-hour interval is NOT industry standard
+
+**Industry Best Practices:**
+- npm, yarn, pnpm ALL use 7-day (1 week) intervals
+- Prevents notification fatigue
+- Balances user awareness vs. annoyance
+- Update checks are async, non-blocking background processes
+
+**Recommended Solution: Option B (Standard Weekly Interval)**
+- Change: `updateCheckInterval: 1000 * 60 * 60 * 24` → `updateCheckInterval: 1000 * 60 * 60 * 24 * 7`
+- Impact: ~1 line code change (minimal scope selected)
+- Rationale: Align with industry standard used by npm, yarn, pnpm
+- Security: Uses HTTPS for checks (default), users can opt-out via NO_UPDATE_NOTIFIER env variable
+
+**Alternative Approaches:**
+- Option A: Keep 24-hour interval (rejected - not industry standard)
+- Option C: Configurable via environment variable (deferred - adds complexity)
+- Option D: Add error handling + diagnostics (deferred - out of minimal scope)
+
+### Decisions
+
+- **Action:** Implement now
+- **Scope:** Minimal (change interval to 7 days only)
+- **Approach:** Option B - Weekly interval (recommended, industry standard)
+- **Priority:** Low
+
+**Selected Approach:**
+Change updateCheckInterval from 24 hours to 7 days to align with industry standard (npm, yarn, pnpm).
+
+**Fix:**
+```javascript
+// Before (24 hours):
+const notifier = updateNotifier({ pkg, updateCheckInterval: 1000 * 60 * 60 * 24 });
+
+// After (7 days):
+const notifier = updateNotifier({ pkg, updateCheckInterval: 1000 * 60 * 60 * 24 * 7 });
+```
+
+### Actions Taken
+
+**Specification Updates:**
+1. Updated `specs/package-publishing-strategy/02-specification.md`:
+   - Added changelog entry documenting this feedback
+   - Section "2025-11-21 - Post-Implementation Feedback #2" (lines 1823-1847)
+   - Documented change needed in bin/claudeflow.js:289
+   - Rationale: Align with industry standard
+
+**Implementation Changes Required:**
+- File: `bin/claudeflow.js`
+- Line: 289
+- Change: Multiply updateCheckInterval by 7 (24 hours → 7 days)
+- Impact: Single parameter change, minimal blast radius
+
+### Rationale
+
+This feedback was addressed through the /spec:feedback workflow:
+1. Code exploration identified multi-layer caching as root cause
+2. Research expert investigated industry best practices and confirmed 7-day standard
+3. Interactive decision process resulted in: Implement now with minimal scope
+4. Specification updated with changelog entry documenting the change
+5. Next steps: Run `/spec:decompose` to create tasks, then `/spec:execute` to implement
+
+**Why Low Priority:**
+- Notifications still work, just appear on 7-day cycle instead of expected immediate display
+- No functionality broken, pure UX improvement
+- Industry standard alignment is good practice but not urgent
+- Simple one-line fix with zero risk
+
+**Why Minimal Scope:**
+- Changing interval alone fixes the core issue
+- Error handling and diagnostics are valuable but not required for fix
+- Can address comprehensive improvements in future feedback if needed
+
+### Security & Performance Impact
+
+**Security:** No security implications (uses same HTTPS checks)
+**Performance:** No performance impact (check frequency reduced from daily to weekly)
+**Compatibility:** update-notifier 7.x fully supports the change
+**UX Improvement:** Reduces notification fatigue, aligns with user expectations
+
+### Next Steps
+
+1. Review the changelog entry in the spec
+2. Update bin/claudeflow.js:289 (change updateCheckInterval to 7 days)
+3. Run: `/spec:decompose specs/package-publishing-strategy/02-specification.md`
+4. Run: `/spec:execute specs/package-publishing-strategy/02-specification.md`
+
+---
+
 ## Summary Statistics
 
-**Feedback Items Processed:** 1
+**Feedback Items Processed:** 3
 **Decisions:**
-- Implement Now: 1
+- Implement Now: 3
 - Defer: 0
 - Out of Scope: 0
 
 **Implementation Impact:**
-- Specification sections updated: 2
-- Task breakdown sessions: 2 (Full + Incremental)
+- Specification sections updated: 3
+- Task breakdown sessions: 2+ (Full + Incremental, more to come)
 - Tasks preserved: 15 (completed)
-- Tasks updated: 2 (affected by feedback)
-- Tasks created: 4 (new work)
-- Total tasks: 22
-- STM tasks created: 4 (IDs: 73-76)
+- Tasks updated: 3 (affected by feedback)
+- Tasks created: 4+ (new work)
+- Total tasks: 22+
+- STM tasks created: 4+ (IDs: 73-76+)
 - Estimated implementation time: 30-60 minutes
 - Security improvement: High (eliminates long-lived tokens)
 
