@@ -24,6 +24,9 @@
     "url": "https://github.com/kennyjpowers/claude-flow/issues"
   },
   "homepage": "https://claudeflow.dev",
+  "publishConfig": {
+    "access": "public"
+  },
   "bin": {
     "claudeflow": "./bin/claudeflow.js"
   },
