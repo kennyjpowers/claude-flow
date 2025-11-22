@@ -1,0 +1,33 @@
+name: Release (Token-based - Temporary)
+
+on:
+  workflow_dispatch:  # Manual trigger to avoid conflicts with main workflow
+
+jobs:
+  release:
+    name: Release to npm (Token Auth)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Verify files
+        run: node scripts/verify-files.js
+
+      - name: Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}  # Temporary token
+        run: npx semantic-release

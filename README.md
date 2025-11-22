@@ -45,65 +45,125 @@ All three layers work together seamlessly in Claude Code.
 
 ## Quick Start
 
-### Option 1: Automated Installation (Recommended)
+### Installation
 
+Install claudeflow globally via your preferred package manager:
+
+#### npm
 ```bash
-# Clone this repository
-git clone https://github.com/kennethpriester/claude-config.git
-cd claude-config
-
-# Choose installation mode:
-
-# Global (available in all projects)
-./install.sh user
-
-# OR
-
-# Project-specific (for team sharing)
-cd /path/to/your/project
-/path/to/claude-config/install.sh project
+npm install -g @33strategies/claudeflow
 ```
 
-**Which should I use?** See [Installation Guide](docs/INSTALLATION_GUIDE.md) for detailed guidance.
+#### yarn
+```bash
+yarn global add @33strategies/claudeflow
+```
+
+#### pnpm
+```bash
+pnpm add -g @33strategies/claudeflow
+```
+
+### Setup
+
+After installation, run the setup command:
+
+```bash
+claudeflow setup
+```
+
+Choose your installation mode:
+- **1) Global** - Install to `~/.claude/` (available in all projects)
+- **2) Project** - Install to `./.claude/` (this project only)
 
 **Quick decision**:
-- **Solo developer or want commands everywhere?** → `./install.sh user`
-- **Team project or want version control?** → `./install.sh project`
+- **Solo developer or want commands everywhere?** → Global mode
+- **Team project or want version control?** → Project mode
 - **Both?** → You can do both! They work together via configuration hierarchy.
 
-The script will:
-1. Check prerequisites (Node.js 18+, Claude Code CLI)
-2. Install ClaudeKit globally via npm
-3. Copy custom workflow commands
+The setup will:
+1. Check prerequisites (Node.js 20+, npm, Claude Code CLI)
+2. Verify ClaudeKit installation (installed automatically as dependency)
+3. Copy custom workflow commands to your chosen location
 4. Set up configuration files
 5. Run ClaudeKit setup
 
-**Optional but recommended**: Install [simple-task-master](https://github.com/carlrannaberg/simple-task-master) for enhanced task tracking:
+**Optional but recommended**: [simple-task-master](https://github.com/carlrannaberg/simple-task-master) is already included for enhanced task tracking:
 ```bash
-npm install -g simple-task-master
+stm list --pretty --tag feature:<slug>
 ```
-This enables `/spec:decompose` and `/spec:execute` to automatically track tasks with `stm list --pretty`.
+This enables `/spec:decompose` and `/spec:execute` to automatically track tasks.
 
-### Option 2: Manual Installation
+### Verify Installation
+
+Check that everything is set up correctly:
 
 ```bash
-# 1. Install ClaudeKit
-npm install -g claudekit
-
-# 2. Clone this repo
-git clone https://github.com/kennethpriester/claude-config.git
-
-# 3. Copy custom configuration to your project
-cd your-project
-cp -r ../claude-config/.claude/* .claude/
-
-# 4. Initialize ClaudeKit
-claudekit setup --yes
-
-# 5. Verify installation
-claudekit list agents
-claudekit list commands
+claudeflow doctor
 ```
+
+This diagnostic command checks:
+- Node.js version (need 20+)
+- npm availability
+- Claude Code CLI installation
+- ClaudeKit installation
+- .claude/ directory structure
+- Command files presence
+
+### Troubleshooting
+
+#### "Command not found: claudeflow"
+- Ensure npm global bin is in your PATH
+- Try: `npm list -g @33strategies/claudeflow`
+- Reinstall: `npm install -g @33strategies/claudeflow`
+
+#### "ClaudeKit not found"
+- ClaudeKit should install automatically as a dependency
+- Manual install: `npm install -g claudekit`
+- Verify: `claudekit --version`
+
+#### "Commands not loading in Claude Code"
+- Run: `claudeflow doctor`
+- Verify files exist in `~/.claude/commands/` (global) or `./.claude/commands/` (project)
+- Restart Claude Code
+
+#### Installation Issues
+Run the diagnostic command for detailed information:
+```bash
+claudeflow doctor
+```
+
+### Migration from install.sh
+
+If you previously used the bash script installation:
+
+1. **Uninstall old version:**
+   ```bash
+   # Global installation
+   rm -rf ~/.claude
+
+   # OR Project installation
+   rm -rf .claude
+   ```
+
+2. **Install via npm:**
+   ```bash
+   npm install -g @33strategies/claudeflow
+   ```
+
+3. **Run setup:**
+   ```bash
+   # Global (if you used install.sh user)
+   claudeflow setup --global
+
+   # OR Project (if you used install.sh project)
+   claudeflow setup --project
+   ```
+
+4. **Verify installation:**
+   ```bash
+   claudeflow doctor
+   ```
 
 ## Document Organization
 
@@ -139,18 +199,32 @@ specs/add-user-auth-jwt/
 ## Repository Structure
 
 ```
-claude-config/
-├── .claude/                          # Custom configuration (layers on ClaudeKit)
+claudeflow/ (@33strategies/claudeflow npm package)
+├── package.json                      # npm package metadata
+├── bin/
+│   └── claudeflow.js                 # CLI entry point
+├── lib/
+│   ├── setup.js                      # Installation logic
+│   └── doctor.js                     # Diagnostic command
+├── scripts/
+│   └── verify-files.js               # Pre-publish file verification
+│
+├── .claude/                          # Custom configuration (distributed in package)
 │   ├── commands/                     # Custom slash commands
 │   │   ├── ideate.md                 # Structured ideation workflow
 │   │   ├── ideate-to-spec.md         # Transform ideation to spec
 │   │   └── spec/
-│   │       └── doc-update.md         # Documentation review
+│   │       ├── create.md             # Enhanced spec creation
+│   │       ├── decompose.md          # Incremental task breakdown
+│   │       ├── execute.md            # Session-aware implementation
+│   │       ├── feedback.md           # Post-implementation feedback
+│   │       ├── doc-update.md         # Documentation review
+│   │       └── migrate.md            # Spec structure migration
 │   ├── settings.json.example         # Example configuration
 │   └── README.md                     # Component documentation
 │
-├── .claude-plugin/                   # Plugin metadata (optional)
-│   └── plugin.json                   # For installing as Claude Code plugin
+├── .claude-plugin/                   # Plugin metadata
+│   └── plugin.json                   # Package metadata
 │
 ├── templates/                        # Configuration templates
 │   ├── project-config/               # Project-level templates
@@ -164,12 +238,17 @@ claude-config/
 │       └── CLAUDE.md                 # Personal preferences
 │
 ├── docs/                             # Documentation
+│   ├── DESIGN_RATIONALE.md          # Design validation & best practices
+│   └── ...
 │
-├── install.sh                        # Installation script
-├── README.md                         # This file
-└── docs/
-    ├── DESIGN_RATIONALE.md          # Design validation & best practices
-    └── ...
+├── .github/
+│   └── workflows/
+│       └── release.yml               # CI/CD automation
+├── .releaserc.json                   # Semantic-release config
+├── .npmignore                        # Package exclusion rules
+├── LICENSE                           # MIT License
+├── CHANGELOG.md                      # Version history (auto-generated)
+└── README.md                         # This file
 ```
 
 ## Understanding the Hybrid Approach
@@ -790,7 +869,7 @@ cat .claude/settings.json | jq .
 - [Setup Guide](docs/SETUP_GUIDE.md) - Detailed setup instructions
 - [Design Rationale](docs/DESIGN_RATIONALE.md) - Design validation and best practices
 - [Feedback Workflow Guide](docs/guides/feedback-workflow-guide.md) - Complete guide to post-implementation feedback
-- [GitHub Issues](https://github.com/kennethpriester/claude-config/issues) - Report problems
+- [GitHub Issues](https://github.com/kennyjpowers/claude-flow.git/issues) - Report problems
 
 ### Community Resources
 - [Awesome Claude Code](https://github.com/hesreallyhim/awesome-claude-code)
