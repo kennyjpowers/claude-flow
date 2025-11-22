@@ -201,6 +201,29 @@ release-token.yml (Temporary):          release.yml (OIDC - Future):
 
 **Handoff to User:** Implementation ready for publishing. All code complete. User must execute manual steps in PUBLISHING_GUIDE.md to complete Task 74 (initial publish), then Tasks 73-76 (OIDC migration and verification).
 
+**CRITICAL ISSUE #5 - Branch Protection Blocking semantic-release:** After fixing permissions (Issue #3) and git credentials (Issue #4), workflow failed with "Repository rule violations found for refs/heads/main - Changes must be made through a pull request". Root cause: GITHUB_TOKEN cannot bypass branch protection rules, even when "Repository admin" is in the bypass list (applies to human users, not workflow tokens).
+
+**Research Findings:**
+- Examined claudekit repository - they don't use semantic-release, they manually publish (no branch protection conflict)
+- GitHub Actions GITHUB_TOKEN fundamentally cannot bypass branch protection rules
+- Three solutions available: (1) GitHub App with bypass permissions (recommended), (2) Personal Access Token (security risk), (3) Manual publishing like claudekit
+
+**Solution Implemented - GitHub App Token:**
+User created GitHub App with bypass permissions and installed it on repository. Updated both workflows to use `tibdex/github-app-token@v2` to generate authentication token instead of default GITHUB_TOKEN.
+
+**Changes Applied (Commits 7b28f96, 5dedbfe):**
+- Added token generation step using BOT_APP_ID and BOT_PRIVATE_KEY secrets
+- Updated checkout action to use generated token: `token: ${{ steps.generate-token.outputs.token }}`
+- Updated GITHUB_TOKEN environment variable to use generated token
+- Applied to both release-token.yml (temporary) and release.yml (OIDC)
+- Push to main succeeded with "Bypassed rule violations for refs/heads/main" confirmation
+
+**Security Benefits:**
+- No Personal Access Token risk (tokens available to all branches)
+- Proper GitHub App scoped permissions
+- Maintains branch protection integrity while allowing automated releases
+- Follows modern best practices per semantic-release documentation
+
 ### Session 2
 
 **Documentation Updates:** Completed comprehensive README.md overhaul - replaced all bash script references with npm/yarn/pnpm installation instructions. Added troubleshooting section featuring `claudeflow doctor` command for installation diagnostics. Migration guide provides clear step-by-step instructions for users upgrading from install.sh.
