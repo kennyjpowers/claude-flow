@@ -1,9 +1,10 @@
-name: Release
+name: Release (OIDC - Disabled Until Task 1.17 Complete)
 
 on:
-  push:
-    branches:
-      - main
+  workflow_dispatch:  # Disabled: Will enable after npm Trusted Publishers configured
+  # push:
+  #   branches:
+  #     - main
 
 jobs:
   test:
@@ -38,6 +39,13 @@ jobs:
     needs: test
     if: github.ref == 'refs/heads/main'
 
+    # OIDC permissions for npm Trusted Publishers
+    permissions:
+      contents: write      # Create releases and tags
+      issues: write        # Comment on issues
+      pull-requests: write # Comment on PRs
+      id-token: write      # OIDC token for npm provenance
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -50,11 +58,14 @@ jobs:
         with:
           node-version: 22
 
+      - name: Update npm to latest
+        run: npm install -g npm@latest
+
       - name: Install dependencies
         run: npm ci
 
       - name: Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          # NPM_TOKEN removed - using OIDC instead
         run: npx semantic-release

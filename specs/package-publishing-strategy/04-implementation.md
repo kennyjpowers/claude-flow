@@ -158,6 +158,18 @@ None currently. All prerequisites met and dependencies clear.
 
 ### Session 3
 
+**CRITICAL BUG FIX - OIDC Implementation Missing:** Discovered that Task 1.12 (Create .github/workflows/release.yml) was marked "UPDATED" in Session 2 for OIDC, but the actual file was never updated. Session 1 created the workflow with `NPM_TOKEN`, Session 2 feedback added OIDC to task spec (lines 152-226 in 03-tasks.md), but the file itself was not modified. This was caught when user noticed both workflows looked identical.
+
+**Root Cause:** Task tracking showed "🔄 UPDATED" but implementation step was skipped. The incremental decompose updated the TASK description but didn't trigger re-implementation of the actual workflow file.
+
+**Fix Applied:**
+- Added `id-token: write` permission to release job (line 46)
+- Removed `NPM_TOKEN` from environment variables (line 69 comment)
+- Added npm update step for OIDC support (line 60-61)
+- Added explicit permissions block (lines 42-46)
+- Temporarily disabled workflow (workflow_dispatch only) until npm Trusted Publishers configured (Task 1.17)
+- This prevents auto-trigger on main push while OIDC not yet set up
+
 **Repository Migration Completed:** User renamed GitHub repository from `claude-config` to `claude-flow` on GitHub web interface. Git remote updated locally to `git@github.com:kennyjpowers/claude-flow.git`. This aligns repository name with package name (@33strategies/claudeflow) and ensures proper provenance for npm publishing.
 
 **Publishing Infrastructure Created:** Generated comprehensive publishing guide (PUBLISHING_GUIDE.md) with 10-step process for secure npm publishing using OIDC. Guide covers token creation, GitHub Secrets setup, workflow triggering, OIDC configuration, and security cleanup. Includes troubleshooting section and success criteria.
@@ -175,6 +187,17 @@ None currently. All prerequisites met and dependencies clear.
 6. Clean up temporary token and workflow
 
 **Security Approach:** Following npm best practices with two-phase publish: (1) Initial token-based publish to create package, (2) Switch to OIDC for all future releases. This enables provenance attestations and eliminates long-lived tokens.
+
+**Workflow Differences Now Correct:**
+```
+release-token.yml (Temporary):          release.yml (OIDC - Future):
+- Uses NPM_TOKEN ✅                      - Uses id-token: write ✅
+- workflow_dispatch trigger ✅           - workflow_dispatch (disabled) ✅
+- For initial publish only              - For all future publishes
+- Will be deleted after use             - Permanent workflow
+```
+
+**Lesson Learned:** When task tracking shows "🔄 UPDATED", must verify the actual implementation files were modified, not just the task description. Incremental decompose updates task specs but doesn't automatically re-implement code.
 
 **Handoff to User:** Implementation ready for publishing. All code complete. User must execute manual steps in PUBLISHING_GUIDE.md to complete Task 74 (initial publish), then Tasks 73-76 (OIDC migration and verification).
 
