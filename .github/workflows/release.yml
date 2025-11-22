@@ -1,10 +1,10 @@
-name: Release (OIDC - Disabled Until Task 1.17 Complete)
+name: Release
 
 on:
-  workflow_dispatch:  # Disabled: Will enable after npm Trusted Publishers configured
-  # push:
-  #   branches:
-  #     - main
+  push:
+    branches:
+      - main
+  workflow_dispatch:  # Allow manual triggers for testing
 
 jobs:
   test:
