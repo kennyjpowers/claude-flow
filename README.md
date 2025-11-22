@@ -7,53 +7,13 @@
 
 A comprehensive configuration repository that combines **ClaudeKit**, **custom agents/commands**, and **Claude Code official features** for an optimal AI-assisted development workflow.
 
-## What This Repository Provides
-
-This repository implements a **layered configuration approach**:
-
-1. **ClaudeKit Foundation** (installed via npm) - 30+ agents, 20+ commands, 25+ hooks
-2. **Custom Extensions** (this repo) - Domain-specific agents and workflow commands
-3. **Official Claude Code Features** - Built-in capabilities and plugin system
-
-All three layers work together seamlessly in Claude Code.
-
-## Key Features
-
-### ClaudeKit (npm package)
-- 30+ specialized agents (TypeScript, React, Testing, Database, DevOps, etc.)
-- 20+ workflow commands (/git:commit, /spec:create, /research, etc.)
-- 25+ intelligent hooks (file-guard, linting, testing, checkpoints)
-- Automated quality assurance and error prevention
-
-### Custom Extensions (this repo)
-- 4 custom workflow commands:
-  - **/ideate**: Structured ideation with comprehensive documentation
-  - **/ideate-to-spec**: Transform ideation into validated specification
-  - **/spec:feedback**: Post-implementation feedback with interactive decisions
-  - **/spec:doc-update**: Parallel documentation review based on specs
-- 4 enhanced spec command overrides (replace ClaudeKit versions):
-  - **/spec:create**: Detects output path and creates specs in feature directories
-  - **/spec:decompose**: Incremental mode preserves completed work, tags STM tasks
-  - **/spec:execute**: Session resume capability with implementation tracking
-  - **/spec:migrate**: Migrates existing specs to feature-directory structure
-- Complete end-to-end workflow from ideation to deployment
-- Example configurations for teams and individuals
-- Uses ClaudeKit's 30+ agents for specialized tasks
-- **Task tracking**: Integrates with [simple-task-master](https://github.com/carlrannaberg/simple-task-master) (stm) - use `stm list --pretty --tag feature:<slug>` to track progress
-
-### Official Claude Code Features
-- 5-tier configuration hierarchy
-- Project-level `.claude/` directories
-- CLAUDE.md context files
-- MCP server integration
-- Plugin system
-
 ## Quick Start
 
 ### Installation
 
-> **Prerequisites:** Node.js 22.14+ (required by ClaudeKit dependency)
+> **Prerequisites:** Node.js 22.14+ 
 > Check version: `node --version` | Install: https://nodejs.org
+> **⚠️ Recommended:** Claude Code **Max plan** 
 
 Install claudeflow globally via your preferred package manager:
 
@@ -101,6 +61,180 @@ The setup will:
 stm list --pretty --tag feature:<slug>
 ```
 This enables `/spec:decompose` and `/spec:execute` to automatically track tasks.
+
+## What This Repository Provides
+
+This repository implements a **layered configuration approach**:
+
+1. **ClaudeKit Foundation** (installed via npm) - 30+ agents, 20+ commands, 25+ hooks
+2. **Custom Extensions** (this repo) - Domain-specific agents and workflow commands
+3. **Official Claude Code Features** - Built-in capabilities and plugin system
+
+All three layers work together seamlessly in Claude Code.
+
+## Standard Workflow
+
+This repository implements a complete end-to-end workflow for feature development:
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    IDEATION PHASE                               │
+└─────────────────────────────────────────────────────────────────┘
+                              │
+                              ▼
+                   /ideate <task-brief>
+                   (Custom Command)
+                              │
+                    Creates ideation doc
+                    with research & analysis
+                              │
+                              ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                   SPECIFICATION PHASE                           │
+└─────────────────────────────────────────────────────────────────┘
+                              │
+                              ▼
+          /ideate-to-spec <ideation-doc>
+          (Custom, calls /spec:create & /spec:validate)
+                              │
+              Creates validated specification
+                              │
+                              ▼
+            /spec:decompose <spec-file>
+            (Custom Override - uses stm if installed)
+                              │
+              Breaks spec into tasks
+                              │
+                              ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                  IMPLEMENTATION PHASE                           │
+└─────────────────────────────────────────────────────────────────┘
+                              │
+                              ▼
+            /spec:execute <spec-file>
+            (Custom Override - uses stm if installed)
+                              │
+              Implements tasks
+                              │
+                              ▼
+       stm list --pretty --tag feature:<slug>
+              (Track progress)
+                              │
+        View task status and completion
+                              │
+                   ┌──────────┴──────────┐
+                   │                     │
+              Not Finished          Finished
+                   │                     │
+                   └──────────┬──────────┘
+                              │
+                              ▼
+                    Manual Testing
+                              │
+                   Discover issues or
+                   improvement opportunities
+                              │
+                              ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                     FEEDBACK PHASE                              │
+└─────────────────────────────────────────────────────────────────┘
+                              │
+                              ▼
+           /spec:feedback <spec-file>
+           (Custom Command - one item at a time)
+                              │
+            Process feedback item:
+            • Code exploration
+            • Optional research
+            • Interactive decisions
+                              │
+                   ┌──────────┴──────────┬────────────┐
+                   │                     │            │
+              Implement Now           Defer     Out of Scope
+                   │                     │            │
+        Update spec changelog    Create STM task     Log only
+                   │                     │            │
+                   ▼                     │            │
+       /spec:decompose (incremental)    │            │
+                   │                     │            │
+       /spec:execute (resume)           │            │
+                   │                     │            │
+                   └──────────┬──────────┴────────────┘
+                              │
+                   More feedback items? (repeat)
+                              │
+                              ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                    COMPLETION PHASE                             │
+└─────────────────────────────────────────────────────────────────┘
+                              │
+                              ▼
+               /git:commit
+               (ClaudeKit Command)
+                              │
+              Commits implementation
+                              │
+                              ▼
+           /spec:doc-update <spec-file>
+           (Custom Command)
+                              │
+        Reviews & updates documentation
+                              │
+                              ▼
+               /git:commit
+               (ClaudeKit Command)
+                              │
+           Commits doc updates
+                              │
+                              ▼
+               /git:push
+               (ClaudeKit Command)
+                              │
+            Pushes to remote
+                              │
+                              ▼
+                          DONE! 🎉
+```
+
+### Key Workflow Steps
+
+1. **Ideation** → Comprehensive investigation and research
+2. **Specification** → Validated, implementation-ready spec
+3. **Decomposition** → Tasks broken down with dependencies (uses stm if installed, tags with `feature:<slug>`)
+4. **Implementation** → Iterative execution with stm task tracking via `stm list --pretty --tag feature:<slug>`
+5. **Feedback** → Process post-implementation feedback with structured decisions (implement/defer/out-of-scope)
+6. **Completion** → Documentation updates and git workflow
+
+## Key Features
+
+### ClaudeKit (npm package)
+- 30+ specialized agents (TypeScript, React, Testing, Database, DevOps, etc.)
+- 20+ workflow commands (/git:commit, /spec:create, /research, etc.)
+- 25+ intelligent hooks (file-guard, linting, testing, checkpoints)
+- Automated quality assurance and error prevention
+
+### Custom Extensions (this repo)
+- 4 custom workflow commands:
+  - **/ideate**: Structured ideation with comprehensive documentation
+  - **/ideate-to-spec**: Transform ideation into validated specification
+  - **/spec:feedback**: Post-implementation feedback with interactive decisions
+  - **/spec:doc-update**: Parallel documentation review based on specs
+- 4 enhanced spec command overrides (replace ClaudeKit versions):
+  - **/spec:create**: Detects output path and creates specs in feature directories
+  - **/spec:decompose**: Incremental mode preserves completed work, tags STM tasks
+  - **/spec:execute**: Session resume capability with implementation tracking
+  - **/spec:migrate**: Migrates existing specs to feature-directory structure
+- Complete end-to-end workflow from ideation to deployment
+- Example configurations for teams and individuals
+- Uses ClaudeKit's 30+ agents for specialized tasks
+- **Task tracking**: Integrates with [simple-task-master](https://github.com/carlrannaberg/simple-task-master) (stm) - use `stm list --pretty --tag feature:<slug>` to track progress
+
+### Official Claude Code Features
+- 5-tier configuration hierarchy
+- Project-level `.claude/` directories
+- CLAUDE.md context files
+- MCP server integration
+- Plugin system
 
 ### Verify Installation
 
@@ -464,138 +598,6 @@ Migrates existing specs from flat structure to feature-directory structure. Move
 
 **UserPromptSubmit:** thinking-level, codebase-map
 
-## Standard Workflow
-
-This repository implements a complete end-to-end workflow for feature development:
-
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                    IDEATION PHASE                               │
-└─────────────────────────────────────────────────────────────────┘
-                              │
-                              ▼
-                   /ideate <task-brief>
-                   (Custom Command)
-                              │
-                    Creates ideation doc
-                    with research & analysis
-                              │
-                              ▼
-┌─────────────────────────────────────────────────────────────────┐
-│                   SPECIFICATION PHASE                           │
-└─────────────────────────────────────────────────────────────────┘
-                              │
-                              ▼
-          /ideate-to-spec <ideation-doc>
-          (Custom, calls /spec:create & /spec:validate)
-                              │
-              Creates validated specification
-                              │
-                              ▼
-            /spec:decompose <spec-file>
-            (Custom Override - uses stm if installed)
-                              │
-              Breaks spec into tasks
-                              │
-                              ▼
-┌─────────────────────────────────────────────────────────────────┐
-│                  IMPLEMENTATION PHASE                           │
-└─────────────────────────────────────────────────────────────────┘
-                              │
-                              ▼
-            /spec:execute <spec-file>
-            (Custom Override - uses stm if installed)
-                              │
-              Implements tasks
-                              │
-                              ▼
-       stm list --pretty --tag feature:<slug>
-              (Track progress)
-                              │
-        View task status and completion
-                              │
-                   ┌──────────┴──────────┐
-                   │                     │
-              Not Finished          Finished
-                   │                     │
-                   └──────────┬──────────┘
-                              │
-                              ▼
-                    Manual Testing
-                              │
-                   Discover issues or
-                   improvement opportunities
-                              │
-                              ▼
-┌─────────────────────────────────────────────────────────────────┐
-│                     FEEDBACK PHASE                              │
-└─────────────────────────────────────────────────────────────────┘
-                              │
-                              ▼
-           /spec:feedback <spec-file>
-           (Custom Command - one item at a time)
-                              │
-            Process feedback item:
-            • Code exploration
-            • Optional research
-            • Interactive decisions
-                              │
-                   ┌──────────┴──────────┬────────────┐
-                   │                     │            │
-              Implement Now           Defer     Out of Scope
-                   │                     │            │
-        Update spec changelog    Create STM task     Log only
-                   │                     │            │
-                   ▼                     │            │
-       /spec:decompose (incremental)    │            │
-                   │                     │            │
-       /spec:execute (resume)           │            │
-                   │                     │            │
-                   └──────────┬──────────┴────────────┘
-                              │
-                   More feedback items? (repeat)
-                              │
-                              ▼
-┌─────────────────────────────────────────────────────────────────┐
-│                    COMPLETION PHASE                             │
-└─────────────────────────────────────────────────────────────────┘
-                              │
-                              ▼
-               /git:commit
-               (ClaudeKit Command)
-                              │
-              Commits implementation
-                              │
-                              ▼
-           /spec:doc-update <spec-file>
-           (Custom Command)
-                              │
-        Reviews & updates documentation
-                              │
-                              ▼
-               /git:commit
-               (ClaudeKit Command)
-                              │
-           Commits doc updates
-                              │
-                              ▼
-               /git:push
-               (ClaudeKit Command)
-                              │
-            Pushes to remote
-                              │
-                              ▼
-                          DONE! 🎉
-```
-
-### Key Workflow Steps
-
-1. **Ideation** → Comprehensive investigation and research
-2. **Specification** → Validated, implementation-ready spec
-3. **Decomposition** → Tasks broken down with dependencies (uses stm if installed, tags with `feature:<slug>`)
-4. **Implementation** → Iterative execution with stm task tracking via `stm list --pretty --tag feature:<slug>`
-5. **Feedback** → Process post-implementation feedback with structured decisions (implement/defer/out-of-scope)
-6. **Completion** → Documentation updates and git workflow
 
 ## Usage Examples
 
