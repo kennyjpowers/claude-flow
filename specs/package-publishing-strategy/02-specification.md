@@ -1271,9 +1271,13 @@ if (notifier.update) {
 
 **Publishing:**
 - Publish only from CI/CD (not local machines)
-- Use NPM_TOKEN stored in GitHub Secrets
+- Use npm Trusted Publishers (OIDC) for secure, token-free publishing
+  - Short-lived OIDC tokens instead of long-lived NPM_TOKEN
+  - Automatic cryptographic provenance attestations (SLSA Level 2)
+  - No secrets storage in GitHub (tokens generated per-workflow run)
 - Enable GitHub Actions required reviews
 - Tag releases with signed commits
+- Require `id-token: write` permission in workflow for OIDC authentication
 
 ---
 
@@ -1777,3 +1781,13 @@ Comprehensive migration guide with:
 - Verified npm package name availability (unscoped "claudeflow" available but using scoped)
 - Trademark search completed (no conflicts)
 - Domain ownership confirmed (claudeflow.dev purchased)
+
+**2025-11-21 - Post-Implementation Feedback**
+- **Trusted Publishers (OIDC)**: Migrating from NPM_TOKEN to npm Trusted Publishers for secure publishing
+  - Decision: Implement BEFORE first publish (recommended by research, easier than retrofitting)
+  - Security benefits: No long-lived tokens, automatic provenance attestations, SLSA Level 2 compliance
+  - Implementation: Add `id-token: write` permission to workflow, remove NPM_TOKEN, configure on npmjs.com
+  - Approach: Initial 7-day token publish, then switch to OIDC (package must exist before OIDC config)
+  - Impact: ~50-100 line changes across 4 files, 30-60 minutes implementation time
+  - Research: Comprehensive analysis completed (see /tmp/research_20251121_npm_trusted_publishers_semantic_release.md)
+  - Next steps: Update specification sections, create tasks via /spec:decompose, implement via /spec:execute
