@@ -13,39 +13,41 @@
 |---------|------|------|-------------------|-----------|-------|
 | 1 | 2025-11-21 | Full | N/A | 18 | Initial decomposition |
 | 2 | 2025-11-21 | Incremental | 1 | 4 | npm Trusted Publishers (OIDC) migration |
+| 3 | 2025-11-21 | Incremental | 1 | 1 | ClaudeKit setup flag fix |
 
 ### Current Session Details
 - **Mode**: Incremental
-- **Previous Decompose**: 2025-11-21 (Session 1)
-- **Current Decompose**: 2025-11-21 (Session 2)
+- **Previous Decompose**: 2025-11-21 (Session 2)
+- **Current Decompose**: 2025-11-21 (Session 3)
 - **Changelog Entries Processed**: 1
 
 ### Changelog Entries (New Since Last Decompose)
 
-#### Entry 1: npm Trusted Publishers (OIDC) Implementation
+#### Entry 1: ClaudeKit Setup Flag Fix
 - **Date**: 2025-11-21
-- **Issue**: npmjs recommends using trusted-publishers feature for deploying from GitHub Actions (post-implementation feedback)
-- **Decision**: Implement BEFORE first publish (recommended by research)
+- **Issue**: ClaudeKit setup fails for global mode with error: `error: unknown option '--global'`
+- **Decision**: Implement with minimal scope
 - **Changes to Specification**:
-  - Security Considerations section updated with OIDC details
-  - Changelog section added with OIDC decision and implementation plan
+  - Section 5.2: lib/setup.js (Core Installation Logic) - Line 620 update
+  - Change from: `claudekit setup --global` to `claudekit setup --user --yes`
+  - Change from: `claudekit setup` to `claudekit setup --yes`
+  - Add non-interactive mode with `--yes` flag for both installation modes
 - **Implementation Impact**:
-  - **Priority**: High (must be done before Task 1.16 publishing)
-  - **Affected Components**: .github/workflows/release.yml, npm account configuration, publishing workflow
-  - **Blast Radius**: ~50-100 line changes across 4 files
-  - **Security Benefits**: No long-lived tokens, automatic provenance, SLSA Level 2
-  - **Approach**: Initial 7-day token publish to create package, then switch to OIDC
-- **Action**: Updated Task 1.12 (workflow), Created Tasks 1.17-1.20 for OIDC implementation
+  - **Priority**: High
+  - **Affected Components**: lib/setup.js (runClaudeKitSetup function, line 257)
+  - **Blast Radius**: LOW - Single function, one-line fix, no downstream dependencies
+  - **Approach**: Add non-interactive mode (change --global to --user, add --yes for both modes)
+- **Action**: Create Task 1.23 for the fix
 
 ### Task Changes Summary
 - **Preserved**: 15 tasks (completed, no changes needed)
-- **Updated**: 2 tasks (Task 1.12, Task 1.16 - context added for OIDC)
-- **Created**: 4 tasks (1.17-1.20 - OIDC implementation)
-- **Total**: 22 tasks
+- **Updated**: 0 tasks
+- **Created**: 1 task (1.23 - ClaudeKit setup flag fix)
+- **Total**: 23 tasks
 
 ### Existing Tasks Status
 
-#### Phase 1: Core npm Package Setup (22 tasks)
+#### Phase 1: Core npm Package Setup (23 tasks)
 - Task 1.1: Create package.json ✅ DONE
 - Task 1.2: Create LICENSE file ✅ DONE
 - Task 1.3: Create .npmignore file ✅ DONE
@@ -68,12 +70,14 @@
 - Task 1.20: Verify OIDC provenance attestation ⏳ NEW
 - Task 1.21: Verify installation from npm ⏳ PENDING
 - Task 1.22: Notify ClaudeKit maintainer ⏳ PENDING
+- Task 1.23: Fix ClaudeKit setup command flags ⏳ NEW
 
 ### Execution Recommendations
-1. Review updated tasks (1.12, 1.16) for OIDC context
-2. Complete new OIDC tasks before publishing (1.17 → 1.18 → 1.19 → 1.20)
-3. Follow Option A approach: initial token publish, then OIDC migration
-4. Verify provenance after OIDC switch (Task 1.20)
+1. Complete Task 1.23 (ClaudeKit flag fix) - High priority bug fix
+2. Review updated tasks (1.12, 1.16) for OIDC context
+3. Complete new OIDC tasks before publishing (1.17 → 1.18 → 1.19 → 1.20)
+4. Follow Option A approach: initial token publish, then OIDC migration
+5. Verify provenance after OIDC switch (Task 1.20)
 
 ---
 
@@ -862,6 +866,138 @@ Learn more: https://www.npmjs.com/package/@33strategies/claudeflow
 
 ---
 
+### Task 1.23: Fix ClaudeKit setup command flags ⏳ NEW
+**Status**: New in Session 3
+**Description**: Fix ClaudeKit setup command to use correct flags (--user instead of --global, add --yes for non-interactive mode)
+**Size**: Small
+**Priority**: High
+**Dependencies**: Task 1.6 (lib/setup.js exists)
+**Can run parallel with**: N/A (bug fix should be completed first)
+**Source**: Feedback #2 from specs/package-publishing-strategy/05-feedback.md
+
+**Technical Requirements**:
+- Update lib/setup.js line 257 in the `runClaudeKitSetup()` function
+- Replace incorrect `--global` flag with correct `--user` flag
+- Add `--yes` flag for non-interactive mode (both global and project modes)
+- Maintain error handling and non-fatal behavior
+
+**Current Implementation (WRONG)**:
+```javascript
+async function runClaudeKitSetup(mode) {
+  printInfo("Running ClaudeKit setup...");
+
+  try {
+    const setupCommand =
+      mode === "global" ? "claudekit setup --global" : "claudekit setup";
+    execSync(setupCommand, { stdio: "inherit" });
+    printSuccess("ClaudeKit setup complete");
+  } catch (error) {
+    printError("ClaudeKit setup failed (non-fatal)");
+    printInfo('You may need to run "claudekit setup" manually');
+  }
+
+  console.log("");
+}
+```
+
+**Fixed Implementation (CORRECT)**:
+```javascript
+async function runClaudeKitSetup(mode) {
+  printInfo("Running ClaudeKit setup...");
+
+  try {
+    const setupCommand =
+      mode === "global" ? "claudekit setup --user --yes" : "claudekit setup --yes";
+    execSync(setupCommand, { stdio: "inherit" });
+    printSuccess("ClaudeKit setup complete");
+  } catch (error) {
+    printError("ClaudeKit setup failed (non-fatal)");
+    printInfo('You may need to run "claudekit setup" manually');
+  }
+
+  console.log("");
+}
+```
+
+**ClaudeKit Supported Flags (verified via `claudekit setup --help`)**:
+- `--user` - Install in user directory (~/.claude) instead of project ✅
+- `--project <path>` - Target directory for project installation ✅
+- `--yes` - Automatic yes to prompts (non-interactive mode) ✅
+- `--global` - NOT SUPPORTED ❌
+
+**Key Changes**:
+1. **Global mode**: Change from `claudekit setup --global` to `claudekit setup --user --yes`
+   - `--user` tells ClaudeKit to install in ~/.claude/ directory
+   - `--yes` makes setup non-interactive (no prompts during automated installation)
+
+2. **Project mode**: Change from `claudekit setup` to `claudekit setup --yes`
+   - Adds `--yes` flag for non-interactive mode
+   - No path needed (defaults to current directory)
+
+**Implementation Steps**:
+1. Open `lib/setup.js`
+2. Navigate to line 257 (inside `runClaudeKitSetup` function)
+3. Replace the `setupCommand` line with corrected version
+4. Save file
+5. Test both modes:
+   ```bash
+   # Test global mode
+   node bin/claudeflow.js setup --global
+   # Should see: claudekit setup --user --yes (in debug output)
+
+   # Test project mode
+   node bin/claudeflow.js setup --project
+   # Should see: claudekit setup --yes (in debug output)
+   ```
+
+**Acceptance Criteria**:
+- [ ] Global mode uses `claudekit setup --user --yes`
+- [ ] Project mode uses `claudekit setup --yes`
+- [ ] No `error: unknown option '--global'` errors
+- [ ] ClaudeKit setup completes without prompts (non-interactive)
+- [ ] Global mode installs to ~/.claude/
+- [ ] Project mode installs to ./.claude/
+- [ ] Error handling remains non-fatal
+- [ ] Success/failure messages display correctly
+
+**Testing Plan**:
+1. **Syntax validation**: Run `node -c lib/setup.js` (check for syntax errors)
+2. **Global mode test**:
+   - Run `claudeflow setup --global` in a clean environment
+   - Verify no `--global` error appears
+   - Verify ClaudeKit setup completes without prompts
+   - Check that ~/.claude/ directory is created with ClaudeKit files
+3. **Project mode test**:
+   - Run `claudeflow setup --project` in a test directory
+   - Verify no errors
+   - Verify setup completes without prompts
+   - Check that ./.claude/ directory is created with ClaudeKit files
+4. **Error handling test**:
+   - Test with ClaudeKit not installed (mock)
+   - Verify error message is clear and non-fatal
+   - Verify script continues and doesn't crash
+
+**Risk Assessment**:
+- **Risk Level**: LOW
+- **Blast Radius**: Single function, single line change
+- **Rollback**: Simple revert if issues found
+- **User Impact**: HIGH (fixes bug affecting ALL global mode installations)
+
+**Why This Fix Is Important**:
+- Affects ALL global mode installations (100% failure rate currently)
+- Creates confusing error message for users
+- Simple one-line fix with low risk
+- Improves user experience by making setup non-interactive
+- Aligns with ClaudeKit's actual command-line API
+
+**Related Issues**:
+- Source: User feedback via `/spec:feedback` command
+- Feedback log: specs/package-publishing-strategy/05-feedback.md #2
+- Console error: `error: unknown option '--global'`
+- Discovered during: Testing claudeflow v1.0.1 setup command
+
+---
+
 ## Implementation Notes
 
 ### OIDC Migration Strategy (Session 2)
@@ -898,6 +1034,7 @@ Learn more: https://www.npmjs.com/package/@33strategies/claudeflow
 The implementation is complete when:
 - ✅ All Session 1 tasks completed (15/15)
 - ✅ OIDC workflow updated (Task 1.12)
+- ⏳ ClaudeKit setup flags fixed (Task 1.23) - HIGH PRIORITY
 - ⏳ Initial token publish complete (Task 1.18)
 - ⏳ npm trusted publishers configured (Task 1.17)
 - ⏳ OIDC publishing enabled (Task 1.19)
@@ -906,6 +1043,7 @@ The implementation is complete when:
 - ⏳ ClaudeKit maintainer notified (Task 1.22)
 - ✅ Package published to npm registry
 - ⏳ **OIDC authentication active (no NPM_TOKEN needed)**
+- ⏳ **ClaudeKit setup works correctly for both global and project modes**
 - ⏳ **Provenance attestations visible on npm**
 - ✅ Installation works on all platforms (Windows, macOS, Linux)
 - ✅ All commands functional (`setup`, `doctor`, `version`, `help`)

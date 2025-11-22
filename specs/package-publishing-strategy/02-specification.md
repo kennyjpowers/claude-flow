@@ -1792,3 +1792,30 @@ Comprehensive migration guide with:
   - Impact: ~50-100 line changes across 4 files, 30-60 minutes implementation time
   - Research: Comprehensive analysis completed (see /tmp/research_20251121_npm_trusted_publishers_semantic_release.md)
   - Next steps: Update specification sections, create tasks via /spec:decompose, implement via /spec:execute
+
+### 2025-11-21 - Post-Implementation Feedback
+
+**Source:** Feedback #1 (see specs/package-publishing-strategy/05-feedback.md)
+
+**Issue:** ClaudeKit setup fails for global mode with error: `error: unknown option '--global'`
+
+**Decision:** Implement with minimal scope
+
+**Changes to Specification:**
+
+- **Section 5.2: lib/setup.js (Core Installation Logic)**
+  - Line 620: Update `runClaudeKitSetup()` function implementation
+  - Change from: `claudekit setup --global` to `claudekit setup --user --yes`
+  - Change from: `claudekit setup` to `claudekit setup --yes`
+  - Add non-interactive mode with `--yes` flag for both installation modes
+
+**Implementation Impact:**
+- Priority: High
+- Approach: Add non-interactive mode (change --global to --user, add --yes for both modes)
+- Affected components: lib/setup.js (runClaudeKitSetup function, single line change)
+- Estimated blast radius: LOW - Single function, one-line fix, no downstream dependencies
+
+**Next Steps:**
+1. Review and update lib/setup.js:257 (change claudekit setup flags)
+2. Run `/spec:decompose specs/package-publishing-strategy/02-specification.md` to update task breakdown
+3. Run `/spec:execute specs/package-publishing-strategy/02-specification.md` to implement changes

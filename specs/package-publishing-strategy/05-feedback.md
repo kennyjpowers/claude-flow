@@ -182,11 +182,123 @@ Security/Best Practices
 
 ---
 
+## Feedback Entry #2
+
+**Date:** 2025-11-21
+**Status:** Accepted - Implementation in progress
+**Type:** Bug/Error
+**Priority:** High
+
+### Description
+
+ClaudeKit setup fails for global mode with error: `error: unknown option '--global'`
+
+**Context from console logs:**
+```
+ℹ Running ClaudeKit setup...
+error: unknown option '--global'
+✗ ClaudeKit setup failed (non-fatal)
+ℹ You may need to run "claudekit setup" manually
+```
+
+### Code Exploration Findings
+
+**Root Cause Analysis:**
+- File: `lib/setup.js`, line 257
+- Current code: `const setupCommand = mode === 'global' ? 'claudekit setup --global' : 'claudekit setup';`
+- Issue: ClaudeKit does NOT support a `--global` flag
+- Correct flag: `--user` (installs to ~/.claude/ directory)
+
+**ClaudeKit Supported Flags (from help output):**
+- `--user` - Install in user directory (~/.claude) instead of project
+- `--project <path>` - Target directory for project installation
+- `--yes` - Automatic yes to prompts (non-interactive mode)
+- NO `--global` flag exists
+
+**Blast Radius:**
+- LOW - Single function affected: `runClaudeKitSetup()` in lib/setup.js (lines 252-266)
+- Error is caught and marked as "non-fatal"
+- ALL global mode installations fail ClaudeKit setup (but continue)
+- No downstream dependencies
+
+**Affected Files:**
+- `lib/setup.js:257` (implementation - uses wrong flag)
+- `specs/package-publishing-strategy/02-specification.md:620` (spec documentation - shows wrong flag)
+
+### Research Findings
+
+Research skipped by user
+
+### Decisions
+
+- **Action:** Implement now
+- **Scope:** Minimal
+- **Approach:** Add non-interactive mode
+- **Priority:** High
+
+**Selected Approach:**
+Change `--global` to `--user` and add `--yes` flag for both modes to prevent prompts during setup.
+
+**Fix:**
+```javascript
+// Before (WRONG):
+const setupCommand = mode === 'global' ? 'claudekit setup --global' : 'claudekit setup';
+
+// After (CORRECT):
+const setupCommand = mode === 'global' ? 'claudekit setup --user --yes' : 'claudekit setup --yes';
+```
+
+### Actions Taken
+
+**Specification Updates:**
+1. Updated `specs/package-publishing-strategy/02-specification.md`:
+   - Added changelog entry documenting this feedback
+   - Section "2025-11-21 - Post-Implementation Feedback" (new entry after OIDC feedback)
+   - Documented change needed in lib/setup.js:257
+   - Lines 1796-1821
+
+**Implementation Changes Required:**
+- File: `lib/setup.js`
+- Line: 257
+- Change: Replace `--global` with `--user --yes` for global mode
+- Change: Add `--yes` flag for project mode
+- Impact: One-line fix, non-interactive setup for both modes
+
+### Rationale
+
+This feedback was addressed through the /spec:feedback workflow:
+1. Code exploration identified the incorrect flag usage and correct replacement
+2. Research was skipped (issue was straightforward with clear solution)
+3. Interactive decision process resulted in: Implement now with minimal scope
+4. Specification updated with changelog entry documenting the change
+5. Next steps: Run `/spec:decompose` to create tasks, then `/spec:execute` to implement
+
+**Why High Priority:**
+- Affects ALL global mode installations
+- Creates confusing error message for users
+- Simple one-line fix with low risk
+- Improves user experience by making setup non-interactive
+
+### Security & Performance Impact
+
+**Security:** No security implications (both flags achieve the same result)
+**Performance:** `--yes` flag eliminates interactive prompts, slightly faster setup
+**Compatibility:** Both `--user` and `--yes` are supported in ClaudeKit v0.9.0+
+
+### Next Steps
+
+1. Review the changelog entry in the spec
+2. Update the affected specification section (lib/setup.js code block at line 620)
+3. Run: `/spec:decompose specs/package-publishing-strategy/02-specification.md`
+4. Run: `/spec:execute specs/package-publishing-strategy/02-specification.md`
+
+---
+
 ## Summary Statistics
 
-**Feedback Items Processed:** 1
+**Feedback Items Processed:** 2
 **Decisions:**
-- Implement Now: 1
+- Implement Now: 2
 - Defer: 0
 - Out of Scope: 0
 
