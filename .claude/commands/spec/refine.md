@@ -48,17 +48,46 @@ Parse the validation results for:
 - **Overengineering Concerns** - Features to cut or simplify
 - **Risk Areas** - Potential implementation challenges
 
-If validation shows **Ready** status with no actionable items:
+**If validation shows Ready status:**
+
+Check if there are any "Recommendations" or "Missing Details (Minor)" items.
+
+**If no recommendations at all:**
 ```
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 Specification Ready ✅
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 The specification has passed validation and is ready for implementation.
 
-**Next Step:** Run /spec:decompose doc/specs/{slug}/02-specification.md
+Next Step: Run /spec:decompose doc/specs/{slug}/02-specification.md
 ```
 Exit the command.
+
+**If recommendations exist, present them using AskUserQuestion:**
+
+```
+Specification Ready ✅ (with {N} minor recommendations)
+
+The specification is implementation-ready, but validation identified optional improvements.
+```
+
+For each recommendation, use AskUserQuestion:
+```
+AskUserQuestion:
+  questions:
+    - header: "Rec {N}"
+      question: "{Recommendation description}. Apply this improvement?"
+      multiSelect: false
+      options:
+        - label: "Apply"
+          description: "Update the spec with this improvement"
+        - label: "Skip"
+          description: "Proceed without this change"
+```
+
+If user selects "Apply": Update the spec accordingly, then continue to next recommendation.
+If user selects "Skip": Log as "Acknowledged, not applied" and continue.
+
+After processing all recommendations, proceed to Step 6 (Summary).
 
 **If actionable items found:** Append or update a "## Validation Feedback" section at the end of the spec document:
 

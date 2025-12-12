@@ -87,12 +87,19 @@ Break the specification into concrete, actionable tasks.
 - Include acceptance criteria with specific test scenarios
 - Document dependencies between tasks
 - Group tasks into logical phases
+- **Identify parallelization opportunities** - which tasks have no dependencies on each other?
 
 **Task structure:**
 - **Phase 1: Foundation** - Core infrastructure, setup, dependencies
 - **Phase 2: Core Implementation** - Main feature functionality
 - **Phase 3: Testing & Validation** - Test coverage, edge cases
 - **Phase 4: Documentation & Polish** - Docs, cleanup, optimization
+
+**Parallelization Analysis:**
+After defining tasks, analyze which can run in parallel:
+- Tasks with `Depends On: none` within the same phase can potentially run in parallel
+- Tasks modifying different files with no shared state can run in parallel
+- Group parallelizable tasks together for the "## Parallelization Strategy" section
 
 ### Step 6: Generate 03-tasks.md
 
@@ -152,6 +159,25 @@ Create `doc/specs/{slug}/03-tasks.md` with this structure:
 
 ## Phase 4: Documentation & Polish
 ...
+
+---
+
+## Parallelization Strategy
+
+Tasks that can be executed in parallel (no dependencies between them):
+
+### Parallel Group 1
+- Task X.Y: {title}
+- Task X.Z: {title}
+
+### Parallel Group 2
+- Task A.B: {title}
+- Task A.C: {title}
+
+### Sequential Dependencies
+Tasks that must be executed in order:
+1. Task 1.1 → Task 1.2 (1.2 depends on 1.1)
+2. Task 2.1 → Task 2.3 (2.3 depends on 2.1)
 ```
 
 ### Step 7: Incremental Mode Processing

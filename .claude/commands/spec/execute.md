@@ -11,6 +11,22 @@ category: workflow
 
 ---
 
+## CRITICAL REQUIREMENTS
+
+**Status Updates are MANDATORY:**
+- You MUST update `03-tasks.md` **immediately** when starting each task (mark `🔄 in_progress`)
+- You MUST update `03-tasks.md` **immediately** when completing each task (mark `✅ completed`)
+- You MUST update the Summary table counts after each status change
+- **DO NOT** batch status updates - update the file after EACH task state change
+- Use the Edit tool to modify task status, not Write (preserves file structure)
+
+**Parallelization is REQUIRED when possible:**
+- Read the "## Parallelization Strategy" section in `03-tasks.md`
+- Launch parallel tasks using multiple Task tool calls in a single message
+- Only run tasks sequentially when they have explicit dependencies
+
+---
+
 ## Workflow Instructions
 
 This command implements a validated specification by working through tasks in `03-tasks.md`, updating progress in real-time. Follow each step sequentially.
@@ -47,8 +63,13 @@ Derive the specification path: `doc/specs/{slug}/02-specification.md`
    - Task statuses (pending, in progress, completed)
    - Dependencies between tasks
    - Current phase
+   - **Parallelization Strategy section** - which tasks can run in parallel
 
 3. **Read the specification** to understand overall scope and requirements
+
+4. **Build execution plan based on parallelization:**
+   - Identify the next batch of parallelizable tasks
+   - Note sequential dependencies that must be respected
 
 ### Step 3: Determine Execution State
 
@@ -79,36 +100,46 @@ Next task: Task {X.Y} - {title}
 
 ### Step 4: Execute Tasks
 
-Work through tasks in dependency order (Phase 1 → Phase 2 → etc.).
+Work through tasks following the Parallelization Strategy:
+- **Parallel groups:** Launch all tasks in a group simultaneously using multiple Task tool calls
+- **Sequential tasks:** Execute one at a time in dependency order
 
-For each pending task:
+**Before starting ANY task implementation:**
 
-#### 4a. Mark Task In Progress
+#### 4a. Mark Task In Progress (MANDATORY FIRST STEP)
 
-Update `03-tasks.md` immediately:
-- Change task status from `pending` to `in_progress`
-- Note start time
+**⚠️ DO THIS BEFORE ANY IMPLEMENTATION WORK:**
+
+1. Use Edit tool to update `03-tasks.md`:
+   - Change `**Status:** ⏳ pending` to `**Status:** 🔄 in_progress`
+   - Add `**Started:** {YYYY-MM-DD HH:MM}`
+
+2. Update the Summary table counts
+
+3. **Only after the file is saved**, proceed to implementation
 
 **Display:**
 ```
----------------------------------------------------
 Starting Task {X.Y}: {Title}
----------------------------------------------------
-Phase: {phase}
-Priority: {priority}
-Depends On: {dependencies}
+Status: 🔄 in_progress (updated in 03-tasks.md)
 ```
 
-#### 4b. Implement
+#### 4b. Implement (Parallel or Sequential)
+
+**For Parallel Groups (from Parallelization Strategy):**
+
+If the current tasks are in a parallel group, launch them ALL simultaneously:
+1. Mark ALL tasks in the group as `🔄 in_progress` first (multiple Edit calls)
+2. Launch ALL task implementations in a single message with multiple Task tool calls
+3. When all complete, mark ALL as `✅ completed`
+
+**For Sequential Tasks:**
+
+Execute one at a time following dependency order.
 
 Read the full task details from `03-tasks.md` (technical requirements, acceptance criteria, files to modify).
 
-**Leverage available AI resources:** Check which specialized agents, skills, plugins, or MCP servers are available and use them for implementation:
-- Match task domain to appropriate specialists (e.g., react-expert for React components, database-expert for data layer, typescript-expert for type issues)
-- Use MCP tools for documentation lookup, external integrations, etc.
-- Invoke relevant skills when they match the task domain
-
-**Parallelization opportunity:** If implementation involves multiple independent concerns (e.g., frontend + backend, multiple modules), launch specialist agents in parallel.
+**Leverage available AI resources:** Match task domain to appropriate specialists (e.g., react-expert, database-expert, typescript-expert).
 
 **Agent prompt pattern:**
 ```
@@ -161,18 +192,24 @@ Run tests to verify they pass.
 
 Loop back to 4b if critical issues need fixing.
 
-#### 4e. Update Task Status
+#### 4e. Update Task Status (MANDATORY AFTER COMPLETION)
 
-Once task passes review, update `03-tasks.md`:
-- Change status from `in_progress` to `completed`
-- Add completion note with date and summary
+**⚠️ DO THIS IMMEDIATELY AFTER TASK PASSES REVIEW:**
+
+1. Use Edit tool to update `03-tasks.md`:
+   - Change `**Status:** 🔄 in_progress` to `**Status:** ✅ completed`
+   - Add `**Completed:** {YYYY-MM-DD HH:MM}`
+   - Add completion summary under task
+
+2. Update the Summary table counts
+
+3. **Only after the file is saved**, proceed to next task or commit
 
 **Display:**
 ```
-Task {X.Y} Complete
+Task {X.Y} Complete ✅ (updated in 03-tasks.md)
 - Files modified: {list}
 - Tests added: {list}
-- Notes: {any relevant notes}
 ```
 
 #### 4f. Commit Changes
