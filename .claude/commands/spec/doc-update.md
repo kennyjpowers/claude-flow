@@ -1,125 +1,231 @@
 ---
-description: Review documentation for updates needed based on a spec file
-allowed-tools: Task, Read, Glob
-argument-hint: "<path-to-spec-file>"
+description: Review documentation for updates needed after implementation
+allowed-tools: Read, Glob, Grep, Bash(ls:*), Bash(find:*), Task, AskUserQuestion, mcp__*
+argument-hint: "[path-to-spec-file]"
 category: workflow
 ---
 
-# Documentation Update Review Based on Spec
+# Documentation Update Review
 
-You are tasked with reviewing all documentation to identify what needs to be updated based on a new specification file.
-
-## Step 1: Read the Specification
-
-Read the specification file provided by the user: `{{ARGUMENT}}`
-
-Analyze the spec to identify:
-1. **Deprecated functionality** - Features, APIs, components explicitly marked as deprecated or removed
-2. **Changed functionality** - Modified behaviors, interfaces, or workflows
-3. **New functionality** - Added features, components, or capabilities that should be documented
-
-## Step 2: Gather All Documentation Files
-
-Use the Glob tool to find all markdown files in:
-- Root directory: `*.md`
-- Developer guides: `developer-guides/*.md`
-
-## Step 3: Launch Parallel Documentation Expert Agents
-
-**IMPORTANT**: Launch ALL agents in a SINGLE message using multiple Task tool calls to maximize parallelization.
-
-For each documentation file found, launch a separate `documentation-expert` agent with this prompt template:
-
-```
-Review the documentation file [FILENAME] for updates needed based on the specification at {{ARGUMENT}}.
-
-Spec summary:
-[Include a 3-5 sentence summary of key changes from the spec: deprecated features, changed functionality, new features]
-
-Review [FILENAME] and identify:
-
-1. **Deprecated Content** - Sections documenting functionality explicitly deprecated/removed by the spec
-   - Quote the specific documentation text
-   - Reference the spec section that deprecates it
-   - Severity: CRITICAL (users would break) or WARNING (just outdated)
-
-2. **Content Requiring Updates** - Sections needing modification due to spec changes
-   - Quote the current documentation text
-   - Explain what changed per the spec
-   - Suggest the updated wording
-
-3. **Missing Content** - New functionality from the spec that should be documented here
-   - Reference the spec section describing new functionality
-   - Suggest where to add it (which section, after which heading)
-   - Draft suggested documentation text
-
-## Output Format
-
-### [FILENAME]
-
-#### Deprecated Content
-- **Location**: [section name or line reference]
-- **Current Text**: [quote]
-- **Reason**: [spec reference]
-- **Severity**: CRITICAL | WARNING
-
-#### Content Requiring Updates
-- **Location**: [section name or line reference]
-- **Current Text**: [quote]
-- **Required Change**: [explanation based on spec]
-- **Suggested Update**: [new wording]
-
-#### Missing Content
-- **Spec Feature**: [feature name from spec]
-- **Suggested Placement**: [after which heading/section]
-- **Draft Content**: [suggested documentation text]
-
-## Priority Summary for this File
-
-- P0 (Critical): [count] - Deprecated features still documented as current
-- P1 (High): [count] - Incorrect documentation that would mislead users
-- P2 (Medium): [count] - Missing documentation for new features
-- P3 (Low): [count] - Minor clarifications or improvements
-
-If the file requires no updates, respond with: "[FILENAME]: No updates required."
-```
-
-**Example of parallel launch** (in a single message):
-- Agent 1: Review README.md
-- Agent 2: Review CLAUDE.md
-- Agent 3: Review TESTING.md
-- Agent 4: Review developer-guides/system-overview.md
-- Agent 5: Review developer-guides/cli-pipeline-executor.md
-- ... (one agent per file)
-
-## Step 4: Consolidate Results
-
-After ALL agents complete (they run in parallel):
-
-1. **Aggregate findings** from all agent reports
-2. **Create summary table**:
-   ```
-   | File | P0 | P1 | P2 | P3 | Status |
-   |------|----|----|----|----|--------|
-   | README.md | 2 | 1 | 3 | 0 | Needs updates |
-   | CLAUDE.md | 0 | 0 | 1 | 2 | Minor updates |
-   ...
-   ```
-
-3. **Present detailed findings** organized by priority:
-   - Start with P0 (Critical) across all files
-   - Then P1 (High), P2 (Medium), P3 (Low)
-
-4. **Provide recommendations**:
-   - Which files need immediate attention
-   - Suggested order of updates
-   - Estimated effort for each file
-
-5. **Ask the user** if they want you to implement any of the suggested updates
+**Specification (optional):** $ARGUMENTS
 
 ---
 
-**Usage Example:**
-```bash
-/spec:doc-update specs/text-generator-spec.md
+## Workflow Instructions
+
+This command reviews all project documentation to identify what needs updating after a feature implementation. Run as the final step before completing a feature. Follow each step sequentially.
+
+### Step 1: Locate Specification
+
+**If a path was provided:** Use that path directly.
+
+**If no path was provided:** Find the most recently modified `02-specification.md` file in `doc/specs/`:
+1. Search for all `02-specification.md` files under `doc/specs/`
+2. Select the one with the most recent modification time
+3. Inform the user which file was auto-selected:
+   ```
+   Auto-selected: doc/specs/{slug}/02-specification.md (modified {time})
+   ```
+
+Extract the feature slug from the path.
+
+### Step 2: Gather Implementation Context
+
+Read the feature's full context to understand what was implemented:
+
+1. **Specification:** `doc/specs/{slug}/02-specification.md`
+   - What was planned
+   - Acceptance criteria
+
+2. **Implementation Summary:** `doc/specs/{slug}/04-implementation.md` (if exists)
+   - What was actually built
+   - Files modified
+   - Any deviations from spec
+
+3. **Feedback Log:** `doc/specs/{slug}/05-feedback.md` (if exists)
+   - Any resolved feedback that changed the implementation
+
+**Build a change summary:**
+- New features/functionality added
+- Changed behaviors or interfaces
+- Deprecated or removed functionality
+- New configuration options
+- New commands or APIs
+
+### Step 3: Find All Documentation Files
+
+Scan for documentation files in common locations:
+
 ```
+*.md (root)
+docs/**/*.md
+doc/**/*.md
+developer-guides/**/*.md
+```
+
+Exclude:
+- `doc/specs/**/*.md` (these are feature specs, not user docs)
+- `node_modules/**`
+- `CHANGELOG.md` (auto-generated)
+
+List the files found:
+```
+Found {count} documentation files:
+- README.md
+- CLAUDE.md
+- docs/installation.md
+- ...
+```
+
+### Step 4: Launch Parallel Documentation Review
+
+**Parallelization opportunity:** Launch review agents for all documentation files concurrently.
+
+**Leverage available AI resources:** Check which specialized agents, skills, plugins, or MCP servers are available for documentation work. Look for:
+- Documentation specialists (e.g., docs-architect, api-documenter, tutorial-engineer)
+- Technical writing capabilities
+- If no documentation-specific agent is available, use `general-purpose` as fallback
+
+For each documentation file, launch the best available documentation agent with this prompt:
+
+```
+Review documentation file for updates needed after feature implementation.
+
+## Feature Summary
+{Change summary from Step 2}
+
+## Documentation File
+{path to doc file}
+
+## Review Tasks
+
+Analyze the documentation and identify:
+
+1. **Outdated Content** - Sections describing functionality that changed
+   - Quote the specific text
+   - Explain what changed
+   - Suggest updated wording
+
+2. **Deprecated Content** - Sections documenting removed/deprecated features
+   - Quote the specific text
+   - Note severity: CRITICAL (would break users) or WARNING (just outdated)
+
+3. **Missing Content** - New functionality that should be documented
+   - What's missing
+   - Where to add it (which section)
+   - Draft suggested text
+
+## Output Format
+
+### {filename}
+
+**Status:** Needs Updates | Minor Updates | No Updates Needed
+
+#### Outdated Content
+- **Location:** {section/line}
+- **Current:** "{quote}"
+- **Issue:** {what changed}
+- **Suggested:** "{new text}"
+
+#### Deprecated Content
+- **Location:** {section/line}
+- **Current:** "{quote}"
+- **Severity:** CRITICAL | WARNING
+
+#### Missing Content
+- **Feature:** {feature name}
+- **Placement:** {after which section}
+- **Draft:** "{suggested text}"
+
+If no updates needed: "{filename}: No updates required - documentation is current."
+```
+
+### Step 5: Consolidate Results
+
+After all agents complete:
+
+1. **Aggregate findings** by priority:
+   - **P0 (Critical):** Deprecated features still documented as current
+   - **P1 (High):** Incorrect documentation that would mislead users
+   - **P2 (Medium):** Missing documentation for new features
+   - **P3 (Low):** Minor clarifications
+
+2. **Create summary table:**
+   ```
+   | File | P0 | P1 | P2 | P3 | Status |
+   |------|----|----|----|----|--------|
+   | README.md | 1 | 2 | 1 | 0 | Needs Updates |
+   | CLAUDE.md | 0 | 0 | 2 | 1 | Minor Updates |
+   | docs/api.md | 0 | 0 | 0 | 0 | Current |
+   ```
+
+3. **Present detailed findings** organized by priority (P0 first, then P1, etc.)
+
+### Step 6: Ask User How to Proceed
+
+Present options:
+- **Update all** - Apply all suggested changes
+- **Update critical only** - Apply only P0 and P1 changes
+- **Review individually** - Go through each change for approval
+- **Skip** - Just document findings, don't make changes
+
+If user chooses to update, apply the changes and report what was modified.
+
+### Step 7: Present Summary
+
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Documentation Review Complete
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+**Feature:** {slug}
+**Files Reviewed:** {count}
+
+**Summary:**
+- P0 (Critical): {count} items
+- P1 (High): {count} items
+- P2 (Medium): {count} items
+- P3 (Low): {count} items
+
+{If changes were made:}
+**Files Updated:**
+- {file1}: {brief description of changes}
+- {file2}: {brief description of changes}
+
+{If no changes needed:}
+All documentation is current. No updates required.
+
+**Next Steps:**
+- Review changes: git diff
+- Commit: /git:commit
+- Push: /git:push
+```
+
+---
+
+## Example Usage
+
+```bash
+# Auto-select most recently modified specification
+/spec:doc-update
+
+# Or specify a path explicitly
+/spec:doc-update doc/specs/add-user-auth/02-specification.md
+```
+
+This will:
+1. Locate the specification and gather implementation context
+2. Find all documentation files
+3. Review each in parallel for needed updates
+4. Present findings by priority
+5. Optionally apply updates
+6. Report summary
+
+---
+
+## Notes
+
+- **Run last:** This should be the final step before committing a completed feature
+- **Parallelization:** All doc files reviewed concurrently for speed
+- **Non-destructive:** Changes only applied if user approves
+- **Context-aware:** Uses implementation summary to understand what actually shipped, not just what was planned

@@ -1,40 +1,25 @@
 ---
-allowed-tools: Read, Write, Grep, Glob, TodoWrite, Task, mcp__context7__resolve-library-id, mcp__context7__get-library-docs, Bash(ls:*), Bash(echo:*), Bash(command:*), Bash(npm:*), Bash(claude:*)
+allowed-tools: Read, Write, Grep, Glob, TodoWrite, Task, Bash(ls:*), Bash(echo:*), mcp__*
 description: Generate a spec file for a new feature or bugfix
 category: validation
 argument-hint: "<feature-or-bugfix-description>"
 ---
 
 ## Context
-- Existing specs: !`ls -la specs/ 2>/dev/null || echo "No specs directory found"`
+- Existing specs: !`ls -la doc/specs/ 2>/dev/null || echo "No specs directory found"`
 
-## Optional: Enhanced Library Documentation Support
+## PRE-READING: Load Codebase Guidance
 
-Context7 MCP server provides up-to-date library documentation for better spec creation.
+Before creating the spec, scan the repository for guidance documents that should inform how this specification is written:
 
-Check if Context7 is available: !`command -v context7-mcp || echo "NOT_INSTALLED"`
+1. **Developer guides** in `developer-guides/`, `docs/`, or similar directories
+2. **AI tooling configuration** - CLAUDE.md, AGENTS.md, rules files, or similar AI guidance
+3. **Architecture documentation** in the root directory or docs folder
+4. **README files** - project overview, conventions, patterns
+5. **Existing specs** in `specs/` or `doc/specs/` - follow established patterns and formatting
+6. **Code style/contribution guides** - CONTRIBUTING.md, style guides, coding standards
 
-If NOT_INSTALLED and the feature involves external libraries, offer to enable Context7:
-```
-████ Optional: Enable Context7 for Enhanced Documentation ████
-
-Context7 provides up-to-date library documentation to improve spec quality.
-This is optional but recommended when working with external libraries.
-
-Would you like me to install Context7 for you? I can:
-  1. Install globally: npm install -g @upstash/context7-mcp
-  2. Add to Claude Code: claude mcp add context7 context7-mcp
-
-Or you can install it manually later if you prefer.
-```
-
-If user agrees to installation:
-- Run: `npm install -g @upstash/context7-mcp`
-- Then run: `claude mcp add context7 context7-mcp`
-- Verify installation and proceed with enhanced documentation support
-
-If user declines or wants to continue without it:
-- Proceed with spec creation using existing knowledge
+Record key conventions, patterns, and constraints that should be reflected in the specification. The spec should align with the project's established practices.
 
 ## FIRST PRINCIPLES PROBLEM ANALYSIS
 
@@ -60,11 +45,12 @@ Before defining any solution, validate the problem from first principles:
 After validating the problem from first principles, complete these technical checks:
 
 ### 1. Context Discovery Phase
+
+**Parallelization opportunity:** Launch multiple subagents concurrently - e.g., one for codebase search, one for dependency analysis, relevant domain experts in parallel.
+
 - Search existing codebase for similar features/specs using AgentTool
-- **Use specialized subagents** when research involves specific domains (TypeScript, React, testing, databases, etc.)
-- Run `claudekit list agents` to see available specialized experts
+- **Leverage available AI resources**: Check which specialized agents, skills, plugins, or MCP servers are currently available and launch relevant ones in parallel to analyze this feature/bugfix domain (e.g., react-expert for React features, database-expert for data layer changes, security-auditor for auth features)
 - Match research requirements to expert domains for optimal analysis
-- Use general-purpose approach only when no specialized expert fits
 - Identify potential conflicts or duplicates
 - Verify feature request is technically feasible
 - Document any missing prerequisites
@@ -108,10 +94,11 @@ First, analyze the request to understand:
 3. Related existing code/features
 4. External libraries/frameworks involved
 
-If the feature involves external libraries or frameworks AND Context7 is available:
-- Use `mcp__context7__resolve-library-id` to find the library
-- Use `mcp__context7__get-library-docs` to get up-to-date documentation
+If the feature involves external libraries or frameworks:
+- Check if any MCP servers are available that provide library documentation (e.g., documentation lookup tools)
+- Use available MCP tools to fetch up-to-date documentation when possible
 - Reference official patterns and best practices from the docs
+- Fall back to existing knowledge if no documentation tools are available
 
 ## END-TO-END INTEGRATION ANALYSIS
 

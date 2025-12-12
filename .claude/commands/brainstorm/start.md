@@ -1,11 +1,11 @@
 ---
-description: Structured ideation with documentation
-allowed-tools: Read, Grep, Glob, Bash(git:*), Bash(npm:*), Bash(npx:*), Task(playwright-expert)
+description: Structured brainstorm with documentation
+allowed-tools: Read, Grep, Glob, Bash(git:*), Bash(npm:*), Bash(npx:*), Task, mcp__*
 argument-hint: "<task-brief>"
 category: workflow
 ---
 
-# Preflight ▸ Discovery ▸ Plan
+# Brainstorm
 
 **Task Brief:** $ARGUMENTS
 
@@ -13,14 +13,14 @@ category: workflow
 
 ## Workflow Instructions
 
-Execute this structured engineering workflow for ideation that enforces complete investigation for any code-change task (bug fix or feature). Follow each step sequentially.
+Execute this structured engineering workflow for brainstorming that enforces complete investigation for any code-change task (bug fix or feature). Follow each step sequentially.
 
 ### Step 1: Create Task Slug & Setup
 
 1. Create a URL-safe slug from the task brief (e.g., "fix-chat-scroll-bug")
-2. Create feature directory: `mkdir -p specs/{slug}`
+2. Create feature directory: `mkdir -p doc/specs/{slug}`
 
-This directory will contain all documents related to this feature throughout its lifecycle (ideation → spec → tasks → implementation).
+This directory will contain all documents related to this feature throughout its lifecycle (brainstorming → spec → tasks → implementation).
 
 ### Step 2: Echo & Scope
 
@@ -29,15 +29,18 @@ Write an "Intent & Assumptions" block that:
 - Lists explicit assumptions
 - Lists what's explicitly out-of-scope to avoid scope creep
 
-This becomes the opening of the ideation file.
+This becomes the opening of the brainstorm file.
 
 ### Step 3: Pre-Reading & Codebase Mapping
 
+**Parallelization opportunity:** Launch multiple subagents concurrently to speed up codebase exploration - e.g., one for scanning documentation, one for searching relevant code, one for analyzing dependencies.
+
 1. Scan repository for:
    - Developer guides in `developer-guides/`
+   - Any AI tooling configuration like rules
    - Architecture docs in the root directory
    - README files
-   - Related spec files in `specs/`
+   - Related spec files in `specs/` or `doc/specs/`
 
 2. Search for relevant code using keywords inferred from task:
    - Components, hooks, utilities
@@ -77,19 +80,36 @@ Record under **Root Cause Analysis**.
 
 ### Step 5: Research
 
+**Parallelization opportunity:** If multiple research angles exist (e.g., different libraries, approaches, or external resources), launch parallel subagents to investigate them concurrently.
+
 1. Consult the research-expert agent to conduct comprehensive research into potential solutions to the task
+2. Search for existing open source tooling that is intended to solve similar problems, and prioritize using them rather than a custom solution if they have significant adoption (100+ stars on github, or > 1000 weekly downloads)
 2. Consider which potential solutions are most appropriate for this code base by exploring the local repo further if necessary
 3. Summarize the most promising potential approaches, the pros and cons of each, and an ultimate recommendation.
 
 Record findings under **Research Findings**
 
-### Step 6: Clarification
+### Step 6: Consult Domain Experts
+
+Before synthesizing clarification questions, check which specialized agents, skills, plugins, or MCP servers are currently available (e.g., react-expert, database-expert, security-auditor, documentation tools, etc.). **Launch relevant domain experts in parallel** when multiple apply - consult any that are relevant to this bug or feature to:
+
+- Get domain-specific insights on the problem space
+- Identify potential pitfalls or considerations you may have missed
+- Surface technical questions that a domain expert would ask
+- Validate or challenge the research recommendations
+- Fetch relevant library documentation if MCP tools are available
+
+Incorporate their insights into your understanding before proceeding to clarification.
+
+### Step 7: Clarification
+
+The primary goal of this brainstorm is to surface ALL relevant clarification questions to the user rather than making key decisions yourself. If a choice is not 100% obvious, it should be considered an unspecified requirement.
 
 1. Create a list of any unspecified requirements or clarification that would be helpful for the user to decide upon
 
-### Step 7: Write ideation document
+### Step 8: Write brainstorm document
 
-Create `specs/{slug}/01-ideation.md` with the following structure:
+Create `doc/specs/{slug}/01-brainstorm.md` with the following structure:
 
 ```markdown
 # {Task Title}
@@ -141,7 +161,7 @@ Create `specs/{slug}/01-ideation.md` with the following structure:
 ## Example Usage
 
 ```bash
-/ideate Fix chat UI auto-scroll bug when messages exceed viewport height
+/brainstorm Fix chat UI auto-scroll bug when messages exceed viewport height
 ```
 
-This will execute the full workflow, creating comprehensive ideation document at `specs/fix-chat-ui-auto-scroll-bug/01-ideation.md` and guide you through discovery of the task.
+This will execute the full workflow, creating comprehensive brainstorm document at `doc/specs/fix-chat-ui-auto-scroll-bug/01-brainstorm.md` and guide you through discovery of the task.
