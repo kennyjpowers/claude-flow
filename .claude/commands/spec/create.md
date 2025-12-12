@@ -1,8 +1,21 @@
 ---
-allowed-tools: Read, Write, Grep, Glob, TodoWrite, Task, Bash(ls:*), Bash(echo:*), mcp__*
+allowed-tools: Read, Write, Grep, Glob, TodoWrite, Task, AskUserQuestion, Bash(ls:*), Bash(mkdir:*), mcp__*
 description: Generate a spec file for a new feature or bugfix
 category: validation
 argument-hint: "<feature-or-bugfix-description>"
+---
+
+## CRITICAL CONSTRAINTS
+
+**Output:** Create ONLY ONE file: the specification at OUTPUT_PATH
+
+**Prohibited:**
+- NO code changes
+- NO extra documentation files
+- NO example files or scripts
+
+**Subagents:** If used for research, instruct them to return findings as text only - no file creation.
+
 ---
 
 ## Context
@@ -46,10 +59,10 @@ After validating the problem from first principles, complete these technical che
 
 ### 1. Context Discovery Phase
 
-**Parallelization opportunity:** Launch multiple subagents concurrently - e.g., one for codebase search, one for dependency analysis, relevant domain experts in parallel.
+**Parallelization opportunity:** Launch `Explore` or `general-purpose` agents concurrently for codebase search and dependency analysis. Instruct them to return findings as text only - no file creation.
 
-- Search existing codebase for similar features/specs using AgentTool
-- **Leverage available AI resources**: Check which specialized agents, skills, plugins, or MCP servers are currently available and launch relevant ones in parallel to analyze this feature/bugfix domain (e.g., react-expert for React features, database-expert for data layer changes, security-auditor for auth features)
+- Search existing codebase for similar features/specs
+- **Leverage available AI resources**: Launch relevant domain experts in parallel (e.g., react-expert, database-expert, security-auditor). Instruct them to analyze and return findings as text only.
 - Match research requirements to expert domains for optimal analysis
 - Identify potential conflicts or duplicates
 - Verify feature request is technically feasible
@@ -57,7 +70,19 @@ After validating the problem from first principles, complete these technical che
 
 ### 2. Request Validation
 - Confirm request is well-defined and actionable
-- If vague or incomplete, STOP and ask clarifying questions
+- If vague or incomplete, STOP and use **AskUserQuestion tool** to clarify:
+  ```
+  AskUserQuestion:
+    questions:
+      - header: "Clarification"
+        question: "{specific question about the unclear requirement}"
+        multiSelect: false
+        options:
+          - label: "{option 1}"
+            description: "{what this option means}"
+          - label: "{option 2}"
+            description: "{what this option means}"
+  ```
 - Validate scope is appropriate (not too broad/narrow)
 
 ### 3. Quality Gate

@@ -1,6 +1,6 @@
 ---
 description: Structured brainstorm with documentation
-allowed-tools: Read, Grep, Glob, Bash(git:*), Bash(npm:*), Bash(npx:*), Task, mcp__*
+allowed-tools: Read, Grep, Glob, Bash(git:*), Bash(ls:*), Bash(find:*), Bash(mkdir:*), Write, WebSearch, WebFetch, Task, mcp__*
 argument-hint: "<task-brief>"
 category: workflow
 ---
@@ -8,6 +8,26 @@ category: workflow
 # Brainstorm
 
 **Task Brief:** $ARGUMENTS
+
+---
+
+## CRITICAL CONSTRAINTS
+
+**This is a RESEARCH-ONLY phase.**
+
+**Output:** Create ONLY ONE file: `doc/specs/{slug}/01-brainstorm.md`
+
+**Prohibited:**
+- NO code changes
+- NO documentation files besides the brainstorm
+- NO example files, scripts, or code samples
+
+**Subagents:** You MAY spawn parallel agents for research speed, but instruct them to:
+- ONLY read and analyze - no file creation
+- Return findings as text to be incorporated into the brainstorm document
+- Use `Explore` or `general-purpose` agents for codebase research
+
+**All findings go INTO the single brainstorm document.**
 
 ---
 
@@ -33,7 +53,7 @@ This becomes the opening of the brainstorm file.
 
 ### Step 3: Pre-Reading & Codebase Mapping
 
-**Parallelization opportunity:** Launch multiple subagents concurrently to speed up codebase exploration - e.g., one for scanning documentation, one for searching relevant code, one for analyzing dependencies.
+**Parallelization opportunity:** Launch multiple `Explore` agents concurrently for speed - e.g., one for documentation, one for relevant code, one for dependencies. Instruct them to return findings as text only.
 
 1. Scan repository for:
    - Developer guides in `developer-guides/`
@@ -80,26 +100,29 @@ Record under **Root Cause Analysis**.
 
 ### Step 5: Research
 
-**Parallelization opportunity:** If multiple research angles exist (e.g., different libraries, approaches, or external resources), launch parallel subagents to investigate them concurrently.
+**Parallelization opportunity:** Launch `research-expert` or parallel web searches for different solution angles.
 
-1. Consult the research-expert agent to conduct comprehensive research into potential solutions to the task
-2. Search for existing open source tooling that is intended to solve similar problems, and prioritize using them rather than a custom solution if they have significant adoption (100+ stars on github, or > 1000 weekly downloads)
-2. Consider which potential solutions are most appropriate for this code base by exploring the local repo further if necessary
-3. Summarize the most promising potential approaches, the pros and cons of each, and an ultimate recommendation.
+1. Use web search to find existing solutions, libraries, or patterns that address this problem
+2. Search for open source tooling with significant adoption (100+ GitHub stars or 1000+ weekly downloads)
+3. Consider which potential solutions are most appropriate for this codebase
+4. Summarize the most promising approaches with pros/cons and a recommendation
+
+**Remember:** All findings go into the brainstorm document, not separate files.
 
 Record findings under **Research Findings**
 
 ### Step 6: Consult Domain Experts
 
-Before synthesizing clarification questions, check which specialized agents, skills, plugins, or MCP servers are currently available (e.g., react-expert, database-expert, security-auditor, documentation tools, etc.). **Launch relevant domain experts in parallel** when multiple apply - consult any that are relevant to this bug or feature to:
+**Parallelization opportunity:** Launch relevant domain expert agents in parallel (e.g., react-expert, database-expert, security-auditor) to get specialized insights. Instruct them to analyze and return findings as text only - no file creation.
 
-- Get domain-specific insights on the problem space
-- Identify potential pitfalls or considerations you may have missed
-- Surface technical questions that a domain expert would ask
-- Validate or challenge the research recommendations
-- Fetch relevant library documentation if MCP tools are available
+Also check if any MCP servers are available for library documentation or API references.
 
-Incorporate their insights into your understanding before proceeding to clarification.
+Have experts consider:
+- Domain-specific pitfalls or edge cases
+- Security, performance, or accessibility implications
+- Technical questions that would validate the approach
+
+**Remember:** Agents return text findings to be incorporated into the brainstorm document.
 
 ### Step 7: Clarification
 

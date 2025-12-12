@@ -43,46 +43,44 @@ This command interactively resolves clarification questions from a brainstorm do
 
 Review the clarifications from Section 6 of the brainstorm document. **Skip any question that is already marked as answered** (contains "**Answer:**" or is struck through with `~~`).
 
-For each unanswered clarification:
+For each unanswered clarification, use the **AskUserQuestion tool** to present options interactively:
 
-1. **Present the decision point clearly** to the user with:
-   - Context from the research findings (Section 5)
-   - Recommended option (if the research identified one)
-   - Pros/cons of alternatives (if applicable)
-   - Impact on implementation complexity/scope
+1. **Build the question using AskUserQuestion tool:**
+   - `header`: Short label (e.g., "Clarification 1/5")
+   - `question`: The clarification question with context
+   - `options`: 2-4 concrete choices based on research findings
+     - Put recommended option first with "(Recommended)" suffix
+     - Each option needs a `label` and `description`
+   - User can always select "Other" to provide custom input
 
-2. **Ask the user to decide** with specific options when possible:
-   - Multiple choice format for clear alternatives
-   - Open-ended questions for creative/architectural decisions
-   - Default recommendations to speed up decision-making
+2. **Example AskUserQuestion usage:**
+   ```
+   AskUserQuestion:
+     questions:
+       - header: "Q1 of 3"
+         question: "State management approach? Research identified Redux and Zustand as viable."
+         multiSelect: false
+         options:
+           - label: "Redux (Recommended)"
+             description: "Team already familiar, good DevTools support"
+           - label: "Zustand"
+             description: "Simpler API, less boilerplate"
+           - label: "React Context"
+             description: "No new dependencies, but limited for complex state"
+   ```
 
-3. **Record and save the decision immediately:**
-   - Update the brainstorm document after each answer
+3. **After user responds, immediately update the brainstorm document:**
    - Use strikethrough format to preserve the original question
    - Mark with "(RESOLVED)" and include the answer
+   - Save the file before proceeding to next question
 
-**Example interaction format:**
-```
-Clarification 1 of 3: State management approach
-From research: We identified Redux and Zustand as viable options
-
-Options:
-  A) Redux (recommended) - Team already familiar, good DevTools
-  B) Zustand - Simpler API, less boilerplate
-  C) React Context - No new dependencies, but limited for complex state
-
-Which approach do you prefer? [A/B/C or your own approach]
-```
-
-**Example answer format in document:**
+**Answer format in document:**
 ```markdown
 1. ~~What state management approach should we use?~~ (RESOLVED)
    **Answer:** Redux - team familiarity and DevTools support
-
-   Original context:
-   - Redux: Team already familiar, good DevTools
-   - Zustand: Simpler API, less boilerplate
 ```
+
+**Continue through all questions** - the AskUserQuestion tool handles the interactive UI, just process each response and update the document before moving to the next question.
 
 If no unanswered questions remain, skip to Step 4.
 

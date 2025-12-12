@@ -67,11 +67,11 @@ Read the specification and extract:
 - Testing requirements
 - Files/components to be modified
 
-**Parallelization opportunity:** Launch domain expert subagents in parallel to analyze different aspects (e.g., architecture, testing strategy, security considerations).
+**Parallelization opportunity:** Launch domain expert agents in parallel (e.g., architecture, testing strategy, security considerations). Instruct them to analyze and return findings as text only - no file creation.
 
 ### Step 4: Consult Domain Experts
 
-Check which specialized agents, skills, plugins, or MCP servers are available. **Launch relevant domain experts in parallel** to:
+Launch relevant domain expert agents in parallel (e.g., react-expert, database-expert). **Instruct them to return findings as text only - no file creation.** Use their input to:
 - Validate task breakdown covers all requirements
 - Identify missing tasks or dependencies
 - Suggest optimal task ordering

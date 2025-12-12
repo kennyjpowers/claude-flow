@@ -27,12 +27,12 @@ This command will analyze the provided specification document to determine if it
 
 ### Domain Expert Consultation
 
-**Parallelization opportunity:** When multiple technical domains are involved (e.g., React + database + security), launch relevant domain experts in parallel for comprehensive validation.
+**Parallelization opportunity:** Launch relevant domain experts in parallel (e.g., react-expert, database-expert, security-auditor) for comprehensive validation. Instruct them to analyze and return findings as text only - no file creation.
 
 When analyzing specifications that involve specific technical domains:
-- **Leverage available AI resources**: Check which specialized agents, skills, plugins, or MCP servers are currently available and consult any that are relevant to this specification's domain (e.g., react-expert for React features, database-expert for data layer changes, security-auditor for auth features)
 - Match specification domains to expert knowledge for thorough validation
-- Use general-purpose approach only when no specialized expert fits
+- Use `Explore` or `general-purpose` agents only when no specialized expert fits
+- All agents return text findings to be incorporated into validation output
 
 ### What This Check Evaluates:
 

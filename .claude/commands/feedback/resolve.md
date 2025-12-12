@@ -63,14 +63,14 @@ Resolving Feedback: {slug}
 
 ### Step 3: Batch Analysis
 
-**Parallelization opportunity:** Analyze all pending feedback items concurrently to speed up processing.
+**Parallelization opportunity:** Analyze all pending feedback items concurrently. **Instruct agents to return findings as text only - no file creation.**
 
 For each pending feedback item, launch analysis in parallel:
 - Read relevant code sections mentioned in or related to the feedback
 - Check specification for related requirements
 - Identify which spec sections would need updates if implemented
 
-**Leverage available AI resources:** Use specialized agents, skills, or MCP servers relevant to the feedback domains (e.g., react-expert for UI feedback, database-expert for data issues).
+Use relevant domain experts (e.g., react-expert for UI feedback, database-expert for data issues). All agents return text findings.
 
 Collect analysis results for all items before proceeding to resolution.
 
@@ -97,17 +97,42 @@ Feedback {current} of {total}: FB-{N}
 
 #### 4b. Ask for Decision
 
-Present options:
-- **Implement** - Add to specification for implementation
-- **Defer** - Valid but not for this iteration
-- **Out of scope** - Not aligned with feature goals
+Use **AskUserQuestion tool** to present options:
 
-Ask: "How should we handle this feedback?"
+```
+AskUserQuestion:
+  questions:
+    - header: "FB-{N}"
+      question: "How should we handle this feedback?"
+      multiSelect: false
+      options:
+        - label: "Implement"
+          description: "Add to specification for implementation"
+        - label: "Defer"
+          description: "Valid but not for this iteration"
+        - label: "Out of scope"
+          description: "Not aligned with feature goals"
+```
 
-#### 4c. Capture Rationale
+#### 4c. Capture Rationale (if Defer or Out of scope)
 
-If user selects **Defer** or **Out of scope**, ask:
-"Brief reason for this decision?"
+If user selected **Defer** or **Out of scope**, use another AskUserQuestion:
+
+```
+AskUserQuestion:
+  questions:
+    - header: "Reason"
+      question: "Brief reason for this decision? (Select 'Other' to provide)"
+      multiSelect: false
+      options:
+        - label: "Not enough time"
+          description: "Will address in future iteration"
+        - label: "Low priority"
+          description: "Other items take precedence"
+        - label: "Technical constraints"
+          description: "Current architecture doesn't support this"
+```
+(User can select a preset or provide custom reason via "Other")
 
 #### 4d. Record Resolution
 

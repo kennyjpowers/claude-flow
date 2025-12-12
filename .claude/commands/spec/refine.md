@@ -91,43 +91,69 @@ This persists the validation results so they're not lost if the session is inter
 
 ### Step 4: Present Issues for Resolution
 
-For each actionable item from the validation:
+For each actionable item from the validation, use **AskUserQuestion tool** to gather decisions:
 
-1. **Display the issue clearly:**
+1. **Display the issue** in your message before asking:
    ```
-   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
    Issue {current} of {total}: {Category}
-   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
    {Issue description from validation}
    ```
 
-2. **Ask the user how to proceed:**
+2. **Use AskUserQuestion tool** based on issue type:
 
    **For Critical Gaps / Missing Details:**
-   - Present the gap and ask user to provide the missing information
-   - Or ask clarifying questions to gather what's needed
-
-   **For Open Questions:**
-   - Present the question with any options identified
-   - Record the user's decision
+   ```
+   AskUserQuestion:
+     questions:
+       - header: "Gap {N}/{total}"
+         question: "{Describe the gap}. How should we address this?"
+         multiSelect: false
+         options:
+           - label: "Provide details"
+             description: "I'll provide the missing information"
+           - label: "Not needed"
+             description: "This detail isn't necessary for implementation"
+           - label: "Defer"
+             description: "Address in a future iteration"
+   ```
 
    **For Overengineering Concerns:**
-   - Present the concern and recommendation
-   - Options:
-     - **Cut it** - Remove from spec entirely
-     - **Simplify** - Reduce scope/complexity (ask how)
-     - **Keep as-is** - User disagrees with assessment (ask for rationale)
-     - **Defer** - Move to future work section
+   ```
+   AskUserQuestion:
+     questions:
+       - header: "Simplify?"
+         question: "{Concern}. Recommendation: {recommendation}. How to proceed?"
+         multiSelect: false
+         options:
+           - label: "Cut it (Recommended)"
+             description: "Remove from spec entirely"
+           - label: "Simplify"
+             description: "Reduce scope/complexity"
+           - label: "Keep as-is"
+             description: "Disagree with assessment"
+           - label: "Defer"
+             description: "Move to future work"
+   ```
 
    **For Risk Areas:**
-   - Present the risk
-   - Options:
-     - **Add mitigation** - User provides mitigation strategy to add to spec
-     - **Accept risk** - Acknowledge and document in spec
-     - **Reduce scope** - Cut the risky portion
+   ```
+   AskUserQuestion:
+     questions:
+       - header: "Risk"
+         question: "{Risk description}. How should we handle it?"
+         multiSelect: false
+         options:
+           - label: "Add mitigation"
+             description: "I'll provide a mitigation strategy"
+           - label: "Accept risk"
+             description: "Acknowledge and document in spec"
+           - label: "Reduce scope"
+             description: "Cut the risky portion"
+   ```
 
-3. **Record the decision** for each issue
+3. **If user selects "Provide details" or "Add mitigation"**, follow up with another AskUserQuestion or request text input.
+
+4. **Record the decision** for each issue
 
 ### Step 5: Update Specification
 

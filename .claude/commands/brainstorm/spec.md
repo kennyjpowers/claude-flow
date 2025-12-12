@@ -1,6 +1,6 @@
 ---
 description: Transform completed brainstorm into specification
-allowed-tools: Read, Grep, Glob, Write, Edit, SlashCommand, Bash(ls:*), Bash(find:*), Bash(mkdir:*), Task, mcp__*
+allowed-tools: Read, Grep, Glob, Write, Edit, SlashCommand, AskUserQuestion, Bash(ls:*), Bash(find:*), Bash(mkdir:*), Task, mcp__*
 argument-hint: "[path-to-brainstorm-doc]"
 category: workflow
 ---
@@ -8,6 +8,19 @@ category: workflow
 # Brainstorm → Spec
 
 **Brainstorm Document (optional):** $ARGUMENTS
+
+---
+
+## CRITICAL CONSTRAINTS
+
+**Output:** Create ONLY ONE file: `doc/specs/{slug}/02-specification.md`
+
+**Prohibited:**
+- NO code changes
+- NO extra documentation files
+- NO example files or scripts
+
+**Subagents:** If used, instruct them to return findings as text only - no file creation.
 
 ---
 
@@ -75,9 +88,21 @@ Based on the brainstorm document and resolved clarifications:
    - Are there prerequisite changes needed first?
    - Should any parts be deferred to follow-up work?
 
-2. **Ask the user if scope is unclear:**
-   - "Should I create one comprehensive spec or break this into multiple smaller specs?"
-   - "Are there any parts that should be out-of-scope for the initial spec?"
+2. **If scope is unclear, use AskUserQuestion tool:**
+   ```
+   AskUserQuestion:
+     questions:
+       - header: "Scope"
+         question: "How should we scope this specification?"
+         multiSelect: false
+         options:
+           - label: "Single comprehensive spec (Recommended)"
+             description: "One spec covering all requirements from the brainstorm"
+           - label: "Multiple smaller specs"
+             description: "Break into separate specs for distinct concerns"
+           - label: "Phased approach"
+             description: "Core MVP first, defer advanced features"
+   ```
 
 3. **Record the specification plan:**
    ```

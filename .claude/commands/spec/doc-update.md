@@ -79,14 +79,11 @@ Found {count} documentation files:
 
 ### Step 4: Launch Parallel Documentation Review
 
-**Parallelization opportunity:** Launch review agents for all documentation files concurrently.
+**Parallelization opportunity:** Launch review agents for all documentation files concurrently. **Instruct them to analyze and return findings as text only - no file creation.**
 
-**Leverage available AI resources:** Check which specialized agents, skills, plugins, or MCP servers are available for documentation work. Look for:
-- Documentation specialists (e.g., docs-architect, api-documenter, tutorial-engineer)
-- Technical writing capabilities
-- If no documentation-specific agent is available, use `general-purpose` as fallback
+Look for documentation specialists (e.g., docs-architect, api-documenter, tutorial-engineer). Use `general-purpose` as fallback.
 
-For each documentation file, launch the best available documentation agent with this prompt:
+For each documentation file, launch the best available agent with this prompt (emphasize text-only output):
 
 ```
 Review documentation file for updates needed after feature implementation.
@@ -163,11 +160,24 @@ After all agents complete:
 
 ### Step 6: Ask User How to Proceed
 
-Present options:
-- **Update all** - Apply all suggested changes
-- **Update critical only** - Apply only P0 and P1 changes
-- **Review individually** - Go through each change for approval
-- **Skip** - Just document findings, don't make changes
+Use **AskUserQuestion tool** to present options:
+
+```
+AskUserQuestion:
+  questions:
+    - header: "Action"
+      question: "How should we handle the {count} documentation updates?"
+      multiSelect: false
+      options:
+        - label: "Update all (Recommended)"
+          description: "Apply all suggested changes across all files"
+        - label: "Update critical only"
+          description: "Apply only P0 and P1 changes"
+        - label: "Review individually"
+          description: "Go through each change for approval"
+        - label: "Skip"
+          description: "Document findings but don't make changes"
+```
 
 If user chooses to update, apply the changes and report what was modified.
 

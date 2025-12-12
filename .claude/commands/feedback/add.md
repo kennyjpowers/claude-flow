@@ -62,20 +62,27 @@ Check if `doc/specs/{slug}/05-feedback.md` exists.
 
 Display:
 ```
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 Adding Feedback: {slug}
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
 
 **Loop until user is done:**
 
-1. Ask the user for feedback:
-   - Question: "Enter feedback (or type 'done' to finish):"
-   - Open-ended text input
+1. **Use AskUserQuestion tool** to gather feedback:
+   ```
+   AskUserQuestion:
+     questions:
+       - header: "Feedback"
+         question: "What feedback do you have? (Select 'Other' to enter your feedback, or 'Done' to finish)"
+         multiSelect: false
+         options:
+           - label: "Done"
+             description: "Finished adding feedback items"
+   ```
+   (User will select "Other" and provide feedback text, or "Done" to exit)
 
-2. **If user enters 'done' (case-insensitive):** Exit the loop
+2. **If user selects "Done":** Exit the loop
 
-3. **Otherwise:** Add the feedback item:
+3. **Otherwise (user provided text via "Other"):** Add the feedback item:
    - Generate next ID: FB-{N} where N increments from highest existing ID
    - Generate brief title: Extract first ~5 words or create summary
    - Append to the "## Pending" section:
@@ -94,7 +101,7 @@ Adding Feedback: {slug}
 
 ### Step 4: Present Summary
 
-After user enters 'done':
+After user selects "Done":
 
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
