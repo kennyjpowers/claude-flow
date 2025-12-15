@@ -207,9 +207,10 @@ Specification Created ✅
 
 ### Recommended Next Steps
 
-1. [ ] Review the specification at doc/specs/{slug}/02-specification.md
-2. [ ] Run /spec:decompose doc/specs/{slug}/02-specification.md
-3. [ ] Implement with: /spec:execute doc/specs/{slug}/02-specification.md
+1. Review the specification at doc/specs/{slug}/02-specification.md
+2. Run `/spec:refine doc/specs/{slug}/02-specification.md` (if validation issues to resolve)
+3. Run `/spec:decompose doc/specs/{slug}/02-specification.md`
+4. Implement with: `/spec:execute doc/specs/{slug}/02-specification.md`
 
 ### Deferred Work (if any)
 
