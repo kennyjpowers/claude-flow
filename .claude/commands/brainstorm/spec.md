@@ -176,11 +176,25 @@ Acceptance criteria:
    mkdir -p doc/specs/{slug}
    ```
 
-3. **Execute `/spec:create`** with the constructed prompt from Step 5, appending:
+3. **Execute `/spec:create` using the SlashCommand tool:**
+   
+   Use the `SlashCommand` tool to invoke `/spec:create` with the constructed prompt from Step 5. The command input should be a single string containing all the context you built.
+   
+   **Example SlashCommand invocation:**
    ```
-
-   IMPORTANT: Save this specification to: doc/specs/{slug}/02-specification.md
+   SlashCommand:
+     command_name: "/spec:create"
+     command_input: |
+       Add proxy config integration to Figma plugin. The plugin should read...
+       
+       Technical context:
+       - Modified file: json-filler-plugin/code.js lines 81-126
+       ...
+       
+       IMPORTANT: Save this specification to: doc/specs/{slug}/02-specification.md
    ```
+   
+   **DO NOT** read the spec:create command file. **DO** invoke it as a tool with your constructed prompt as input.
 
 4. **Verify the spec file was created at:** `doc/specs/{slug}/02-specification.md`
 

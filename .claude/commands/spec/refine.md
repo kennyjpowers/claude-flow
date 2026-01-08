@@ -39,9 +39,18 @@ Before running validation, check if the spec already has a "## Validation Feedba
 
 ### Step 3: Run Validation and Persist Results
 
-Execute `/spec:validate` on the specification and capture the output.
+Execute `/spec:validate` on the specification using the **SlashCommand tool**:
 
-Parse the validation results for:
+**Example SlashCommand invocation:**
+```
+SlashCommand:
+  command_name: "/spec:validate"
+  command_input: "doc/specs/{slug}/02-specification.md"
+```
+
+**DO NOT** read the spec:validate command file. **DO** invoke it as a tool with the spec path as input.
+
+Capture and parse the validation results for:
 - **Critical Gaps** - Must-fix issues blocking implementation
 - **Missing Details** - Areas needing clarification
 - **Open Questions** - Unresolved decisions in the spec
