@@ -27,8 +27,7 @@ All slash commands in `.claude/commands/` have been audited and their required t
 - ✅ **Bash(npm:*)** - NPM package management
 - ✅ **Bash(npx:*)** - NPX package execution
 - ✅ **Bash(node:*)** - Node.js runtime
-- ✅ **Bash(stm:*)** - Simple Task Master CLI (list, add, show, update, delete, init, grep)
-- ✅ **Bash(claudekit:*)** - ClaudeKit utilities (status checks, list agents)
+
 - ✅ **Bash(jq:*)** - JSON parsing and manipulation
 - ✅ **Bash(mkdir:*)** - Directory creation
 - ✅ **Bash(mv:*)** - File/directory moving
@@ -72,7 +71,7 @@ All slash commands in `.claude/commands/` have been audited and their required t
 **Status:** ✅ All tools allowed
 
 ### /spec:feedback
-**Required Tools:** Read, Grep, Glob, Write, Edit, Task, AskUserQuestion, Bash(stm:*), Bash(claudekit:*)
+**Required Tools:** Read, Grep, Glob, Write, Edit, Task, AskUserQuestion
 **Status:** ✅ All tools allowed
 
 ### /spec:doc-update
@@ -89,11 +88,11 @@ All slash commands in `.claude/commands/` have been audited and their required t
 **Status:** ✅ All tools allowed
 
 ### /spec:execute
-**Required Tools:** Task, Read, TodoWrite, Grep, Glob, Bash(claudekit:*), Bash(stm:*), Bash(jq:*)
+**Required Tools:** Task, Read, TodoWrite, Grep, Glob, Bash(jq:*)
 **Status:** ✅ All tools allowed
 
 ### /spec:decompose
-**Required Tools:** Read, Task, Write, TodoWrite, Bash(mkdir:*), Bash(cat:*), Bash(grep:*), Bash(echo:*), Bash(basename:*), Bash(date:*), Bash(claudekit:*), Bash(stm:*)
+**Required Tools:** Read, Task, Write, TodoWrite, Bash(mkdir:*), Bash(cat:*), Bash(grep:*), Bash(echo:*), Bash(basename:*), Bash(date:*)
 **Status:** ✅ All tools allowed
 
 ## Additional Bash Commands Found in Command Logic
@@ -104,13 +103,7 @@ The following bash commands are used within the command implementations:
 - `git status`, `git diff`, `git log`, `git add`, `git commit`, `git stash`, `git rev-parse`, `git show-toplevel`
 - **Coverage:** ✅ Bash(git:*)
 
-### STM Commands
-- `stm list`, `stm add`, `stm show`, `stm update`, `stm delete`, `stm init`, `stm grep`
-- **Coverage:** ✅ Bash(stm:*)
 
-### ClaudeKit Commands
-- `claudekit status stm`, `claudekit list agents`
-- **Coverage:** ✅ Bash(claudekit:*)
 
 ### File Operations
 - `mkdir -p`, `mv`, `cat`, `ls`, `find`, `grep`, `echo`, `basename`, `dirname`, `date`, `chmod`, `curl`, `cd`, `test`, `tree`, `rm`

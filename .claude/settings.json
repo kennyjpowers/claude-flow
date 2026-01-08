@@ -16,8 +16,7 @@
       "Bash(npm:*)",
       "Bash(npx:*)",
       "Bash(node:*)",
-      "Bash(stm:*)",
-      "Bash(claudekit:*)",
+
       "Bash(jq:*)",
       "Bash(mkdir:*)",
       "Bash(mv:*)",

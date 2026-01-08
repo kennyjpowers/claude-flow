@@ -97,7 +97,7 @@ After validating the problem from first principles, complete these technical che
 Check if $ARGUMENTS contains: "IMPORTANT: Save this specification to: <path>"
 
 If found:
-1. Extract the full path (e.g., `specs/my-feature/02-specification.md`)
+1. Extract the full path (e.g., `doc/specs/my-feature/02-specification.md`)
 2. Store as OUTPUT_PATH variable
 3. Create parent directory: `mkdir -p $(dirname OUTPUT_PATH)`
 4. Strip this instruction line from the task description for spec content
@@ -105,8 +105,8 @@ If found:
 
 If not found (legacy direct usage):
 1. Generate filename from task description:
-   - Features: `specs/feat-{kebab-case-name}.md`
-   - Bugfixes: `specs/fix-{issue-number}-{brief-description}.md`
+   - Features: `doc/specs/feat-{kebab-case-name}.md`
+   - Bugfixes: `doc/specs/fix-{issue-number}-{brief-description}.md`
 2. Use that as OUTPUT_PATH
 
 ## Your task

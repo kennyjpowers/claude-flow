@@ -1,3 +1,28 @@
+## [2.0.0] - 2026-01-08
+
+### Breaking Changes
+- Removed ClaudeKit dependency - claudeflow is now fully standalone
+- Removed simple-task-master (STM) integration - task tracking via 03-tasks.md
+- Lowered Node.js requirement from 22.14+ to 20+
+- Specs directory changed from `specs/` to `doc/specs/`
+
+### Changed
+- Simplified setup process (no ClaudeKit verification)
+- Simplified doctor diagnostics (no ClaudeKit checks)
+- Updated all documentation for standalone workflow
+- Simplified settings template (minimal permissions)
+- Updated package description to be tool-agnostic
+- Claude Code CLI now optional (other AI tools supported)
+
+### Removed
+- ClaudeKit hooks configuration
+- ClaudeKit agents documentation
+- STM task tracking commands
+- Outdated flowchart image (docs/Claudeflow.jpg)
+- npm engine version constraint
+
+---
+
 # [1.2.0](https://github.com/kennyjpowers/claude-flow/compare/v1.1.2...v1.2.0) (2025-11-22)
 
 

@@ -1,21 +1,30 @@
-# Claude Config - Hybrid Configuration for Claude Code + ClaudeKit
+# claudeflow - Workflow Orchestration for AI-Assisted Development
 
 [![npm version](https://img.shields.io/npm/v/@33strategies/claudeflow.svg)](https://www.npmjs.com/package/@33strategies/claudeflow)
 [![npm downloads](https://img.shields.io/npm/dm/@33strategies/claudeflow.svg)](https://www.npmjs.com/package/@33strategies/claudeflow)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Node Version](https://img.shields.io/badge/node-%3E%3D22.14-brightgreen.svg)](https://nodejs.org/)
+[![Node Version](https://img.shields.io/badge/node-%3E%3D20-brightgreen.svg)](https://nodejs.org/)
 
-A comprehensive configuration repository that combines **ClaudeKit**, **custom agents/commands**, and **Claude Code official features** for an optimal AI-assisted development workflow.
+Workflow commands for seamless end-to-end feature development with AI coding assistants. Works with Claude Code, OpenCode, and other AI development tools.
 
-![Claudeflow](docs/Claudeflow.jpg)
+## What's New in v2
+
+**claudeflow v2.0.0** is a major release with breaking changes:
+
+- **Standalone package** - No external dependencies (ClaudeKit/STM removed)
+- **Simplified installation** - Just `npm install` and `claudeflow setup`
+- **Tool-agnostic** - Works with Claude Code, OpenCode, and other AI tools
+- **Lower requirements** - Node.js 20+ (down from 22.14+)
+- **Streamlined workflow** - Focus on workflow commands only
+
+See [CHANGELOG.md](CHANGELOG.md) for full details.
 
 ## Quick Start
 
 ### Installation
 
-> **Prerequisites:** Node.js 22.14+ 
-> Check version: `node --version` | Install: https://nodejs.org
-> **⚠️ Recommended:** Claude Code **Max plan** 
+> **Prerequisites:** Node.js 20+ 
+> Check version: `node --version` | Install: https://nodejs.org 
 
 Install claudeflow globally via your preferred package manager:
 
@@ -52,58 +61,31 @@ Choose your installation mode:
 - **Both?** → You can do both! They work together via configuration hierarchy.
 
 The setup will:
-1. Check prerequisites (Node.js 22.14+, npm, Claude Code CLI)
-2. Verify ClaudeKit installation (installed automatically as dependency)
-3. Copy custom workflow commands to your chosen location
-4. Set up configuration files
-5. Run ClaudeKit setup
+1. Check prerequisites (Node.js 20+, npm)
+2. Copy custom workflow commands to your chosen location
+3. Set up configuration files
 
-**Optional but recommended**: [simple-task-master](https://github.com/carlrannaberg/simple-task-master) is already included for enhanced task tracking:
-```bash
-stm list --pretty --tag feature:<slug>
-```
-This enables `/spec:decompose` and `/spec:execute` to automatically track tasks.
+## What This Package Provides
 
-## What This Repository Provides
+claudeflow provides **workflow commands** for AI-assisted feature development:
 
-This repository implements a **layered configuration approach**:
+### Custom Workflow Commands
+- **/ideate**: Structured ideation with comprehensive documentation
+- **/ideate-to-spec**: Transform ideation into validated specification
+- **/spec:feedback**: Post-implementation feedback with interactive decisions
+- **/spec:doc-update**: Parallel documentation review based on specs
 
-1. **ClaudeKit Foundation** (installed via npm) - 30+ agents, 20+ commands, 25+ hooks
-2. **Custom Extensions** (this repo) - Domain-specific agents and workflow commands
-3. **Official Claude Code Features** - Built-in capabilities and plugin system
+### Enhanced Spec Commands
+- **/spec:create**: Detects output path and creates specs in feature directories
+- **/spec:decompose**: Incremental mode preserves completed work
+- **/spec:execute**: Session resume capability with implementation tracking
+- **/spec:migrate**: Migrates existing specs to feature-directory structure
 
-All three layers work together seamlessly in Claude Code.
-
-## Key Features
-
-### ClaudeKit (npm package)
-- 30+ specialized agents (TypeScript, React, Testing, Database, DevOps, etc.)
-- 20+ workflow commands (/git:commit, /spec:create, /research, etc.)
-- 25+ intelligent hooks (file-guard, linting, testing, checkpoints)
-- Automated quality assurance and error prevention
-
-### Custom Extensions (this repo)
-- 4 custom workflow commands:
-  - **/ideate**: Structured ideation with comprehensive documentation
-  - **/ideate-to-spec**: Transform ideation into validated specification
-  - **/spec:feedback**: Post-implementation feedback with interactive decisions
-  - **/spec:doc-update**: Parallel documentation review based on specs
-- 4 enhanced spec command overrides (replace ClaudeKit versions):
-  - **/spec:create**: Detects output path and creates specs in feature directories
-  - **/spec:decompose**: Incremental mode preserves completed work, tags STM tasks
-  - **/spec:execute**: Session resume capability with implementation tracking
-  - **/spec:migrate**: Migrates existing specs to feature-directory structure
+### Key Features
 - Complete end-to-end workflow from ideation to deployment
-- Example configurations for teams and individuals
-- Uses ClaudeKit's 30+ agents for specialized tasks
-- **Task tracking**: Integrates with [simple-task-master](https://github.com/carlrannaberg/simple-task-master) (stm) - use `stm list --pretty --tag feature:<slug>` to track progress
-
-### Official Claude Code Features
-- 5-tier configuration hierarchy
-- Project-level `.claude/` directories
-- CLAUDE.md context files
-- MCP server integration
-- Plugin system
+- Task tracking via `doc/specs/<slug>/03-tasks.md`
+- Session continuity across implementation runs
+- Interactive question resolution in specifications
 
 ### Verify Installation
 
@@ -114,10 +96,9 @@ claudeflow doctor
 ```
 
 This diagnostic command checks:
-- Node.js version (need 22.14+)
+- Node.js version (need 20+)
 - npm availability
-- Claude Code CLI installation
-- ClaudeKit installation
+- Claude Code CLI (optional - other AI tools supported)
 - .claude/ directory structure
 - Command files presence
 
@@ -127,11 +108,6 @@ This diagnostic command checks:
 - Ensure npm global bin is in your PATH
 - Try: `npm list -g @33strategies/claudeflow`
 - Reinstall: `npm install -g @33strategies/claudeflow`
-
-#### "ClaudeKit not found"
-- ClaudeKit should install automatically as a dependency
-- Manual install: `npm install -g claudekit`
-- Verify: `claudekit --version`
 
 #### "Commands not loading in Claude Code"
 - Run: `claudeflow doctor`
@@ -176,7 +152,7 @@ If you previously used the bash script installation:
    claudeflow doctor
    ```
 
-**Note:** Your existing STM tasks will be preserved. The migration only affects the installation method, not your feature work or task data.
+**Note:** The migration only affects the installation method, not your feature work or task data.
 
 ### Package Security
 
@@ -221,7 +197,7 @@ pnpm update -g @33strategies/claudeflow
 All documents related to a feature are organized in a single directory:
 
 ```
-specs/
+doc/specs/
 └── <feature-slug>/
     ├── 01-ideation.md          # Ideation and research
     ├── 02-specification.md     # Validated specification
@@ -235,11 +211,10 @@ specs/
 - Clear lifecycle progression (01 → 02 → 03 → 04)
 - Easy to find and navigate
 - Git-friendly tracking
-- STM tasks tagged with `feature:<slug>` for filtering
 
 **Example:**
 ```
-specs/add-user-auth-jwt/
+doc/specs/add-user-auth-jwt/
 ├── 01-ideation.md          # Created by /ideate
 ├── 02-specification.md     # Created by /ideate-to-spec → /spec:create
 ├── 03-tasks.md             # Created by /spec:decompose
@@ -302,28 +277,7 @@ claudeflow/ (@33strategies/claudeflow npm package)
 └── README.md                         # This file
 ```
 
-## Understanding the Hybrid Approach
-
-### Three-Layer Architecture
-
-```
-┌─────────────────────────────────────┐
-│  Layer 3: Custom (This Repo)        │  ← Domain-specific agents & commands
-├─────────────────────────────────────┤
-│  Layer 2: ClaudeKit (npm)           │  ← 30+ agents, 20+ commands, 25+ hooks
-├─────────────────────────────────────┤
-│  Layer 1: Claude Code (Official)    │  ← Base CLI, plugin system, MCP
-└─────────────────────────────────────┘
-```
-
-### How They Work Together
-
-| Feature | Claude Code | ClaudeKit | This Repo |
-|---------|-------------|-----------|-----------|
-| **Agents** | Built-in agents | typescript-expert, react-expert, database-expert, etc. (30+) | Uses ClaudeKit agents |
-| **Commands** | `/init`, `/plugin` | /git:commit, /spec:create, /research, etc. (20+) | /ideate, /ideate-to-spec, /spec:doc-update + overrides for /spec:create, /spec:decompose, /spec:execute, /spec:migrate |
-| **Hooks** | Hook system | file-guard, typecheck-changed, lint-changed, etc. (25+) | Uses ClaudeKit hooks via settings.json |
-| **Config** | .claude/ hierarchy | Integrates with .claude/ | Custom commands in .claude/ |
+## Configuration
 
 ### Configuration Hierarchy
 
@@ -335,9 +289,7 @@ Claude Code uses a 5-tier precedence system:
 4. **Project settings** (`.claude/settings.json`) - Team, committed
 5. **User settings** (`~/.claude/settings.json`) - Personal global defaults
 
-## Available Components
-
-### Custom Commands (This Repo)
+## Available Commands
 
 #### /ideate
 Structured ideation workflow that enforces complete investigation for any code-change task (bug fix or feature). Produces comprehensive ideation documentation including:
@@ -372,11 +324,11 @@ After creating the specification, the system automatically:
 - Re-entrant (skips already-answered questions)
 - Save-as-you-go for recoverability
 
-**Usage:** `/ideate-to-spec specs/<slug>/01-ideation.md`
+**Usage:** `/ideate-to-spec doc/specs/<slug>/01-ideation.md`
 
 **Example with Questions:**
 ```bash
-/ideate-to-spec specs/my-feature/01-ideation.md
+/ideate-to-spec doc/specs/my-feature/01-ideation.md
 # → Creates specification
 # → System detects 5 open questions
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -418,15 +370,13 @@ Process ONE specific piece of post-implementation feedback from testing or usage
 1. Validates prerequisites (implementation must exist)
 2. Prompts for detailed feedback description
 3. Explores relevant code with targeted investigation
-4. Optionally consults research-expert for solution approaches
-5. Guides through interactive decisions (implement/defer/out-of-scope)
-6. Updates spec changelog for "implement now" decisions
-7. Creates STM tasks for deferred feedback
-8. Logs all decisions in `05-feedback.md`
+4. Guides through interactive decisions (implement/defer/out-of-scope)
+5. Updates spec changelog for "implement now" decisions
+6. Logs all decisions in `05-feedback.md`
 
 Integrates with incremental `/spec:decompose` and resume `/spec:execute` for seamless iteration.
 
-**Usage:** `/spec:feedback specs/my-feature/02-specification.md`
+**Usage:** `/spec:feedback doc/specs/my-feature/02-specification.md`
 
 #### /spec:doc-update
 Review all documentation to identify what needs to be updated based on a new specification file. Launches parallel documentation expert agents to review each doc file for:
@@ -434,30 +384,26 @@ Review all documentation to identify what needs to be updated based on a new spe
 - Content requiring updates
 - Missing content for new features
 
-**Usage:** `/spec:doc-update specs/text-generator-spec.md`
+**Usage:** `/spec:doc-update doc/specs/text-generator-spec.md`
 
-### Enhanced Spec Commands (Overrides)
-
-These commands override ClaudeKit's versions with enhanced feature-directory organization and STM integration:
+### Enhanced Spec Commands
 
 #### /spec:create
-Enhanced version that detects output paths and organizes specs in feature directories. Creates specs in `specs/<slug>/02-specification.md` format.
+Creates specifications in feature directories at `doc/specs/<slug>/02-specification.md`.
 
 **Usage:** `/spec:create Add user authentication with JWT tokens`
 
 #### /spec:decompose
-Enhanced version with **incremental mode** that detects changelog updates and creates only new tasks while preserving completed work. Extracts feature slugs and tags all STM tasks with `feature:<slug>` for filtering. Creates task breakdown in `specs/<slug>/03-tasks.md` with re-decompose metadata.
+Breaks down specifications into tasks with **incremental mode** that preserves completed work. Creates task breakdown in `doc/specs/<slug>/03-tasks.md`.
 
-**Usage:** `/spec:decompose specs/add-user-auth/02-specification.md`
+**Usage:** `/spec:decompose doc/specs/add-user-auth/02-specification.md`
 
-**Incremental Mode:** Automatically detects when spec changelog has been updated after feedback and creates only new tasks for changes.
+**Incremental Mode:** Automatically detects when spec changelog has been updated and creates only new tasks for changes.
 
 #### /spec:execute
-Enhanced version with **session resume capability** that continues from previous progress. Reads implementation summary to skip completed tasks, resume in-progress work, and append new session history. Creates/updates `specs/<slug>/04-implementation.md` with cross-session context.
+Implements tasks with **session resume capability**. Reads implementation summary to skip completed tasks and continue from previous progress. Creates/updates `doc/specs/<slug>/04-implementation.md`.
 
-**Usage:** `/spec:execute specs/add-user-auth/02-specification.md`
-
-**Resume Mode:** Automatically detects previous sessions and skips completed work, maintaining full implementation history.
+**Usage:** `/spec:execute doc/specs/add-user-auth/02-specification.md`
 
 **Session Continuity:** When you run `/spec:execute` multiple times on the same spec, it reads `04-implementation.md` to understand what work has already been completed. This allows you to:
 - Work on large features across multiple sessions without re-doing completed tasks
@@ -465,60 +411,10 @@ Enhanced version with **session resume capability** that continues from previous
 - Maintain a complete history of all sessions (Session 1, Session 2, etc.)
 - Seamlessly integrate feedback workflow: implement → test → `/spec:feedback` → `/spec:decompose` (incremental) → `/spec:execute` (resume)
 
-**Track Progress:** `stm list --pretty --tag feature:add-user-auth` (replaces removed `/spec:progress`)
-
 #### /spec:migrate
-Migrates existing specs from flat structure to feature-directory structure. Moves specs, tasks, and ideation docs into organized `specs/<slug>/` directories and tags STM tasks.
+Migrates existing specs from flat structure to feature-directory structure.
 
 **Usage:** `/spec:migrate`
-
-### ClaudeKit Agents (30+)
-
-**Build Tools:** webpack-expert, vite-expert
-
-**Languages:** typescript-expert, typescript-build-expert, typescript-type-expert
-
-**Frontend:** react-expert, react-performance-expert, nextjs-expert, css-styling-expert, accessibility-expert
-
-**Testing:** testing-expert, jest-testing-expert, vitest-testing-expert, playwright-expert
-
-**Database:** database-expert, postgres-expert, mongodb-expert
-
-**DevOps:** docker-expert, github-actions-expert, devops-expert, git-expert
-
-**Specialized:** ai-sdk-expert, nestjs-expert, kafka-expert, loopback-expert, nodejs-expert
-
-**Utilities:** code-search, linting-expert, refactoring-expert, code-review-expert, research-expert
-
-### ClaudeKit Commands (20+)
-
-**Git Workflow:** /git:status, /git:commit, /git:checkout, /git:push, /git:ignore-init
-
-**Specifications:** /spec:validate
-- **Note:** This repo overrides `/spec:create`, `/spec:decompose`, `/spec:execute` with enhanced versions
-- Enhanced versions add feature-directory organization and STM task tagging
-- `/spec:migrate` is a custom addition for migrating existing specs
-- Use `stm list --pretty --tag feature:<slug>` to track progress (replaces removed `/spec:progress`)
-
-**Quality:** /code-review, /validate-and-fix
-
-**Research:** /research
-
-**Development:** /create-command, /create-subagent
-
-**Checkpoints:** /checkpoint:restore
-
-**Hooks:** /hook:disable, /hook:enable, /hook:status
-
-### ClaudeKit Hooks (25+)
-
-**PreToolUse:** file-guard (protects sensitive files)
-
-**PostToolUse:** typecheck-changed, lint-changed, check-any-changed, test-changed, codebase-map-update, check-comment-replacement
-
-**Stop:** create-checkpoint, check-todos, typecheck-project, lint-project, test-project, self-review
-
-**UserPromptSubmit:** thinking-level, codebase-map
 
 ## Standard Workflow
 
@@ -549,9 +445,9 @@ This repository implements a complete end-to-end workflow for feature developmen
                               │
                               ▼
             /spec:decompose <spec-file>
-            (Custom Override - uses stm if installed)
                               │
               Breaks spec into tasks
+              (creates 03-tasks.md)
                               │
                               ▼
 ┌─────────────────────────────────────────────────────────────────┐
@@ -560,21 +456,9 @@ This repository implements a complete end-to-end workflow for feature developmen
                               │
                               ▼
             /spec:execute <spec-file>
-            (Custom Override - uses stm if installed)
                               │
               Implements tasks
-                              │
-                              ▼
-       stm list --pretty --tag feature:<slug>
-              (Track progress)
-                              │
-        View task status and completion
-                              │
-                   ┌──────────┴──────────┐
-                   │                     │
-              Not Finished          Finished
-                   │                     │
-                   └──────────┬──────────┘
+              (updates 03-tasks.md status)
                               │
                               ▼
                     Manual Testing
@@ -598,9 +482,9 @@ This repository implements a complete end-to-end workflow for feature developmen
                               │
                    ┌──────────┴──────────┬────────────┐
                    │                     │            │
-              Implement Now           Defer     Out of Scope
+               Implement Now           Defer     Out of Scope
                    │                     │            │
-        Update spec changelog    Create STM task     Log only
+        Update spec changelog       Log for later    Log only
                    │                     │            │
                    ▼                     │            │
        /spec:decompose (incremental)    │            │
@@ -617,28 +501,12 @@ This repository implements a complete end-to-end workflow for feature developmen
 └─────────────────────────────────────────────────────────────────┘
                               │
                               ▼
-               /git:commit
-               (ClaudeKit Command)
-                              │
-              Commits implementation
-                              │
-                              ▼
            /spec:doc-update <spec-file>
-           (Custom Command)
                               │
         Reviews & updates documentation
                               │
                               ▼
-               /git:commit
-               (ClaudeKit Command)
-                              │
-           Commits doc updates
-                              │
-                              ▼
-               /git:push
-               (ClaudeKit Command)
-                              │
-            Pushes to remote
+               git commit & push
                               │
                               ▼
                           DONE! 🎉
@@ -648,12 +516,10 @@ This repository implements a complete end-to-end workflow for feature developmen
 
 1. **Ideation** → Comprehensive investigation and research
 2. **Specification** → Validated, implementation-ready spec with interactive question resolution
-3. **Decomposition** → Tasks broken down with dependencies (uses stm if installed, tags with `feature:<slug>`)
-4. **Implementation** → Iterative execution with stm task tracking via `stm list --pretty --tag feature:<slug>`
+3. **Decomposition** → Tasks broken down in `03-tasks.md`
+4. **Implementation** → Iterative execution with task status tracking
 5. **Feedback** → Process post-implementation feedback with structured decisions (implement/defer/out-of-scope)
 6. **Completion** → Documentation updates and git workflow
-
-**Note:** Phase 2 (Specification) now includes automatic open questions resolution to ensure specs are implementation-ready before decomposition begins.
 
 ## Usage Examples
 
@@ -662,88 +528,44 @@ This repository implements a complete end-to-end workflow for feature developmen
 ```bash
 # Step 1: Start with ideation
 /ideate Add user authentication with JWT tokens
-# → Creates: specs/add-user-auth-jwt/01-ideation.md
-#   Includes: investigation, research, clarifications
+# → Creates: doc/specs/add-user-auth-jwt/01-ideation.md
 
 # Step 2: Transform to validated specification
-/ideate-to-spec specs/add-user-auth-jwt/01-ideation.md
-# → User makes decisions interactively (Step 2: ideation clarifications)
-# → System creates specification via /spec:create
-# → System detects and resolves open questions (Step 6: interactive resolution)
-# → All questions answered interactively with progress tracking
-# → Specification re-validated until complete
-# → Summary includes both ideation decisions AND resolved spec questions
-# → Creates: specs/add-user-auth-jwt/02-specification.md (validated & complete)
+/ideate-to-spec doc/specs/add-user-auth-jwt/01-ideation.md
+# → Creates: doc/specs/add-user-auth-jwt/02-specification.md (validated & complete)
 
 # Step 3: Break down into tasks
-/spec:decompose specs/add-user-auth-jwt/02-specification.md
-# → Creates: specs/add-user-auth-jwt/03-tasks.md
-# → Creates STM tasks tagged with feature:add-user-auth-jwt
+/spec:decompose doc/specs/add-user-auth-jwt/02-specification.md
+# → Creates: doc/specs/add-user-auth-jwt/03-tasks.md
 
 # Step 4: Start implementation
-/spec:execute specs/add-user-auth-jwt/02-specification.md
-# → Implements tasks incrementally, updating stm status
+/spec:execute doc/specs/add-user-auth-jwt/02-specification.md
+# → Implements tasks, updates status in 03-tasks.md
 
-# Step 5: Check progress (can run anytime during implementation)
-stm list --pretty --tag feature:add-user-auth-jwt
-# → Shows: completion %, current phase, task status
-#   Note: This replaces the removed /spec:progress command
+# Step 5: Continue implementing (loop back to step 4 if needed)
+/spec:execute doc/specs/add-user-auth-jwt/02-specification.md
+# → Resume mode: skips completed work
 
-# Step 6: Continue implementing (loop back to step 4 if needed)
-/spec:execute specs/add-user-auth-jwt/02-specification.md
-
-# Step 7: Final progress check (should show 100%)
-stm list --pretty --tag feature:add-user-auth-jwt
-
-# Step 8: Implementation summary created automatically
-# → Creates: specs/add-user-auth-jwt/04-implementation.md
-
-# Step 9: Manual testing (discover feedback items)
+# Step 6: Manual testing (discover feedback items)
 # Test the implemented feature manually
-# Identify bugs, improvements, or missing functionality
 
-# Step 10: Process feedback (repeat for each feedback item)
-/spec:feedback specs/add-user-auth-jwt/02-specification.md
-# → Interactive workflow:
-#   1. Describe feedback item
-#   2. Code exploration
-#   3. Optional research
-#   4. Make decision:
-#      - Implement Now: Updates spec changelog
-#      - Defer: Creates STM task for later
-#      - Out of Scope: Logs decision only
+# Step 7: Process feedback (repeat for each feedback item)
+/spec:feedback doc/specs/add-user-auth-jwt/02-specification.md
+# → Interactive workflow with implement/defer/out-of-scope decisions
 
-# Step 11: If "Implement Now" was chosen, run incremental decompose
-/spec:decompose specs/add-user-auth-jwt/02-specification.md
+# Step 8: If "Implement Now" was chosen, run incremental decompose
+/spec:decompose doc/specs/add-user-auth-jwt/02-specification.md
 # → Incremental mode: preserves completed tasks, creates only new ones
 
-# Step 12: Resume implementation for new tasks
-/spec:execute specs/add-user-auth-jwt/02-specification.md
-# → Resume mode: skips completed work, implements new feedback tasks
+# Step 9: Resume implementation for new tasks
+/spec:execute doc/specs/add-user-auth-jwt/02-specification.md
 
-# Step 13: Repeat steps 9-12 until all feedback is addressed
+# Step 10: Update documentation and commit
+/spec:doc-update doc/specs/add-user-auth-jwt/02-specification.md
+# git add . && git commit -m "feat: add user authentication"
+# git push
 
-# Step 14: Commit implementation
-/git:commit
-# → Creates conventional commit with changes
-
-# Step 15: Update documentation
-/spec:doc-update specs/add-user-auth-jwt/02-specification.md
-# → Parallel agents review all docs
-# → Identifies outdated content and missing docs
-
-# Step 16: Commit documentation updates
-/git:commit
-
-# Step 17: Push to remote
-/git:push
-
-# All documents for this feature are now in: specs/add-user-auth-jwt/
-# ├── 01-ideation.md
-# ├── 02-specification.md
-# ├── 03-tasks.md
-# ├── 04-implementation.md
-# └── 05-feedback.md
+# All documents for this feature are now in: doc/specs/add-user-auth-jwt/
 ```
 
 ### Quick Start (Skip Ideation)
@@ -766,10 +588,9 @@ If you have specs in the old flat structure:
 /spec:migrate
 
 # This will:
-# - Move specs/*.md to specs/<slug>/02-specification.md
-# - Move specs/*-tasks.md to specs/<slug>/03-tasks.md
-# - Move docs/ideation/*.md to specs/<slug>/01-ideation.md
-# - Tag STM tasks with feature:<slug>
+# - Move specs/*.md to doc/specs/<slug>/02-specification.md
+# - Move specs/*-tasks.md to doc/specs/<slug>/03-tasks.md
+# - Move docs/ideation/*.md to doc/specs/<slug>/01-ideation.md
 # - Generate migration report
 ```
 
@@ -777,121 +598,32 @@ If you have specs in the old flat structure:
 
 ```bash
 # After implementing a feature via a spec
-/spec:doc-update specs/add-user-auth-jwt/02-specification.md
+/spec:doc-update doc/specs/add-user-auth-jwt/02-specification.md
 
 # This will:
-# - Launch parallel documentation expert agents
 # - Review all docs for outdated content
 # - Identify missing documentation for new features
 # - Provide prioritized recommendations
 ```
 
-## Configuration
+## Settings Management
 
-### Project Setup (Team)
-
-```bash
-cd your-project
-
-# Initialize with ClaudeKit + custom config
-./path/to/claude-config/install.sh project
-
-# Customize settings
-cp .claude/settings.json.example .claude/settings.json
-# Edit .claude/settings.json for team
-
-# Add to git
-echo ".claude/settings.local.json" >> .gitignore
-echo "CLAUDE.local.md" >> .gitignore
-git add .claude/ CLAUDE.md .gitignore
-git commit -m "Add Claude Code configuration"
-```
-
-### Personal Setup (Global)
-
-```bash
-# Install to ~/.claude
-./path/to/claude-config/install.sh user
-
-# Customize personal settings
-cp ~/.claude/settings.json ~/.claude/settings.local.json
-# Edit ~/.claude/settings.local.json for personal preferences
-```
-
-### Settings Management
-
-**Team Settings** (`.claude/settings.json` - committed):
+**Project Settings** (`.claude/settings.json` - committed):
 ```json
 {
   "permissions": {
     "allow": ["Read", "Edit", "Bash(git:*)"],
     "deny": [".env", "**/*.key", "secrets/"]
-  },
-  "hooks": {
-    "PreToolUse": [{
-      "matcher": "Read|Edit|Write",
-      "hooks": [{"type": "command", "command": "claudekit-hooks run file-guard"}]
-    }]
   }
 }
 ```
 
 **Personal Overrides** (`.claude/settings.local.json` - gitignored):
-```json
-{
-  "environmentVariables": {
-    "EDITOR": "code"
-  }
-}
-```
-
-## Maintenance
-
-### Update ClaudeKit
-
-```bash
-# Check for updates
-npm outdated -g | grep claudekit
-
-# Update to latest
-npm update -g claudekit
-```
-
-### Update Custom Configuration
-
-```bash
-# Pull latest from this repo
-cd path/to/claude-config
-git pull origin main
-
-# Re-run installation to update
-./install.sh project
-```
-
-### Validate Configuration
-
-```bash
-# Validate agents
-claudekit lint-agents
-
-# Validate commands
-claudekit lint-commands
-
-# List all components
-claudekit list agents
-claudekit list commands
-
-# Check hook status
-claudekit-hooks status
-
-# Profile hook performance
-claudekit-hooks profile
-```
+- Use for personal preferences that shouldn't be committed
 
 ## Best Practices
 
 ### 1. Security First
-- Always enable file-guard hook
 - Never commit secrets to `.claude/settings.json`
 - Use environment variable references: `"API_KEY": "${API_KEY}"`
 - Keep `.env` files gitignored
@@ -899,93 +631,19 @@ claudekit-hooks profile
 ### 2. Team Collaboration
 - Commit `.claude/settings.json` and `CLAUDE.md` to git
 - Gitignore `.claude/settings.local.json` and `CLAUDE.local.md`
-- Document custom agents and commands in README
-- Use PR reviews for configuration changes
 
-### 3. Performance
-- Profile hooks regularly: `claudekit-hooks profile`
-- Keep UserPromptSubmit hooks under 10k characters
-- Use `*-changed` hooks for fast feedback
-- Use `*-project` hooks sparingly (slow but comprehensive)
-
-### 4. Agent Management
-- Start with 10-15 most relevant agents
-- Add more as needed
-- Remove unused agents to reduce context overhead
-- Document agent purposes in `.claude/agents/README.md`
-
-### 5. Context Optimization
+### 3. Context Optimization
 - Keep CLAUDE.md focused and concise
-- Use file references instead of embedding code
-- Enable codebase-map hook for project structure
 - Break large tasks into smaller steps
-
-## Troubleshooting
-
-### ClaudeKit Not Found
-
-```bash
-# Reinstall globally
-npm install -g claudekit
-
-# Check installation
-which claudekit
-claudekit --version
-```
-
-### Agents Not Appearing
-
-```bash
-# Verify agent files
-ls -la .claude/agents/
-
-# Validate agents
-claudekit lint-agents
-
-# Restart Claude Code session
-```
-
-### Hooks Not Running
-
-```bash
-# Check hook status
-claudekit-hooks status
-
-# Enable hooks
-claudekit-hooks enable file-guard
-
-# Verify settings.json syntax
-cat .claude/settings.json | jq .
-
-# Restart Claude Code session
-```
-
-### Settings Not Applied
-
-- Check configuration hierarchy (local > project > user)
-- Restart Claude Code session
-- Validate JSON syntax: `jq . .claude/settings.json`
-- Check for enterprise policies overriding settings
 
 ## Resources
 
-### Official Documentation
-- [Claude Code Documentation](https://docs.claude.com/en/docs/claude-code/)
-- [Claude Code Best Practices](https://www.anthropic.com/engineering/claude-code-best-practices)
-- [ClaudeKit Documentation](https://docs.claudekit.cc/)
-- [ClaudeKit GitHub](https://github.com/carlrannaberg/claudekit)
-
-### This Repository
-- [Installation Guide](docs/INSTALLATION_GUIDE.md) - When to use user vs project installation
+### Documentation
+- [Installation Guide](docs/INSTALLATION_GUIDE.md) - When to use global vs project installation
 - [Setup Guide](docs/SETUP_GUIDE.md) - Detailed setup instructions
 - [Design Rationale](docs/DESIGN_RATIONALE.md) - Design validation and best practices
 - [Feedback Workflow Guide](docs/guides/feedback-workflow-guide.md) - Complete guide to post-implementation feedback
-- [GitHub Issues](https://github.com/kennyjpowers/claude-flow.git/issues) - Report problems
-
-### Community Resources
-- [Awesome Claude Code](https://github.com/hesreallyhim/awesome-claude-code)
-- [ClaudeLog](https://claudelog.com/)
-- [ClaudeKit Skills](https://github.com/mrgoonie/claudekit-skills)
+- [GitHub Issues](https://github.com/kennyjpowers/claude-flow/issues) - Report problems
 
 ## Contributing
 
@@ -1001,33 +659,5 @@ MIT License - feel free to use and modify for your projects.
 
 ## Acknowledgments
 
-- **ClaudeKit** by Carl Rannaberg - Comprehensive toolkit foundation
-- **Anthropic** - Claude Code CLI and official features
+- **Anthropic** - Claude Code CLI and AI development
 - Community contributors and examples
-
----
-
-**Note**: This repository implements a validated, research-backed approach for managing Claude Code configuration. See [research.md](research.md) for detailed analysis, sources, and best practices.
-
-## Why This Approach?
-
-### vs. Git Submodules (Grok's Original Suggestion)
-- ✅ Simpler: npm install vs. submodule complexity
-- ✅ Standard: Familiar to all Node.js developers
-- ✅ Easy updates: `npm update -g` vs. `git submodule update --remote`
-- ✅ No merge conflicts with upstream
-- ❌ Submodules add unnecessary complexity
-
-### vs. Manual Configuration
-- ✅ Automated setup via installation script
-- ✅ Validated configurations from research
-- ✅ Combines best of ClaudeKit + custom + official
-- ✅ Easy to maintain and update
-
-### vs. Plugin-Only Approach
-- ✅ More flexible than plugins alone
-- ✅ Can customize ClaudeKit features
-- ✅ Works with npm-distributed tools
-- ✅ Better for teams with specific needs
-
-This hybrid approach provides the **best of all worlds**: ClaudeKit's mature foundation, your custom extensions, and official Claude Code features, all working together seamlessly.

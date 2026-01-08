@@ -8,19 +8,19 @@ Before installing claudeflow, ensure you have the following:
 
 ### Required Software
 
-- **Node.js 22.14+** (required by ClaudeKit dependency)
+- **Node.js 20+**
   - Check version: `node --version`
   - Install from: https://nodejs.org
-  - Must be 22.14 or higher
+  - Must be 20 or higher
 
 - **Package Manager** (npm, yarn, or pnpm)
   - npm comes bundled with Node.js
   - yarn: https://yarnpkg.com
   - pnpm: https://pnpm.io
 
-- **Claude Code CLI** (runtime environment)
-  - Install from: https://code.claude.com
-  - Verify installation: `claude --version`
+- **AI Coding Tool** (optional but recommended)
+  - Claude Code CLI: https://code.claude.com
+  - OpenCode, or other AI development tools
 
 ### Supported Platforms
 
@@ -90,7 +90,7 @@ pnpm add -g @33strategies/claudeflow
 claudeflow setup
 ```
 
-**Note:** All three methods install the same package and provide identical functionality. ClaudeKit is installed automatically as a dependency.
+**Note:** All three methods install the same package and provide identical functionality.
 
 ## Decision Guide
 
@@ -192,10 +192,10 @@ Project settings override global settings, so team conventions take precedence.
 
 ### User/Global Installation (Step-by-Step)
 
-1. **Install Node.js 22.14+ if needed**
+1. **Install Node.js 20+ if needed**
    ```bash
    node --version  # Check version
-   # If < 22.14, install from nodejs.org
+   # If < 20, install from nodejs.org
    ```
 
 2. **Install claudeflow**
@@ -222,10 +222,9 @@ Project settings override global settings, so team conventions take precedence.
 
    You should see all checks passing:
    ```
-   ✓ Node.js version - v22.14.0
-   ✓ npm - 10.2.3
-   ✓ Claude Code CLI - 1.0.0
-   ✓ ClaudeKit - 1.0.0
+   ✓ Node.js version - v20.x.x
+   ✓ npm - 10.x.x
+   ✓ Claude Code CLI (optional)
    ✓ Global (~/.claude/)
      ✓ Commands directory
      ✓ Command files - 8/8 found
@@ -247,10 +246,10 @@ Project settings override global settings, so team conventions take precedence.
 
 ### Project Installation (Step-by-Step)
 
-1. **Install Node.js 22.14+ if needed**
+1. **Install Node.js 20+ if needed**
    ```bash
    node --version  # Check version
-   # If < 22.14, install from nodejs.org
+   # If < 20, install from nodejs.org
    ```
 
 2. **Install claudeflow globally**
@@ -328,10 +327,9 @@ claudeflow doctor
 ```
 
 This checks:
-- ✓ Node.js version (requires 22.14+)
+- ✓ Node.js version (requires 20+)
 - ✓ npm availability
-- ✓ Claude Code CLI installation
-- ✓ ClaudeKit installation (should be automatic)
+- ✓ Claude Code CLI installation (optional)
 - ✓ Global installation (~/.claude/)
 - ✓ Project installation (./.claude/)
 - ✓ Command files presence (8/8 required commands)
@@ -342,10 +340,9 @@ claudeflow Doctor - Installation Diagnostics
 
 ================================================
 
-✓ Node.js version - v22.14.0
-✓ npm - 10.2.3
-✓ Claude Code CLI - 1.0.0
-✓ ClaudeKit - 1.0.0
+✓ Node.js version - v20.x.x
+✓ npm - 10.x.x
+✓ Claude Code CLI (optional)
 
 Installation Locations:
 
@@ -363,10 +360,9 @@ Installation Locations:
 ```
 
 **If checks fail**, the doctor command provides specific recommendations:
-- Node.js < 22.14: Install Node.js 22.14+ from https://nodejs.org
-- ClaudeKit not found: Should install automatically; manual: `npm install -g claudekit`
+- Node.js < 20: Install Node.js 20+ from https://nodejs.org
 - Commands missing: Re-run `claudeflow setup`
-- Claude Code CLI not found: Install from https://code.claude.com
+- Claude Code CLI not found: Optional - other AI tools also work
 
 ## Updating After Installation
 
@@ -432,7 +428,7 @@ npm outdated -g @33strategies/claudeflow
 
 ### For User/Global Installation
 
-- [ ] Verify Node.js 22.14+ installed (`node --version`)
+- [ ] Verify Node.js 20+ installed (`node --version`)
 - [ ] Install claudeflow globally (`npm install -g @33strategies/claudeflow`)
 - [ ] Run setup (`claudeflow setup --global`)
 - [ ] Verify with doctor command (`claudeflow doctor`)
@@ -443,7 +439,7 @@ npm outdated -g @33strategies/claudeflow
 
 ### For Project/Team Installation
 
-- [ ] Verify Node.js 22.14+ installed (`node --version`)
+- [ ] Verify Node.js 20+ installed (`node --version`)
 - [ ] Navigate to project directory
 - [ ] Install claudeflow globally (`npm install -g @33strategies/claudeflow`)
 - [ ] Run project setup (`claudeflow setup --project`)
@@ -514,19 +510,18 @@ You should see all checks passing.
 |--------|------------------|-------------------|
 | **Distribution** | Manual git clone/download | npm registry |
 | **Installation** | `./install.sh user/project` | `claudeflow setup --global/--project` |
-| **Prerequisites** | Bash shell (Unix only) | Node.js 22.14+ (cross-platform) |
+| **Prerequisites** | Bash shell (Unix only) | Node.js 20+ (cross-platform) |
 | **Updates** | `git pull && ./install.sh` | `npm update -g claudeflow` |
 | **Diagnostics** | Manual file checks | `claudeflow doctor` |
 | **Notifications** | None | Automatic weekly update checks |
 | **Platforms** | macOS, Linux only | Windows, macOS, Linux |
 | **Package Managers** | N/A | npm, yarn, pnpm |
-| **ClaudeKit** | Manual: `npm install -g claudekit` | Automatic dependency |
 
 ### Migration Notes
 
-- **STM Tasks Preserved:** Your existing STM tasks are not affected. Migration only changes the installation method.
 - **Settings Preserved:** If you back up your `settings.json` before removing `.claude/`, you can restore it after setup.
-- **No Breaking Changes:** All commands work exactly the same way.
+- **Task Tracking:** Task tracking now uses `doc/specs/<slug>/03-tasks.md` instead of external tools.
+- **Spec Paths Changed:** Specs are now in `doc/specs/` instead of `specs/`.
 
 ## Troubleshooting
 
@@ -545,23 +540,6 @@ npm install -g @33strategies/claudeflow
 # If installed but not in PATH, find npm global bin directory
 npm bin -g
 # Add that directory to your PATH in ~/.bashrc, ~/.zshrc, or equivalent
-```
-
-### "ClaudeKit not found"
-
-**Cause:** ClaudeKit should install automatically as a dependency but didn't
-
-**Solutions:**
-```bash
-# Reinstall claudeflow (will install ClaudeKit)
-npm uninstall -g @33strategies/claudeflow
-npm install -g @33strategies/claudeflow
-
-# Manual installation (if needed)
-npm install -g claudekit
-
-# Verify
-claudekit --version
 ```
 
 ### "Commands not loading in Claude Code"
@@ -588,20 +566,20 @@ ls -la ./.claude/commands/         # For project
 
 ### "Node.js version too old"
 
-**Cause:** Node.js version < 22.14
+**Cause:** Node.js version < 20
 
 **Solution:**
 ```bash
 # Check current version
 node --version
 
-# Install Node.js 22.14+ from:
+# Install Node.js 20+ from:
 # https://nodejs.org
 
 # Or use a version manager:
 # nvm (https://github.com/nvm-sh/nvm)
-nvm install 22
-nvm use 22
+nvm install 20
+nvm use 20
 ```
 
 ### Installation hangs or fails
@@ -712,9 +690,10 @@ sudo npm install -g @33strategies/claudeflow
    - Watch for update notifications (weekly checks)
    - Update when convenient
 
-3. **Keep ClaudeKit updated** - It's a dependency
-   - Updates automatically with claudeflow
-   - Check version: `claudekit --version`
+3. **Run doctor regularly** - Catch issues early
+   ```bash
+   claudeflow doctor
+   ```
 
 ## Additional Resources
 

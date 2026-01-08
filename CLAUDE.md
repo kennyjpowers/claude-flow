@@ -2,23 +2,20 @@
 
 ## Project Overview
 
-**claudeflow** is a workflow orchestration npm package for Claude Code that provides a complete end-to-end feature development lifecycle for AI-assisted development. It layers custom workflow commands on top of ClaudeKit (30+ agents, 20+ commands, 25+ hooks) and Claude Code's official CLI.
+**claudeflow** is a workflow orchestration npm package that provides a complete end-to-end feature development lifecycle for AI-assisted development. It provides custom workflow commands that work with Claude Code, OpenCode, and other AI development tools.
 
-**Version:** 1.2.0 (November 21, 2025)
+**Version:** 2.0.0 (January 2026)
 **Package:** @33strategies/claudeflow
 **Distribution:** npm, yarn, pnpm
 
 ## Architecture
 
-Three-layer system:
-1. **Claude Code (Official)** - Base CLI, plugin system, MCP integration
-2. **ClaudeKit (npm)** - 30+ specialized agents, workflow commands, intelligent hooks
-3. **claudeflow (npm)** - Domain-specific workflow extensions, end-to-end feature lifecycle
+Standalone workflow package providing custom commands for AI-assisted feature development.
 
 **System Requirements:**
-- Node.js 22.14+ (ClaudeKit dependency requirement)
+- Node.js 20+
 - npm/yarn/pnpm (any package manager)
-- Claude Code CLI (runtime environment)
+- AI coding assistant (Claude Code, OpenCode, etc.) - optional but recommended
 
 See [docs/INSTALLATION_GUIDE.md](docs/INSTALLATION_GUIDE.md) for detailed prerequisites and installation instructions.
 
@@ -32,44 +29,43 @@ IDEATION → SPECIFICATION → DECOMPOSITION → IMPLEMENTATION → FEEDBACK →
 
 ### Phase 1: Ideation
 - **Command:** `/ideate <task-brief>`
-- **Output:** `specs/<slug>/01-ideation.md`
+- **Output:** `doc/specs/<slug>/01-ideation.md`
 - **Purpose:** Enforce complete investigation before code changes
 - **Includes:** Intent, pre-reading, codebase mapping, root cause analysis, research, clarifications
 
 ### Phase 2: Specification
 - **Command:** `/ideate-to-spec <path-to-ideation>`
-- **Output:** `specs/<slug>/02-specification.md`
+- **Output:** `doc/specs/<slug>/02-specification.md`
 - **Purpose:** Transform ideation into validated technical specification
 - **Process:** Extract decisions → build spec → validate → resolve open questions → re-validate
-- **Interactive:** Automatically detects and resolves open questions using AskUserQuestion tool before completion
+- **Interactive:** Automatically detects and resolves open questions before completion
 
 ### Phase 3: Decomposition
 - **Command:** `/spec:decompose <path-to-spec>`
-- **Output:** `specs/<slug>/03-tasks.md` + STM tasks
+- **Output:** `doc/specs/<slug>/03-tasks.md`
 - **Purpose:** Break specification into actionable tasks
-- **Critical:** Tasks tagged with `feature:<slug>` for filtering
 - **Pattern:** Full implementation details copied into tasks (NOT summaries)
 
 ### Phase 4: Implementation
 - **Command:** `/spec:execute <path-to-spec>`
-- **Output:** `specs/<slug>/04-implementation.md`
+- **Output:** `doc/specs/<slug>/04-implementation.md`
 - **Purpose:** Implement tasks incrementally with session continuity
 - **Process:** For each task: implement → test → code review → fix → commit
 - **Tracks:** Progress, files modified, tests added, known issues, next steps
 
 ### Phase 5: Feedback
 - **Command:** `/spec:feedback <path-to-spec>`
-- **Output:** `specs/<slug>/05-feedback.md`
+- **Output:** `doc/specs/<slug>/05-feedback.md`
 - **Purpose:** Process post-implementation feedback with structured decisions
-- **Process:** One feedback item at a time → explore code → optional research → interactive decisions → take action based on outcome
+- **Process:** One feedback item at a time → explore code → interactive decisions → take action based on outcome
 - **Decision Outcomes:**
   - **Implement Now:** Update spec changelog → incremental `/spec:decompose` → resume `/spec:execute`
-  - **Defer:** Create STM task for future consideration → log in feedback file
+  - **Defer:** Log for future consideration in feedback file
   - **Out of Scope:** Log decision with rationale → no further action
 - **Integration:** Works with incremental `/spec:decompose` and resume `/spec:execute`
 
 ### Phase 6: Completion
-- **Commands:** `/git:commit`, `/spec:doc-update`, `/git:push`
+- **Commands:** `/spec:doc-update`, git commit & push
 - **Purpose:** Finalize changes, update documentation, push to remote
 
 ## Key Commands
@@ -83,31 +79,21 @@ IDEATION → SPECIFICATION → DECOMPOSITION → IMPLEMENTATION → FEEDBACK →
 | `/spec:doc-update <path>` | Review docs with parallel agents |
 
 ### Command Overrides (4)
-Enhanced versions of ClaudeKit commands:
+Enhanced versions of spec commands:
 
 | Command | Enhancement |
 |---------|------------|
 | `/spec:create <desc>` | Feature-directory aware with output path detection |
 | `/spec:decompose <path>` | Incremental mode: preserves completed work, creates only new tasks |
 | `/spec:execute <path>` | Resume mode: continues from previous session, skips completed work |
-| `/spec:migrate` | Convert old flat structure to feature directories |
-
-### Progress Tracking
-```bash
-# View all tasks for a feature
-stm list --pretty --tag feature:<slug>
-
-# View by status
-stm list --status pending --tag feature:<slug>
-stm list --status done --tag feature:<slug>
-```
+| `/spec:migrate` | Convert old flat structure to feature directories
 
 ## Document Organization
 
 **Feature-Based Directories** - All docs for a feature in one place:
 
 ```
-specs/<feature-slug>/
+doc/specs/<feature-slug>/
 ├── 01-ideation.md          # Investigation & research
 ├── 02-specification.md     # Technical specification
 ├── 03-tasks.md             # Task breakdown
@@ -156,7 +142,7 @@ The `/ideate-to-spec` command includes automatic open questions resolution to en
 
 **Example Workflow:**
 ```bash
-/ideate-to-spec specs/my-feature/01-ideation.md
+/ideate-to-spec doc/specs/my-feature/01-ideation.md
 # → System creates spec via /spec:create
 # → Detects 5 open questions
 # → Presents questions interactively
@@ -168,29 +154,14 @@ The `/ideate-to-spec` command includes automatic open questions resolution to en
 ```
 
 **Technical Implementation:**
-- Uses only built-in Claude Code tools (AskUserQuestion, Read, Edit, Grep)
+- Uses only built-in AI coding tools (Read, Edit, Grep)
 - No external dependencies or npm packages required
-- Fully integrated with existing ClaudeKit `/spec:validate` command
 - Save-as-you-go approach enables recovery if interrupted
 
 ## Important Conventions
 
 ### Content Preservation Pattern
 **CRITICAL:** When creating tasks, copy full implementation details from spec - DO NOT summarize or reference.
-
-```bash
-# WRONG ❌
-stm add "Task" --details "See spec section 3"
-
-# CORRECT ✅
-stm add "Task" --details "[Full code blocks and details copied here]"
-```
-
-### Task Tagging
-All tasks MUST be tagged with `feature:<slug>`:
-```bash
-stm add "Task" --tags "feature:my-feature,phase1,high-priority"
-```
 
 ### Configuration Hierarchy
 5-tier precedence (highest to lowest):
@@ -255,35 +226,12 @@ claudeflow/                    # npm package (@33strategies/claudeflow)
 ├── templates/
 │   ├── project-config/        # Team-level templates
 │   └── user-config/           # Personal templates
-├── specs/                     # Feature specifications (not in package)
+├── doc/specs/                 # Feature specifications (not in package)
 │   └── <feature-slug>/        # Feature directory
 ├── docs/                      # Documentation
 ├── LICENSE                    # MIT License
 ├── CHANGELOG.md               # Auto-generated
 └── CLAUDE.md                  # This file
-```
-
-## ClaudeKit Agents Available
-
-**Build Tools:** webpack-expert, vite-expert
-**Languages:** typescript-expert, typescript-build-expert, typescript-type-expert
-**Frontend:** react-expert, react-performance-expert, nextjs-expert, css-styling-expert, accessibility-expert
-**Testing:** testing-expert, jest-testing-expert, vitest-testing-expert, playwright-expert
-**Database:** database-expert, postgres-expert, mongodb-expert
-**DevOps:** docker-expert, github-actions-expert, devops-expert, git-expert
-**Specialized:** ai-sdk-expert, nestjs-expert, kafka-expert, loopback-expert, nodejs-expert, code-review-expert, refactoring-expert, research-expert
-
-## Configuration Hooks
-
-From `settings.json.example`:
-
-```json
-{
-  "PreToolUse": ["file-guard"],
-  "PostToolUse": ["typecheck-changed", "lint-changed", "test-changed"],
-  "Stop": ["create-checkpoint", "check-todos"],
-  "UserPromptSubmit": ["thinking-level"]
-}
 ```
 
 ## Installation
@@ -311,13 +259,6 @@ claudeflow doctor                   # Verify installation health
 - [docs/INSTALLATION_GUIDE.md](docs/INSTALLATION_GUIDE.md) - Complete installation guide
 - [README.md](README.md#troubleshooting) - Troubleshooting section
 
-## Optional Enhancements
-
-**Recommended:** Install simple-task-master for persistent task tracking:
-```bash
-npm install -g simple-task-master
-```
-
 ## Quick Reference
 
 ### First-Time Setup
@@ -330,29 +271,26 @@ claudeflow doctor    # Verify installation
 ### Standard Workflow
 ```bash
 /ideate <task-brief>
-/ideate-to-spec specs/<slug>/01-ideation.md
-/spec:decompose specs/<slug>/02-specification.md
-/spec:execute specs/<slug>/02-specification.md
-stm list --pretty --tag feature:<slug>  # Track progress
+/ideate-to-spec doc/specs/<slug>/01-ideation.md
+/spec:decompose doc/specs/<slug>/02-specification.md
+/spec:execute doc/specs/<slug>/02-specification.md
 
 # After manual testing, process feedback
-/spec:feedback specs/<slug>/02-specification.md  # One item at a time
+/spec:feedback doc/specs/<slug>/02-specification.md  # One item at a time
 # (Choose: implement/defer/out-of-scope)
 # If "implement": spec updated, then run:
-/spec:decompose specs/<slug>/02-specification.md  # Incremental mode
-/spec:execute specs/<slug>/02-specification.md    # Resume mode
+/spec:decompose doc/specs/<slug>/02-specification.md  # Incremental mode
+/spec:execute doc/specs/<slug>/02-specification.md    # Resume mode
 
 # Final steps
-/spec:doc-update specs/<slug>/02-specification.md
-/git:commit
-/git:push
+/spec:doc-update doc/specs/<slug>/02-specification.md
 ```
 
 ### Quick Start (Skip Ideation)
 ```bash
 /spec:create <description>
-/spec:decompose specs/<slug>/02-specification.md
-/spec:execute specs/<slug>/02-specification.md
+/spec:decompose doc/specs/<slug>/02-specification.md
+/spec:execute doc/specs/<slug>/02-specification.md
 ```
 
 ### Migrate Existing Project
@@ -373,7 +311,7 @@ stm list --pretty --tag feature:<slug>  # Track progress
 
 ## Best Practices
 
-1. **Security First** - Enable file-guard, never commit secrets
+1. **Security First** - Never commit secrets
 2. **Team Collaboration** - Commit settings.json and CLAUDE.md, gitignore local overrides
 3. **Content Preservation** - Copy full details into tasks, not summaries
 4. **Task Organization** - Always tag with `feature:<slug>`
@@ -384,14 +322,19 @@ stm list --pretty --tag feature:<slug>  # Track progress
 
 **Installation problems?** Run `claudeflow doctor` for diagnostics
 **Commands not loading?** Verify with `claudeflow doctor`, restart Claude Code
-**ClaudeKit not found?** Should install automatically; manual: `npm install -g claudekit`
-**Tasks not showing in STM?** Install simple-task-master: `npm install -g simple-task-master`
 **Hooks not running?** Check settings precedence (local overrides project)
 **Migration needed?** Use `/spec:migrate` to convert old structure
 
 **For comprehensive troubleshooting, see [README.md](README.md#troubleshooting)**
 
 ## Version History
+
+**v2.0.0 (January 2026):**
+- **Standalone:** Removed ClaudeKit dependency - fully standalone package
+- **Simplified:** Removed STM integration - task tracking via 03-tasks.md
+- **Requirements:** Lowered Node.js from 22.14+ to 20+
+- **Paths:** Specs directory changed from `specs/` to `doc/specs/`
+- **Tool-Agnostic:** Works with Claude Code, OpenCode, and other AI tools
 
 **v1.2.0 (Nov 21, 2025):**
 - **Distribution:** Published to npm as @33strategies/claudeflow
@@ -414,8 +357,8 @@ stm list --pretty --tag feature:<slug>  # Track progress
 
 **v1.1.0 (Nov 21, 2025):**
 - Feature-based directory structure
-- Removed `/spec:progress` (use STM instead)
-- STM task tagging with `feature:<slug>`
+- Removed `/spec:progress`
+- Feature task tagging in 03-tasks.md
 - Session continuity in `/spec:execute`
 - Migration command `/spec:migrate`
 - Enhanced overrides for spec commands

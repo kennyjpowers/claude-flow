@@ -65,7 +65,7 @@ switch (command) {
 
 function showHelp() {
   console.log(`
-claudeflow v${pkg.version} - Workflow orchestration for Claude Code
+claudeflow v${pkg.version} - Workflow orchestration for AI-assisted development
 
 USAGE:
   claudeflow <command> [options]

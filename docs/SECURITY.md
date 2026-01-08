@@ -64,7 +64,6 @@ All releases are built and published via GitHub Actions. You can verify:
 claudeflow has minimal dependencies to reduce attack surface:
 
 **Runtime dependencies:**
-- `claudekit` (required) - 30+ agents, commands, hooks
 - `update-notifier` - Notify users of available updates
 
 **Development dependencies:**
@@ -114,8 +113,8 @@ Configuration files should never contain secrets:
 - Keep `.env` files gitignored
 - Use `.claude/settings.local.json` for personal/sensitive overrides (gitignored)
 
-**File-guard hook:**
-ClaudeKit provides a `file-guard` hook that prevents Claude Code from reading or modifying sensitive files:
+**Permissions configuration:**
+Configure your settings.json to prevent AI tools from reading or modifying sensitive files:
 
 ```json
 {
@@ -192,7 +191,7 @@ If you discover a security vulnerability in claudeflow:
 
 ### Usage
 
-1. **Enable file-guard hook:** Protect sensitive files from AI access
+1. **Configure deny permissions:** Protect sensitive files from AI access
 2. **Never commit secrets:** Use environment variables
 3. **Review settings.json:** Understand what's being configured
 4. **Keep updated:** Install security updates promptly
@@ -211,9 +210,9 @@ If you discover a security vulnerability in claudeflow:
 claudeflow has not undergone a formal security audit. However:
 
 - Built on official npm and Node.js APIs (well-audited)
-- ClaudeKit dependency is actively maintained with security updates
 - Code is open source and publicly auditable
 - Uses standard security practices (no custom crypto, no eval, etc.)
+- Minimal dependencies reduce attack surface
 
 **For enterprise users:**
 If you require a formal security audit, please contact 33strategies@duck.com to discuss arrangements.

@@ -7,27 +7,12 @@
       "Bash(git:*)",
       "Bash(npm:*)",
       "Bash(node:*)",
-      "Bash(stm:*)",
       "Bash(npx:*)",
-      "Bash(stm:*)",
-      "Bash(claudekit:*)",
-      "Bash(jq:*)",
       "Bash(mkdir:*)",
-      "Bash(mv:*)",
-      "Bash(cat:*)",
       "Bash(ls:*)",
-      "Bash(find:*)",
+      "Bash(cat:*)",
       "Bash(grep:*)",
-      "Bash(echo:*)",
-      "Bash(basename:*)",
-      "Bash(dirname:*)",
-      "Bash(date:*)",
-      "Bash(command:*)",
-      "Bash(chmod:*)",
-      "Bash(curl:*)",
-      "Bash(cd:*)",
-      "Bash(test:*)",
-      "Bash(tree:*)"
+      "Bash(find:*)"
     ],
     "deny": [
       ".env",
@@ -35,34 +20,6 @@
       "**/*.key",
       "**/*.pem",
       ".git/**"
-    ]
-  },
-  "environmentVariables": {
-    "NODE_ENV": "development",
-    "API_URL": "${API_URL}"
-  },
-  "hooks": {
-    "PreToolUse": [
-      {
-        "matcher": "Edit|Write",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "echo 'Validating file edit...'",
-            "timeout": 10
-          }
-        ]
-      }
-    ],
-    "SessionStart": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "echo 'Claude Code session started in' $CLAUDE_PROJECT_DIR"
-          }
-        ]
-      }
     ]
   }
 }

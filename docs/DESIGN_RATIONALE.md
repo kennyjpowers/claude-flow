@@ -2,7 +2,7 @@
 
 **Purpose:** This document captures the design validation, architectural decisions, and best practices that inform the Claude Config system.
 
-**Version:** 1.2.0
+**Version:** 2.0.0
 **Last Updated:** 2025-11-21
 
 ---
@@ -28,14 +28,14 @@
 
 ## Overview
 
-Claude Config is a hybrid configuration system that layers custom workflow commands on top of ClaudeKit and Claude Code's official CLI. This document explains the research, decisions, and patterns that shaped its architecture.
+claudeflow is a standalone workflow orchestration system that provides custom workflow commands for AI-assisted development. This document explains the research, decisions, and patterns that shaped its architecture.
 
 ### Design Principles
 
 1. **Workflow-First** - Focus on end-to-end feature development lifecycle
 2. **Incremental Intelligence** - Commands understand previous work and adapt
 3. **Decision Traceability** - Complete audit trail of all decisions
-4. **Graceful Degradation** - Work without optional dependencies (STM)
+4. **Standalone Operation** - No external tool dependencies
 5. **Session Continuity** - Resume across multiple implementation runs
 
 ---
@@ -78,7 +78,7 @@ IDEATION → SPECIFICATION (with interactive question resolution) → DECOMPOSIT
     → FEEDBACK → (back to SPECIFICATION or DECOMPOSITION) → COMPLETION
 ```
 
-**Interactive Question Resolution (v1.2.0):** After spec creation via `/spec:create`, the system automatically detects "Open Questions" sections, presents each question interactively using AskUserQuestion, records answers with strikethrough audit trail, and re-validates until complete. This prevents decomposition with incomplete specifications.
+**Interactive Question Resolution (v1.2.0+):** After spec creation via `/spec:create`, the system automatically detects "Open Questions" sections, presents each question interactively, records answers with strikethrough audit trail, and re-validates until complete. This prevents decomposition with incomplete specifications.
 
 ### Interactive Decision-Making Frameworks
 
@@ -338,7 +338,7 @@ Would you like to:
 - ✅ `/ideate-to-spec` - Now guarantees implementation-ready specs
 - ✅ Overall workflow quality - Prevents incomplete specs from reaching decomposition
 
-**Dependency Note:** This feature relies on ClaudeKit's `/spec:validate` to detect open questions. If `/spec:validate` is updated to change how it reports open questions, this feature may need corresponding updates.
+**Note:** This feature uses the specification validation logic to detect open questions.
 
 ---
 
@@ -348,7 +348,7 @@ Would you like to:
 
 **Flat Structure (v1.0.0):**
 ```
-specs/
+doc/specs/
 ├── feat-user-auth.md
 ├── feat-dashboard.md
 ├── fix-123-bug.md
@@ -363,7 +363,7 @@ specs/
 
 **Hierarchical Structure (v1.1.0+):**
 ```
-specs/<feature-slug>/
+doc/specs/<feature-slug>/
 ├── 01-ideation.md
 ├── 02-specification.md
 ├── 03-tasks.md
@@ -396,21 +396,22 @@ The feature-based directory structure follows the ADR pattern:
 **Anti-Pattern:**
 ```bash
 # BAD: Summary in task details
-stm add "Fix auth bug" --details "See spec section 3.2"
+"Fix auth bug - See spec section 3.2"
 ```
 
 **Problem:** Context loss when:
 - Spec file is updated/moved
 - Task viewed months later
 - Multiple people working on project
-- STM queried from different context
+- Task file queried from different context
 
 ### Full Detail Copying Requirements
 
 **Correct Pattern:**
 ```bash
-# GOOD: Full details copied
-stm add "Fix auth bug" --details "$(cat <<EOF
+# GOOD: Full details copied in task
+Task: Fix auth bug
+Details: $(cat <<EOF
 **Issue:** Authentication fails when password contains special characters
 
 **Root Cause:** Password validation regex doesn't escape special chars
@@ -426,7 +427,6 @@ stm add "Fix auth bug" --details "$(cat <<EOF
 
 **Files:** src/auth/validator.ts, tests/auth/validator.test.ts
 EOF
-)"
 ```
 
 **Benefits:**
@@ -580,12 +580,12 @@ Use caret range (^1.0.0)
 **Key Insight:** Changelog is the source of truth for what changed
 - Section 18 in specification tracks all updates
 - Each changelog entry = scope of new work
-- Completed work (in STM) should be preserved
+- Completed work (tracked in 03-tasks.md) should be preserved
 
 **Design Solution:** Incremental mode
 1. **Detect:** Compare changelog timestamps with last decompose
 2. **Categorize:** Tasks → preserve/update/create
-3. **Filter:** Skip completed tasks (status=done in STM)
+3. **Filter:** Skip completed tasks (status in 03-tasks.md)
 4. **Create:** Only new work for uncovered changelog entries
 
 ### Preserving Completed Work
@@ -601,7 +601,7 @@ Use caret range (^1.0.0)
 ```bash
 # GOOD: Preserves completed, adds only new
 /spec:decompose spec.md
-# Detects: Tasks 1-15 done (from STM)
+# Detects: Tasks 1-15 done (from 03-tasks.md)
 # Creates: Tasks 16-18 (only new work from changelog)
 ```
 
@@ -678,23 +678,19 @@ Optimal Context (implemented):
 - Passed automatically in Task tool prompts
 - Agents understand "don't restart, continue"
 
-### Progress Tracking in Distributed Systems
+### Progress Tracking
 
 **Challenge:** Multiple sources of truth
-- STM: Task status (done/in-progress/pending)
-- Implementation Summary: Completed work by session
+- Task file (03-tasks.md): Task status (done/in-progress/pending)
+- Implementation Summary (04-implementation.md): Completed work by session
 - Git: Actual code changes
 
-**Research:** Reconciliation strategies
+**Design Solution:** Single source of truth per phase
+1. **During decomposition:** 03-tasks.md is source of truth for task status
+2. **During implementation:** 04-implementation.md is source of truth for session progress
+3. **For completed work:** Both files updated when task is marked done
 
-**Design Solution:** Cross-reference with auto-reconciliation
-1. Query STM for task status
-2. Parse implementation summary for sessions
-3. Compare: Detect discrepancies
-4. Reconcile: Trust summary as source of truth
-5. Update: Sync STM to match summary
-
-**Rationale:** Implementation summary is more reliable
+**Rationale:** Implementation summary is the authoritative record
 - Human-curated (review before commit)
 - Session-based (clear what happened when)
 - Immutable history (append-only)
@@ -736,7 +732,7 @@ Optimal Context (implemented):
 ### Example Usage
 
 ```bash
-/spec:feedback specs/my-feature/02-specification.md
+/spec:feedback doc/specs/my-feature/02-specification.md
 
 # Command will:
 # 1. Validate prerequisites
@@ -844,34 +840,27 @@ Not on:
 
 **Result:** 5-10x faster than full codebase scan
 
-### STM Query Optimization
+### Task File Optimization
 
-**Challenge:** Querying all tasks is slow for large projects
+**Challenge:** Parsing large task files is slow for projects with many features
 
 **Optimization Strategies:**
 
-1. **Tag Filtering:**
-   ```bash
-   # SLOW: Get all tasks, filter in memory
-   stm list | grep "feature:my-feature"
-
-   # FAST: Filter in query
-   stm list --tags "feature:my-feature"
-   ```
+1. **Feature Filtering:**
+   - Task files are organized by feature directory (doc/specs/<slug>/03-tasks.md)
+   - Only parse the relevant feature's task file
 
 2. **Status Filtering:**
+   - Parse only the summary table for quick status overview
+   - Full task details only when needed for specific task
+
+3. **Grep for Status:**
    ```bash
-   # Only get done tasks (skip pending/in-progress)
-   stm list --tags "feature:my-feature" --status done
+   # Quick status check without full parsing
+   grep "Status.*completed" doc/specs/<slug>/03-tasks.md
    ```
 
-3. **JSON Format:**
-   ```bash
-   # Parse JSON (faster than parsing pretty output)
-   stm list --tags "feature:my-feature" -f json | jq '.[] | .id'
-   ```
-
-**Result:** 10-50x faster for projects with 100+ tasks
+**Result:** Fast status checks for projects with many features
 
 ### Incremental Decompose Performance
 
@@ -910,14 +899,14 @@ Not on:
 ```bash
 # Attack attempt
 /spec:feedback ../../etc/passwd
-/spec:feedback specs/../../../secrets.json
+/spec:feedback doc/specs/../../../secrets.json
 ```
 
 **Mitigation:**
 1. **Path Validation:**
    ```bash
    # Reject if path doesn't match expected pattern
-   if [[ ! "$SPEC_PATH" =~ ^specs/[^/]+/02-specification\.md$ ]]; then
+   if [[ ! "$SPEC_PATH" =~ ^doc/specs/[^/]+/02-specification\.md$ ]]; then
      echo "Error: Invalid spec path format"
      exit 1
    fi
@@ -925,9 +914,9 @@ Not on:
 
 2. **Absolute Path Resolution:**
    ```bash
-   # Resolve to absolute path, check it's in specs/
+   # Resolve to absolute path, check it's in doc/specs/
    REAL_PATH=$(realpath "$SPEC_PATH")
-   if [[ ! "$REAL_PATH" =~ ^$(pwd)/specs/ ]]; then
+   if [[ ! "$REAL_PATH" =~ ^$(pwd)/doc/specs/ ]]; then
      echo "Error: Path outside specs directory"
      exit 1
    fi
@@ -1001,7 +990,7 @@ Feedback: "; rm -rf /; echo "
 **Sources of Input:**
 - User feedback text
 - Spec file paths
-- STM task IDs
+- Task identifiers
 - Changelog entries
 
 **Validation Strategy:**
@@ -1014,34 +1003,31 @@ Feedback: "; rm -rf /; echo "
 
 ## Architecture Decision Records
 
-### ADR-001: Three-Layer Architecture
+### ADR-001: Standalone Architecture (v2.0.0)
 
-**Context:** Need to extend Claude Code without forking
+**Context:** Need to provide workflow commands that work with multiple AI tools
 
-**Options:**
-1. Fork Claude Code (full control, hard to maintain)
-2. Modify ClaudeKit (possible, but affects all users)
-3. Layer on top (clean separation, easy updates)
+**Previous (v1.x):** Three-layer architecture with ClaudeKit dependency
+**New (v2.0.0):** Standalone package with no external tool dependencies
 
-**Decision:** Three-layer architecture
+**Decision:** Standalone workflow package
 ```
-Claude Code (Official CLI)
+AI Tool (Claude Code, OpenCode, etc.)
      ↓
-ClaudeKit (npm package - agents, commands, hooks)
-     ↓
-Claude Config (this repo - custom workflow commands)
+claudeflow (this package - custom workflow commands)
 ```
 
 **Rationale:**
-- **Clean Separation:** Each layer has clear responsibilities
-- **Easy Updates:** Pull upstream changes without conflicts
-- **Modularity:** Can swap layers independently
-- **Maintainability:** No forked code to maintain
+- **Tool-Agnostic:** Works with any AI coding assistant
+- **Simpler:** No external dependencies to install/manage
+- **Portable:** Commands work anywhere
+- **Maintainable:** Single codebase to maintain
 
 **Consequences:**
-- ✅ Easy to update Claude Code and ClaudeKit
-- ✅ Custom commands are portable
-- ❌ Limited to ClaudeKit's capabilities (can't patch core)
+- ✅ Works with Claude Code, OpenCode, and other tools
+- ✅ Simpler installation and setup
+- ✅ Lower Node.js requirements (20+ instead of 22.14+)
+- ❌ No automatic hooks (user configures as needed)
 
 ### ADR-002: Feature-Based Directories
 
@@ -1049,8 +1035,8 @@ Claude Config (this repo - custom workflow commands)
 
 **Options:**
 1. Keep flat (simple, but hard to organize)
-2. By type (specs/, tasks/, implementation/)
-3. By feature (specs/<slug>/)
+2. By type (doc/specs/, doc/tasks/, doc/implementation/)
+3. By feature (doc/specs/<slug>/)
 
 **Decision:** Feature-based directories (option 3)
 
@@ -1107,36 +1093,36 @@ Claude Config (this repo - custom workflow commands)
 - ✅ Cost-effective
 - ❌ Extra interaction (one more question)
 
-### ADR-005: STM Graceful Degradation
+### ADR-005: Standalone Task Tracking (v2.0.0)
 
-**Context:** Should STM be required or optional?
+**Context:** How should task progress be tracked?
 
-**Options:**
-1. Required (hard dependency, blocks users without STM)
-2. Optional with failure (partial functionality)
-3. Optional with graceful degradation (full workflow, reduced features)
+**Previous (v1.x):** Optional STM integration for task tracking
+**New (v2.0.0):** Task tracking via 03-tasks.md file
 
-**Decision:** Optional with graceful degradation (option 3)
+**Decision:** Track tasks in 03-tasks.md with status markers
 
 **Rationale:**
-- **Accessibility:** Works without STM installed
-- **User Experience:** Full workflow always works
-- **Progressive Enhancement:** STM adds features when available
+- **No Dependencies:** No external tools required
+- **Portable:** Works across all AI tools
+- **Git-Friendly:** Task status is version controlled
+- **Simple:** Status visible in plain text file
 
 **Consequences:**
-- ✅ No hard dependencies
-- ✅ Works for all users
-- ❌ More complex implementation (handle both modes)
+- ✅ No external tools to install
+- ✅ Task history preserved in git
+- ✅ Works with any AI coding assistant
+- ❌ No advanced task management features
 
 ---
 
 ## Command Override Philosophy
 
-### When to Override vs Create New
+### When to Create vs Enhance Commands
 
 **Guidelines:**
 
-**Override ClaudeKit command when:**
+**Enhance existing command when:**
 - ✅ Adding incremental behavior (preserve + extend)
 - ✅ Maintaining backward compatibility
 - ✅ Same core purpose, different implementation
@@ -1152,8 +1138,8 @@ Claude Config (this repo - custom workflow commands)
 
 | Command | Type | Rationale |
 |---------|------|-----------|
-| `/spec:decompose` | Override | Adds incremental mode, preserves original behavior |
-| `/spec:execute` | Override | Adds resume, preserves original behavior |
+| `/spec:decompose` | Enhanced | Adds incremental mode, preserves original behavior |
+| `/spec:execute` | Enhanced | Adds resume, preserves original behavior |
 | `/spec:feedback` | New | Completely new workflow step |
 | `/ideate` | New | Standalone workflow command |
 
@@ -1215,7 +1201,7 @@ fi
 # Incremental decompose backward compatibility
 if [ -f "03-tasks.md" ]; then
   # Check for existing tasks
-  if stm list --tags "feature:$SLUG" >/dev/null 2>&1; then
+  if grep -q "Status.*completed" "03-tasks.md"; then
     # Incremental mode (new)
   else
     # Full mode (original)
@@ -1279,13 +1265,14 @@ fi
 | **Cursor** | Chat + inline | Interactive | Limited to editor |
 | **Windsurf** | Continuous feedback | Real-time | High cognitive load |
 | **Claude Code** | CLI workflow | Structured, auditable | Requires setup |
-| **Claude Config** | Workflow orchestration | Complete lifecycle | Markdown commands (learning curve) |
+| **claudeflow** | Workflow orchestration | Complete lifecycle | Markdown commands (learning curve) |
 
-**Unique Aspects of Claude Config:**
+**Unique Aspects of claudeflow:**
 - End-to-end lifecycle (ideation → completion)
 - Post-implementation feedback (others focus on pre/during)
 - Incremental intelligence (understands previous work)
 - Session continuity (resume across runs)
+- Tool-agnostic (works with Claude Code, OpenCode, etc.)
 
 ### GitHub Review Process Patterns
 
