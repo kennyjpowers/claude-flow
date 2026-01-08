@@ -1,6 +1,6 @@
 ---
 description: Transform completed brainstorm into specification
-allowed-tools: Read, Grep, Glob, Write, Edit, SlashCommand, AskUserQuestion, Bash(ls:*), Bash(find:*), Bash(mkdir:*), Task, mcp__*
+allowed-tools: Read, Grep, Glob, Write, Edit, AskUserQuestion, Bash(ls:*), Bash(find:*), Bash(mkdir:*), Task, mcp__*
 argument-hint: "[path-to-brainstorm-doc]"
 category: workflow
 ---
@@ -111,9 +111,9 @@ Based on the brainstorm document and resolved clarifications:
    Deferred work: {list}
    ```
 
-### Step 5: Build Spec Creation Prompt
+### Step 5: Prepare Spec Creation Context
 
-Construct a rich, detailed prompt for `/spec:create` that includes:
+Gather all information needed for the specification:
 
 1. **Task description** (from Intent + resolved clarifications):
    - Clear, imperative statement of what to build/fix
@@ -135,68 +135,20 @@ Construct a rich, detailed prompt for `/spec:create` that includes:
    - Technical requirements
    - Non-regression requirements
 
-**Example constructed prompt:**
-```
-Add proxy config integration to Figma plugin. The plugin should read a config.proxyBaseUrl
-field from banner-data.json and automatically construct proxy URLs for image_url mappings
-that point to TradeBlock domains (media.tradeblock.us, media.tradeblock.io).
+### Step 6: Execute Spec Creation Using the Skill
 
-Technical context:
-- Modified file: json-filler-plugin/code.js lines 81-126 (image fetching logic)
-- Data flow: banner-data.json → plugin reads config → constructs proxy URL → fetches image
-- Must maintain backward compatibility with existing pipelines
-
-User decisions:
-- URL construction happens in plugin (not pre-constructed in JSON)
-- Only proxy TradeBlock domains (media.tradeblock.us, media.tradeblock.io)
-- Fallback to original URL if proxy fails
-
-Acceptance criteria:
-- Works with or without config.proxyBaseUrl (backward compatible)
-- Only proxies whitelisted TradeBlock domains
-- Gracefully falls back on proxy errors
-- No changes needed to existing banner-data.json files
-```
-
-### Step 6: Execute Spec Creation
-
-1. **Inform the user:**
-   ```
-   Creating specification with the following scope:
-   - {Primary task description}
-   - {Key technical constraints}
-   - {Main acceptance criteria}
-
-   Output path: doc/specs/{slug}/02-specification.md
-   Proceeding with /spec:create...
-   ```
-
-2. **Create the output directory if needed:**
-   ```
+1. **Create the output directory if needed:**
+   ```bash
    mkdir -p doc/specs/{slug}
    ```
 
-3. **Execute `/spec:create` using the SlashCommand tool:**
+2. Use and follow the `spec-create` skill exactly as written to generate the specification.
    
-   Use the `SlashCommand` tool to invoke `/spec:create` with the constructed prompt from Step 5. The command input should be a single string containing all the context you built.
-   
-   **Example SlashCommand invocation:**
-   ```
-   SlashCommand:
-     command_name: "/spec:create"
-     command_input: |
-       Add proxy config integration to Figma plugin. The plugin should read...
-       
-       Technical context:
-       - Modified file: json-filler-plugin/code.js lines 81-126
-       ...
-       
-       IMPORTANT: Save this specification to: doc/specs/{slug}/02-specification.md
-   ```
-   
-   **DO NOT** read the spec:create command file. **DO** invoke it as a tool with your constructed prompt as input.
+   Pass to the skill:
+   - Task description, technical context, constraints, and acceptance criteria from Step 5
+   - Output path: `doc/specs/{slug}/02-specification.md`
 
-4. **Verify the spec file was created at:** `doc/specs/{slug}/02-specification.md`
+3. **Verify the spec file was created at:** `doc/specs/{slug}/02-specification.md`
 
 ### Step 7: Present Summary & Next Steps
 
@@ -246,8 +198,8 @@ Specification Created ✅
 This will:
 1. Locate the completed brainstorm document
 2. Verify all clarifications have been resolved
-3. Synthesize the brainstorm into a spec creation prompt
-4. Execute /spec:create with full context
+3. Synthesize the brainstorm content
+4. Use the `spec-create` skill to generate the specification
 5. Present summary and next steps
 
 ---

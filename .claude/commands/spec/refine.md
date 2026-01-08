@@ -1,6 +1,6 @@
 ---
 description: Interactively resolve validation feedback on a specification
-allowed-tools: Read, Grep, Glob, Edit, AskUserQuestion, SlashCommand, Bash(ls:*), Bash(find:*), Task, mcp__*
+allowed-tools: Read, Grep, Glob, Edit, AskUserQuestion, Bash(ls:*), Bash(find:*), Task, mcp__*
 argument-hint: "[path-to-spec-file]"
 category: workflow
 ---
@@ -39,16 +39,7 @@ Before running validation, check if the spec already has a "## Validation Feedba
 
 ### Step 3: Run Validation and Persist Results
 
-Execute `/spec:validate` on the specification using the **SlashCommand tool**:
-
-**Example SlashCommand invocation:**
-```
-SlashCommand:
-  command_name: "/spec:validate"
-  command_input: "doc/specs/{slug}/02-specification.md"
-```
-
-**DO NOT** read the spec:validate command file. **DO** invoke it as a tool with the spec path as input.
+Use and follow the `spec-validate` skill exactly as written to analyze the specification at `doc/specs/{slug}/02-specification.md`.
 
 Capture and parse the validation results for:
 - **Critical Gaps** - Must-fix issues blocking implementation
