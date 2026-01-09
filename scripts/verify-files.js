@@ -9,14 +9,17 @@ const __dirname = dirname(__filename);
 const projectRoot = join(__dirname, '..');
 
 const requiredFiles = [
-  '.claude/commands/ideate.md',
-  '.claude/commands/ideate-to-spec.md',
-  '.claude/commands/spec/create.md',
+  '.claude/commands/brainstorm/start.md',
+  '.claude/commands/brainstorm/clarify.md',
+  '.claude/commands/brainstorm/spec.md',
+  '.claude/commands/feedback/add.md',
+  '.claude/commands/feedback/resolve.md',
   '.claude/commands/spec/decompose.md',
   '.claude/commands/spec/execute.md',
-  '.claude/commands/spec/feedback.md',
   '.claude/commands/spec/doc-update.md',
-  '.claude/commands/spec/migrate.md',
+  '.claude/commands/spec/refine.md',
+  '.claude/skills/spec-create.md',
+  '.claude/skills/spec-validate.md',
   'templates/project-config/CLAUDE.md',
   'templates/user-config/CLAUDE.md',
   'docs/DESIGN_RATIONALE.md',

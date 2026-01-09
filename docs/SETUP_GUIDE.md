@@ -269,22 +269,26 @@ credentials/
 claude
 
 # Use custom workflow commands
-/ideate Fix chat UI auto-scroll bug       # Structured ideation
-/ideate-to-spec doc/specs/<slug>/01-ideation.md  # Transform to spec
-/spec:decompose doc/specs/<slug>/02-specification.md  # Break down tasks
-/spec:execute doc/specs/<slug>/02-specification.md    # Implement tasks
-/spec:feedback doc/specs/<slug>/02-specification.md   # Process feedback
-/spec:doc-update doc/specs/<slug>/02-specification.md # Documentation review
+/brainstorm:start Fix chat UI auto-scroll bug       # Start brainstorming
+/brainstorm:clarify doc/specs/<slug>/01-brainstorm.md  # Clarify with questions
+/brainstorm:spec doc/specs/<slug>/01-brainstorm.md     # Transform to spec
+/spec:decompose doc/specs/<slug>/02-specification.md   # Break down tasks
+/spec:execute doc/specs/<slug>/02-specification.md     # Implement tasks
+/feedback:add doc/specs/<slug>/02-specification.md     # Add feedback item
+/feedback:resolve doc/specs/<slug>/05-feedback.md      # Resolve feedback
+/spec:doc-update doc/specs/<slug>/02-specification.md  # Documentation review
 ```
 
 ### Standard Workflow
 
-1. **Ideation** → `/ideate <task-brief>`
-2. **Specification** → `/ideate-to-spec doc/specs/<slug>/01-ideation.md`
-3. **Decomposition** → `/spec:decompose doc/specs/<slug>/02-specification.md`
-4. **Implementation** → `/spec:execute doc/specs/<slug>/02-specification.md`
-5. **Feedback** → `/spec:feedback doc/specs/<slug>/02-specification.md`
-6. **Documentation** → `/spec:doc-update doc/specs/<slug>/02-specification.md`
+1. **Brainstorm** → `/brainstorm:start <task-brief>`
+2. **Clarify** → `/brainstorm:clarify doc/specs/<slug>/01-brainstorm.md`
+3. **Specification** → `/brainstorm:spec doc/specs/<slug>/01-brainstorm.md`
+4. **Decomposition** → `/spec:decompose doc/specs/<slug>/02-specification.md`
+5. **Implementation** → `/spec:execute doc/specs/<slug>/02-specification.md`
+6. **Add Feedback** → `/feedback:add doc/specs/<slug>/02-specification.md`
+7. **Resolve Feedback** → `/feedback:resolve doc/specs/<slug>/05-feedback.md`
+8. **Documentation** → `/spec:doc-update doc/specs/<slug>/02-specification.md`
 
 ## Customization
 

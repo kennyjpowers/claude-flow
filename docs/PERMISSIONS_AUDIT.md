@@ -1,6 +1,6 @@
 # Permissions Audit Report
 
-**Generated:** 2025-11-21
+**Generated:** 2026-01-08
 **Settings File:** `.claude/settings.json`
 
 ## Summary
@@ -62,15 +62,23 @@ All slash commands in `.claude/commands/` have been audited and their required t
 
 ## Command Coverage Analysis
 
-### /ideate
+### /brainstorm:start
 **Required Tools:** Read, Grep, Glob, Bash(git:*), Bash(npm:*), Bash(npx:*), Task
 **Status:** ✅ All tools allowed
 
-### /ideate-to-spec
+### /brainstorm:clarify
+**Required Tools:** Read, Grep, Glob, Write, Edit, Task, AskUserQuestion
+**Status:** ✅ All tools allowed
+
+### /brainstorm:spec
 **Required Tools:** Read, Grep, Glob, Write, SlashCommand(/spec:create:*), SlashCommand(/spec:validate:*)
 **Status:** ✅ All tools allowed
 
-### /spec:feedback
+### /feedback:add
+**Required Tools:** Read, Grep, Glob, Write, Edit, AskUserQuestion
+**Status:** ✅ All tools allowed
+
+### /feedback:resolve
 **Required Tools:** Read, Grep, Glob, Write, Edit, Task, AskUserQuestion
 **Status:** ✅ All tools allowed
 
@@ -115,7 +123,7 @@ The following bash commands are used within the command implementations:
 
 ## Verification Checklist
 
-- ✅ All 8 slash commands analyzed
+- ✅ All 10 slash commands analyzed
 - ✅ All allowed-tools from frontmatter included
 - ✅ All bash commands from command logic included
 - ✅ MCP tools included

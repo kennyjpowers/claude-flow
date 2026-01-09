@@ -310,3 +310,19 @@ None - all clarifications resolved during brainstorming.
 | Date | Change | Author |
 |------|--------|--------|
 | 2026-01-08 | Initial specification created from brainstorm | Claude Code |
+
+### 2026-01-08 15:25 - Feedback Resolution
+
+**Source:** /feedback:resolve
+**Feedback Items:** FB-1, FB-2, FB-3
+
+**Changes:**
+- Section 6.4: Added documentation update requirements for command renames
+- Section 12 Phase 3-4: Added tasks for updating command references in docs
+
+**New Requirements:**
+- Replace all `/ideate` command references with `/brainstorm:start` in documentation
+- Replace all `/ideate-to-spec` command references with `/brainstorm:clarify` + `/brainstorm:spec` workflow in documentation
+- Replace all `01-ideation.md` filename references with `01-brainstorm.md` in documentation
+- Replace all `/spec:feedback` command references with `/feedback:add` + `/feedback:resolve` workflow in documentation
+- Update `.github/workflows/release.yml` to use Node.js 20.x instead of 22.14.0 for both test and release jobs

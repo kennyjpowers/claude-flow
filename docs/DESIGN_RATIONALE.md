@@ -3,7 +3,7 @@
 **Purpose:** This document captures the design validation, architectural decisions, and best practices that inform the Claude Config system.
 
 **Version:** 2.0.0
-**Last Updated:** 2025-11-21
+**Last Updated:** 2026-01
 
 ---
 
@@ -126,7 +126,7 @@ IDEATION → SPECIFICATION (with interactive question resolution) → DECOMPOSIT
   - Forgotten questions leading to incomplete implementations
   - Friction from switching between workflow and manual editing
 
-**Real-World Example:** The `package-publishing-strategy` spec was generated with 12 open questions covering ClaudeKit version compatibility, ESM vs CommonJS, NPM organization, and support policy. These required manual resolution outside the workflow, creating friction and potential for oversight.
+**Real-World Example:** The `package-publishing-strategy` spec was generated with 12 open questions covering dependency version compatibility, ESM vs CommonJS, NPM organization, and support policy. These required manual resolution outside the workflow, creating friction and potential for oversight.
 
 ### Solution: Interactive Resolution Loop in /ideate-to-spec
 
@@ -188,7 +188,7 @@ Step 7: Present summary (includes resolved questions)
 **Design Decision:** Sequential presentation (one question at a time)
 
 **Rationale:**
-- Spec questions are complex technical decisions (e.g., "ESM vs CommonJS?", "Which ClaudeKit version?")
+- Spec questions are complex technical decisions (e.g., "ESM vs CommonJS?", "Which dependency versions?")
 - Each requires careful consideration of trade-offs
 - Unlike feedback batching (related questions about single issue), spec questions are independent
 - User can process 10-20 questions sequentially without fatigue (proven in manual testing)
@@ -451,7 +451,7 @@ This pattern aligns with:
 **Anti-Pattern: Delete Original Question**
 ```markdown
 <!-- Before -->
-1. **ClaudeKit Version Compatibility**
+1. **Dependency Version Strategy**
    - Option A: Pin exact version
    - Option B: Use caret range
 
@@ -464,13 +464,13 @@ Use caret range (^1.0.0)
 **Correct Pattern: Strikethrough with Audit Trail**
 ```markdown
 <!-- Before -->
-1. **ClaudeKit Version Compatibility**
+1. **Dependency Version Strategy**
    - Option A: Pin exact version
    - Option B: Use caret range
    - Recommendation: Option B
 
 <!-- After (GOOD) -->
-1. ~~**ClaudeKit Version Compatibility**~~ (RESOLVED)
+1. ~~**Dependency Version Strategy**~~ (RESOLVED)
    **Answer:** Use caret range (^1.0.0)
    **Rationale:** Automatic updates, test compatibility in CI/CD
 

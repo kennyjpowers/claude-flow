@@ -3,16 +3,17 @@
 **Spec:** doc/specs/v2-major-release-prep/02-specification.md
 **Created:** 2026-01-08 15:55
 **Last Updated:** 2026-01-08 15:55
-**Last Decompose:** 2026-01-08 15:55
+**Last Decompose:** 2026-01-08 15:30
 
 ## Summary
 
 | Status | Count |
 |--------|-------|
-| ⏳ Pending | 1 |
+| ⏳ Pending | 0 |
 | 🔄 In Progress | 0 |
-| ✅ Completed | 17 |
-| **Total** | **18** |
+| ✅ Completed | 27 |
+| ❌ Cancelled | 2 |
+| **Total** | **29** |
 
 ---
 
@@ -512,9 +513,16 @@ rm docs/Claudeflow.jpg
 ## Phase 4: Secondary Documentation
 
 ### Task 4.1: Update docs/SETUP_GUIDE.md
-**Status:** ⏳ pending
+**Status:** ✅ completed
+**Started:** 2026-01-08 15:30
+**Completed:** 2026-01-08 15:32
 **Priority:** medium
 **Depends On:** Phase 3 tasks
+
+**Completion Notes:**
+- Updated Available Custom Commands section with brainstorm and feedback commands
+- Updated Standard Workflow section with 8-step command sequence
+- Updated filename references to 01-brainstorm.md
 
 **Description:**
 Update setup guide to remove ClaudeKit references and update paths.
@@ -537,9 +545,17 @@ Update setup guide to remove ClaudeKit references and update paths.
 ---
 
 ### Task 4.2: Update docs/INSTALLATION_GUIDE.md
-**Status:** ⏳ pending
+**Status:** ✅ completed
+**Started:** 2026-01-08 15:30
+**Completed:** 2026-01-08 15:32
 **Priority:** medium
 **Depends On:** Phase 3 tasks
+
+**Completion Notes:**
+- Updated all /ideate references to /brainstorm:start
+- Updated command directory structures in examples
+- Removed broken link to non-existent guides/feedback-workflow-guide.md
+- Updated workflow descriptions
 
 **Description:**
 Update installation guide for standalone workflow.
@@ -562,10 +578,16 @@ Update installation guide for standalone workflow.
 ---
 
 ### Task 4.3: Update docs/SECURITY.md
-**Status:** 🔄 in_progress
+**Status:** ✅ completed
 **Started:** 2026-01-08 15:35
+**Completed:** 2026-01-08 15:30
 **Priority:** medium
 **Depends On:** none
+
+**Completion Notes:**
+- Added v2.0.0 Security Benefits section in Dependency Security area
+- Added v2.0.0 changelog entry at end of file
+- Noted reduced attack surface due to ClaudeKit removal
 
 **Description:**
 Update security documentation for reduced dependency footprint.
@@ -585,10 +607,18 @@ Update security documentation for reduced dependency footprint.
 ---
 
 ### Task 4.4: Update docs/DESIGN_RATIONALE.md
-**Status:** 🔄 in_progress
+**Status:** ✅ completed
 **Started:** 2026-01-08 15:35
+**Completed:** 2026-01-08 15:30
 **Priority:** medium
 **Depends On:** none
+
+**Completion Notes:**
+- Updated Last Updated date to 2026-01
+- Removed ClaudeKit from active workflow descriptions (5 instances)
+- Updated examples to use generic "Dependency Version Strategy"
+- Preserved ClaudeKit/STM in ADR historical context
+- Verified all paths use doc/specs/ format
 
 **Description:**
 Update design rationale for standalone architecture.
@@ -608,9 +638,17 @@ Update design rationale for standalone architecture.
 ---
 
 ### Task 4.5: Update docs/PERMISSIONS_AUDIT.md
-**Status:** ⏳ pending
+**Status:** ✅ completed
+**Started:** 2026-01-08 15:32
+**Completed:** 2026-01-08 15:35
 **Priority:** low
 **Depends On:** Task 2.1
+
+**Completion Notes:**
+- Updated Generated date to 2026-01-08
+- Renamed commands to brainstorm/feedback structure
+- Updated command count from 8 to 10
+- No ClaudeKit/STM permissions were present (already clean)
 
 **Description:**
 Update permissions audit to reflect simplified settings.
@@ -629,10 +667,15 @@ Update permissions audit to reflect simplified settings.
 ---
 
 ### Task 4.6: Update docs/guides/feedback-workflow-guide.md
-**Status:** 🔄 in_progress
+**Status:** ❌ cancelled
 **Started:** 2026-01-08 15:35
+**Completed:** 2026-01-08 15:30
 **Priority:** medium
 **Depends On:** none
+
+**Completion Notes:**
+- File does not exist in the repository
+- Reference in INSTALLATION_GUIDE.md will be removed in Task 4.2
 
 **Description:**
 Update feedback workflow guide for new command structure.
@@ -643,20 +686,23 @@ Update feedback workflow guide for new command structure.
 - Remove STM task references
 
 **Acceptance Criteria:**
-- [ ] Commands use new structure
-- [ ] Paths use `doc/specs/`
-- [ ] No STM references
+- [x] N/A - File does not exist
 
 **Files to Modify:**
-- `docs/guides/feedback-workflow-guide.md`
+- `docs/guides/feedback-workflow-guide.md` (does not exist)
 
 ---
 
 ### Task 4.7: Update docs/api/feedback-workflow.md
-**Status:** 🔄 in_progress
+**Status:** ❌ cancelled
 **Started:** 2026-01-08 15:35
+**Completed:** 2026-01-08 15:30
 **Priority:** medium
 **Depends On:** none
+
+**Completion Notes:**
+- File does not exist in the repository
+- No API docs directory exists
 
 **Description:**
 Update API documentation for feedback workflow.
@@ -666,18 +712,26 @@ Update API documentation for feedback workflow.
 - Change `specs/` to `doc/specs/`
 
 **Acceptance Criteria:**
-- [ ] API docs reflect new commands
-- [ ] Paths use `doc/specs/`
+- [x] N/A - File does not exist
 
 **Files to Modify:**
-- `docs/api/feedback-workflow.md`
+- `docs/api/feedback-workflow.md` (does not exist)
 
 ---
 
 ### Task 4.8: Update .claude/README.md
-**Status:** ⏳ pending
+**Status:** ✅ completed
+**Started:** 2026-01-08 15:32
+**Completed:** 2026-01-08 15:35
 **Priority:** medium
 **Depends On:** Phase 3 tasks
+
+**Completion Notes:**
+- Updated How It Works workflow section with new terminology
+- Replaced /ideate with /brainstorm:start
+- Replaced /ideate-to-spec with /brainstorm:clarify and /brainstorm:spec
+- Replaced /spec:feedback with /feedback:add and /feedback:resolve
+- Updated filename references to 01-brainstorm.md
 
 **Description:**
 Update the .claude directory README.
@@ -701,10 +755,368 @@ Update the .claude directory README.
 
 ## Phase 5: Verification
 
+### Task 4.9: Update brainstorm workflow documentation (replaces /ideate) ✅ DONE
+**Status:** ✅ completed
+**Added:** 2026-01-08 15:30
+**Started:** 2026-01-08 15:35
+**Completed:** 2026-01-08 15:40
+
+**Completion Notes:**
+- Updated README.md: Custom Workflow Commands, Document Organization, Repository Structure, Available Commands, Standard Workflow diagram, Complete Workflow Example, Quick Start
+- Updated CLAUDE.md: Core Workflow, Phase 1-7 sections, Key Commands table, Document Organization, Workflow Features, Directory Structure, Quick Reference
+- All /ideate references replaced with /brainstorm:start
+- All /ideate-to-spec replaced with /brainstorm:clarify + /brainstorm:spec workflow
+- All 01-ideation.md references updated to 01-brainstorm.md
+- Only historical changelog entries preserved unchanged
+**Source:** Changelog 2026-01-08 15:25 - Feedback Resolution (FB-1)
+**Priority:** high
+**Depends On:** none
+
+**Description:**
+Rewrite all documentation sections that reference `/ideate` and `/ideate-to-spec` commands to describe the new three-command brainstorm workflow. This is NOT a simple find/replace - the new workflow has different behavior and structure.
+
+**Old Workflow (single command):**
+- `/ideate <task-brief>` → Creates ideation document with research
+- `/ideate-to-spec <path>` → Single command that transforms ideation to spec
+
+**New Workflow (three commands with different purposes):**
+
+1. **`/brainstorm:start <task-brief>`** (from `.claude/commands/brainstorm/start.md`)
+   - **Purpose:** Structured research-only phase - NO code changes allowed
+   - **Output:** `doc/specs/{slug}/01-brainstorm.md`
+   - **Sections created:**
+     - Intent & Assumptions (task brief, assumptions, out-of-scope)
+     - Pre-reading Log (files/docs read with takeaways)
+     - Codebase Map (components, dependencies, data flow, blast radius)
+     - Root Cause Analysis (bugs only - repro steps, hypotheses)
+     - Research (potential solutions with pros/cons, recommendation)
+     - Clarification (questions for user to decide)
+   - **Key difference from /ideate:** Explicit "CRITICAL CONSTRAINTS" prohibiting code changes, parallelization of explore agents for research speed
+
+2. **`/brainstorm:clarify [path]`** (from `.claude/commands/brainstorm/clarify.md`)
+   - **Purpose:** Interactive resolution of clarification questions from brainstorm
+   - **Input:** Reads `01-brainstorm.md`, extracts Section 6 (Clarification)
+   - **Process:**
+     - Presents each unanswered question via AskUserQuestion tool
+     - Records answers with strikethrough format (audit trail)
+     - Evaluates if answers reveal NEW questions (iterative)
+     - Consults domain experts based on user's answers
+   - **Output:** Updated `01-brainstorm.md` with resolved questions
+   - **Key feature:** Re-entrant - skips already-answered questions, can run multiple times
+   - **This command did NOT exist before** - clarifications were implicit in /ideate-to-spec
+
+3. **`/brainstorm:spec [path]`** (from `.claude/commands/brainstorm/spec.md`)
+   - **Purpose:** Transform COMPLETED brainstorm (all clarifications resolved) into specification
+   - **Prerequisite:** Will NOT proceed if unanswered questions exist in brainstorm
+   - **Process:**
+     - Verifies all clarifications complete
+     - Synthesizes brainstorm content (intent, codebase map, research, decisions)
+     - Determines specification scope (single vs multiple specs)
+     - Uses `spec-create` skill to generate specification
+   - **Output:** `doc/specs/{slug}/02-specification.md`
+   - **Key difference from /ideate-to-spec:** Explicit verification gate, uses skill for spec creation
+
+**Documentation sections to REWRITE (not find/replace):**
+
+1. **README.md - "Custom Workflow Commands" section:**
+   - Remove `/ideate` and `/ideate-to-spec` entries
+   - Add three new entries with accurate descriptions:
+   ```markdown
+   ### Brainstorm Workflow Commands
+   
+   #### /brainstorm:start
+   Structured brainstorm workflow that enforces complete investigation before any code changes. Creates comprehensive research documentation including intent, codebase mapping, root cause analysis (for bugs), external research, and clarification questions.
+   
+   **Usage:** `/brainstorm:start Fix chat UI auto-scroll bug when messages exceed viewport height`
+   **Output:** `doc/specs/{slug}/01-brainstorm.md`
+   
+   #### /brainstorm:clarify
+   Interactively resolve clarification questions from a brainstorm document. Presents each question with options, records answers with audit trail, and evaluates if answers reveal additional questions.
+   
+   **Usage:** `/brainstorm:clarify` (auto-selects recent) or `/brainstorm:clarify doc/specs/{slug}/01-brainstorm.md`
+   
+   #### /brainstorm:spec
+   Transform a completed brainstorm (with all clarifications resolved) into a technical specification. Verifies prerequisites, synthesizes research findings, and generates implementation-ready spec.
+   
+   **Usage:** `/brainstorm:spec` (auto-selects recent) or `/brainstorm:spec doc/specs/{slug}/01-brainstorm.md`
+   **Output:** `doc/specs/{slug}/02-specification.md`
+   ```
+
+2. **README.md - "Standard Workflow" diagram:**
+   - Update the workflow to show three-step brainstorm phase:
+   ```
+   /brainstorm:start <task-brief>
+        → doc/specs/{slug}/01-brainstorm.md
+   /brainstorm:clarify
+        → Resolves questions in 01-brainstorm.md
+   /brainstorm:spec
+        → doc/specs/{slug}/02-specification.md
+   ```
+
+3. **README.md - "Complete Workflow Example" section:**
+   - Update example to show the three-command sequence:
+   ```bash
+   # Step 1: Start with brainstorm (research phase)
+   /brainstorm:start Add user authentication with JWT tokens
+   # → Creates: doc/specs/add-user-auth-jwt/01-brainstorm.md
+   
+   # Step 2: Resolve clarification questions interactively
+   /brainstorm:clarify doc/specs/add-user-auth-jwt/01-brainstorm.md
+   # → Updates brainstorm with answered questions
+   
+   # Step 3: Transform to specification (requires all questions answered)
+   /brainstorm:spec doc/specs/add-user-auth-jwt/01-brainstorm.md
+   # → Creates: doc/specs/add-user-auth-jwt/02-specification.md
+   ```
+
+4. **CLAUDE.md - "Core Workflow" section:**
+   - Update Phase 1 to describe three brainstorm commands
+   - Update workflow diagram
+
+5. **CLAUDE.md - "Quick Reference" section:**
+   - Update standard workflow commands list
+
+6. **.claude/README.md - "Available Custom Commands" section:**
+   - Remove `/ideate` and `/ideate-to-spec` entries
+   - Add new `/brainstorm:start`, `/brainstorm:clarify`, `/brainstorm:spec` entries with full descriptions
+
+7. **docs/SETUP_GUIDE.md** - Update any workflow examples
+
+8. **docs/INSTALLATION_GUIDE.md** - Update any command references
+
+9. **docs/DESIGN_RATIONALE.md** - Update any workflow rationale sections
+
+**Also update filename references:**
+- `01-ideation.md` → `01-brainstorm.md` everywhere
+- `ideation document` → `brainstorm document`
+- `ideation phase` → `brainstorm phase`
+
+**Acceptance Criteria:**
+- [ ] All `/ideate` command references removed from current workflow docs
+- [ ] All `/ideate-to-spec` command references removed from current workflow docs
+- [ ] New `/brainstorm:start` command documented with accurate description
+- [ ] New `/brainstorm:clarify` command documented with accurate description
+- [ ] New `/brainstorm:spec` command documented with accurate description
+- [ ] Workflow diagrams updated to show three-command sequence
+- [ ] Usage examples show the actual command sequence
+- [ ] `01-ideation.md` references updated to `01-brainstorm.md`
+- [ ] Historical changelog entries preserved (don't modify old release notes)
+
+**Files to Modify:**
+- `README.md`
+- `CLAUDE.md`
+- `.claude/README.md`
+- `docs/SETUP_GUIDE.md`
+- `docs/INSTALLATION_GUIDE.md`
+- `docs/DESIGN_RATIONALE.md`
+- `docs/PERMISSIONS_AUDIT.md`
+
+---
+
+### Task 4.10: Update feedback workflow documentation (replaces /spec:feedback) ✅ DONE
+**Status:** ✅ completed
+**Added:** 2026-01-08 15:30
+**Started:** 2026-01-08 15:35
+**Completed:** 2026-01-08 15:40
+
+**Completion Notes:**
+- Updated README.md: Custom Workflow Commands, workflow diagrams, usage examples
+- Updated CLAUDE.md: Phase 6 Feedback section, Custom Commands table, Quick Reference
+- All /spec:feedback replaced with /feedback:add and /feedback:resolve two-command workflow
+- Workflow diagrams show two-step feedback pattern (capture then resolve)
+- Only historical changelog entry in CLAUDE.md preserved unchanged
+**Source:** Changelog 2026-01-08 15:25 - Feedback Resolution (FB-2)
+**Priority:** high
+**Depends On:** none
+
+**Description:**
+Rewrite all documentation sections that reference `/spec:feedback` to describe the new two-command feedback workflow. This is NOT a simple find/replace - the new workflow separates capture from resolution with different behaviors.
+
+**Old Workflow (single command):**
+- `/spec:feedback <path-to-spec>` → Single command that:
+  - Validates prerequisites
+  - Collects ONE feedback item
+  - Explores code
+  - Makes decision (implement/defer/out-of-scope)
+  - Updates spec if implementing
+  - Had to run multiple times for multiple feedback items
+
+**New Workflow (two commands with separated concerns):**
+
+1. **`/feedback:add [path]`** (from `.claude/commands/feedback/add.md`)
+   - **Purpose:** Quick capture of feedback items - NO analysis or resolution
+   - **Input:** Auto-selects most recent `02-specification.md` or takes explicit path
+   - **Output:** Creates/updates `doc/specs/{slug}/05-feedback.md`
+   - **Process:**
+     - Capture loop - keeps asking for feedback until user says "done"
+     - Each item gets unique ID (FB-1, FB-2, etc.)
+     - Items saved immediately (save-as-you-go)
+     - Brief title auto-generated from feedback text
+   - **Key differences from /spec:feedback:**
+     - Captures MULTIPLE items in one session (loop)
+     - NO analysis during capture
+     - NO decisions during capture
+     - Much faster - just text capture
+   - **When to use:** After manual testing, quickly jot down all issues/suggestions
+
+2. **`/feedback:resolve [path]`** (from `.claude/commands/feedback/resolve.md`)
+   - **Purpose:** Batch analyze and resolve ALL pending feedback items
+   - **Input:** Auto-selects most recent `05-feedback.md` or takes explicit path
+   - **Process:**
+     - Loads ALL pending items from feedback file
+     - **Parallel analysis:** Launches domain expert agents concurrently for all items
+     - Presents each item with analysis for user decision
+     - Three outcomes: Implement / Defer / Out of scope
+     - Captures rationale for Defer/Out-of-scope
+     - Moves resolved items from "Pending" to "Resolved" section
+     - Updates specification with changelog if any "Implement" items
+   - **Key differences from /spec:feedback:**
+     - Processes ALL pending items in one session (batch)
+     - Parallel agent analysis for speed
+     - Structured decision workflow with rationale capture
+     - Automatic spec changelog update
+   - **When to use:** After capturing feedback, sit down to triage and decide
+
+**Documentation sections to REWRITE (not find/replace):**
+
+1. **README.md - "Custom Workflow Commands" section:**
+   - Remove `/spec:feedback` entry
+   - Add two new entries:
+   ```markdown
+   ### Feedback Workflow Commands
+   
+   #### /feedback:add
+   Quickly capture feedback items for a feature after manual testing. Runs a capture loop to collect multiple items in one session. Each item is saved immediately with a unique ID.
+   
+   **Usage:** `/feedback:add` (auto-selects recent spec) or `/feedback:add doc/specs/{slug}/02-specification.md`
+   **Output:** Creates/updates `doc/specs/{slug}/05-feedback.md`
+   
+   #### /feedback:resolve
+   Batch analyze and resolve all pending feedback items. Launches parallel domain expert agents for analysis, then presents each item for user decision (implement/defer/out-of-scope). Updates specification changelog for items marked "implement".
+   
+   **Usage:** `/feedback:resolve` (auto-selects recent) or `/feedback:resolve doc/specs/{slug}/05-feedback.md`
+   ```
+
+2. **README.md - "Standard Workflow" diagram:**
+   - Update the feedback phase to show two-step process:
+   ```
+   # After manual testing
+   /feedback:add
+        → doc/specs/{slug}/05-feedback.md (capture multiple items)
+   /feedback:resolve
+        → Analyzes all pending, updates spec for "implement" items
+   ```
+
+3. **README.md - "Complete Workflow Example" section:**
+   - Update feedback steps:
+   ```bash
+   # Step 6: After manual testing, capture feedback (can add multiple)
+   /feedback:add doc/specs/add-user-auth-jwt/02-specification.md
+   # → Loop: "What feedback?" → enter text → "What feedback?" → "done"
+   # → Creates: doc/specs/add-user-auth-jwt/05-feedback.md with FB-1, FB-2, etc.
+   
+   # Step 7: Resolve all pending feedback (batch processing)
+   /feedback:resolve
+   # → Parallel analysis of all items
+   # → Interactive decisions: implement/defer/out-of-scope
+   # → Updates spec changelog if any "implement"
+   ```
+
+4. **CLAUDE.md - "Core Workflow" section:**
+   - Update Phase 5 (Feedback) to describe two commands
+   - Emphasize the capture-then-resolve pattern
+
+5. **CLAUDE.md - "Quick Reference" section:**
+   - Update feedback workflow commands
+
+6. **.claude/README.md - "Available Custom Commands" section:**
+   - Remove `/spec:feedback` entry
+   - Add `/feedback:add` and `/feedback:resolve` with full descriptions
+
+7. **docs/guides/feedback-workflow-guide.md** - Major rewrite for new workflow
+
+8. **docs/api/feedback-workflow.md** - Update API documentation
+
+9. **docs/DESIGN_RATIONALE.md** - Update feedback workflow rationale
+
+**Acceptance Criteria:**
+- [ ] All `/spec:feedback` command references removed from current workflow docs
+- [ ] New `/feedback:add` command documented with accurate description
+- [ ] New `/feedback:resolve` command documented with accurate description
+- [ ] Workflow diagrams updated to show two-command sequence
+- [ ] Usage examples show the capture-then-resolve pattern
+- [ ] Feedback workflow guide fully updated
+- [ ] Historical changelog entries preserved
+
+**Files to Modify:**
+- `README.md`
+- `CLAUDE.md`
+- `.claude/README.md`
+- `docs/SETUP_GUIDE.md`
+- `docs/guides/feedback-workflow-guide.md`
+- `docs/api/feedback-workflow.md`
+- `docs/DESIGN_RATIONALE.md`
+- `docs/PERMISSIONS_AUDIT.md`
+
+---
+
+### Task 4.11: Update GitHub workflow to use Node 20 ✅ DONE
+**Status:** ✅ completed
+**Added:** 2026-01-08 15:30
+**Started:** 2026-01-08 15:30
+**Completed:** 2026-01-08 15:32
+**Source:** Changelog 2026-01-08 15:25 - Feedback Resolution (FB-3)
+**Priority:** high
+**Depends On:** none
+
+**Completion Notes:**
+- Updated test job node-version from 22.14.0 to '20'
+- Updated release job node-version from 22.14.0 to '20'
+
+**Description:**
+Update `.github/workflows/release.yml` to use Node.js 20.x instead of 22.14.0 for both test and release jobs, consistent with the lowered Node.js requirement in package.json.
+
+**Current state:**
+- Line 24 (test job): `node-version: 22.14.0`
+- Line 65 (release job): `node-version: 22.14.0`
+
+**Changes to make:**
+```yaml
+# Line 24 - test job
+node-version: '20'
+
+# Line 65 - release job  
+node-version: '20'
+```
+
+**Rationale:**
+- package.json now requires Node.js >=20.0.0
+- CI/CD should test against the minimum supported version
+- Using `'20'` will use the latest 20.x LTS release
+
+**Acceptance Criteria:**
+- [ ] Test job uses Node.js 20
+- [ ] Release job uses Node.js 20
+- [ ] Workflow file is valid YAML
+
+**Files to Modify:**
+- `.github/workflows/release.yml`
+
+---
+
 ### Task 5.1: Run Verification Checks
-**Status:** ⏳ pending
+**Status:** ✅ completed
+**Started:** 2026-01-08 15:40
+**Completed:** 2026-01-08 15:45
 **Priority:** high
 **Depends On:** All previous tasks
+
+**Completion Notes:**
+- ClaudeKit/STM references: Only in historical spec files (`specs/`) - expected, these are v1.x artifacts
+- Old specs/ paths: Only in historical spec files - expected
+- `claudeflow doctor` runs successfully (Node.js check, npm check, Claude CLI check all pass)
+- `package.json` is valid JSON
+- Current working docs (README.md, CLAUDE.md, docs/*.md, .claude/README.md) are clean of ClaudeKit/STM references
 
 **Description:**
 Run comprehensive verification to ensure all changes are complete.
@@ -773,6 +1185,11 @@ Tasks that can be executed in parallel (no dependencies between them):
 - Task 4.4: Update docs/DESIGN_RATIONALE.md
 - Task 4.6: Update docs/guides/feedback-workflow-guide.md
 - Task 4.7: Update docs/api/feedback-workflow.md
+
+### Parallel Group 4 (Phase 4 - Command Documentation Rewrites) ⏳ NEW
+- Task 4.9: Update brainstorm workflow documentation (comprehensive rewrite)
+- Task 4.10: Update feedback workflow documentation (comprehensive rewrite)
+- Task 4.11: Update GitHub workflow to use Node 20
 
 ### Sequential Dependencies
 Tasks that must be executed in order:

@@ -70,9 +70,11 @@ The setup will:
 claudeflow provides **workflow commands** for AI-assisted feature development:
 
 ### Custom Workflow Commands
-- **/ideate**: Structured ideation with comprehensive documentation
-- **/ideate-to-spec**: Transform ideation into validated specification
-- **/spec:feedback**: Post-implementation feedback with interactive decisions
+- **/brainstorm:start**: Structured brainstorming with comprehensive documentation
+- **/brainstorm:clarify**: Resolve open questions interactively
+- **/brainstorm:spec**: Transform brainstorm into validated specification
+- **/feedback:add**: Quick capture of feedback items after testing
+- **/feedback:resolve**: Batch analyze and resolve pending feedback
 - **/spec:doc-update**: Parallel documentation review based on specs
 
 ### Enhanced Spec Commands
@@ -82,7 +84,7 @@ claudeflow provides **workflow commands** for AI-assisted feature development:
 - **/spec:migrate**: Migrates existing specs to feature-directory structure
 
 ### Key Features
-- Complete end-to-end workflow from ideation to deployment
+- Complete end-to-end workflow from brainstorming to deployment
 - Task tracking via `doc/specs/<slug>/03-tasks.md`
 - Session continuity across implementation runs
 - Interactive question resolution in specifications
@@ -199,7 +201,7 @@ All documents related to a feature are organized in a single directory:
 ```
 doc/specs/
 └── <feature-slug>/
-    ├── 01-ideation.md          # Ideation and research
+    ├── 01-brainstorm.md        # Brainstorming and research
     ├── 02-specification.md     # Validated specification
     ├── 03-tasks.md             # Task breakdown
     ├── 04-implementation.md    # Implementation summary
@@ -215,11 +217,11 @@ doc/specs/
 **Example:**
 ```
 doc/specs/add-user-auth-jwt/
-├── 01-ideation.md          # Created by /ideate
-├── 02-specification.md     # Created by /ideate-to-spec → /spec:create
+├── 01-brainstorm.md        # Created by /brainstorm:start
+├── 02-specification.md     # Created by /brainstorm:spec (after /brainstorm:clarify)
 ├── 03-tasks.md             # Created by /spec:decompose
 ├── 04-implementation.md    # Created by /spec:execute
-└── 05-feedback.md          # Created by /spec:feedback (after testing)
+└── 05-feedback.md          # Created by /feedback:add (after testing)
 ```
 
 ## Repository Structure
@@ -237,8 +239,10 @@ claudeflow/ (@33strategies/claudeflow npm package)
 │
 ├── .claude/                          # Custom configuration (distributed in package)
 │   ├── commands/                     # Custom slash commands
-│   │   ├── ideate.md                 # Structured ideation workflow
-│   │   ├── ideate-to-spec.md         # Transform ideation to spec
+│   │   ├── brainstorm/               # Brainstorming workflow commands
+│   │   │   ├── start.md              # Structured brainstorming workflow
+│   │   │   ├── clarify.md            # Resolve open questions
+│   │   │   └── spec.md               # Transform brainstorm to spec
 │   │   └── spec/
 │   │       ├── create.md             # Enhanced spec creation
 │   │       ├── decompose.md          # Incremental task breakdown
@@ -291,8 +295,8 @@ Claude Code uses a 5-tier precedence system:
 
 ## Available Commands
 
-#### /ideate
-Structured ideation workflow that enforces complete investigation for any code-change task (bug fix or feature). Produces comprehensive ideation documentation including:
+#### /brainstorm:start
+Structured brainstorming workflow that enforces complete investigation for any code-change task (bug fix or feature). Produces comprehensive brainstorm documentation including:
 - Intent & assumptions
 - Pre-reading log
 - Codebase mapping
@@ -300,43 +304,35 @@ Structured ideation workflow that enforces complete investigation for any code-c
 - Research findings
 - Clarification questions
 
-**Usage:** `/ideate Fix chat UI auto-scroll bug when messages exceed viewport height`
+**Usage:** `/brainstorm:start Fix chat UI auto-scroll bug when messages exceed viewport height`
 
-#### /ideate-to-spec
-Transform an ideation document into a validated, implementation-ready specification. This command:
-1. Reads and synthesizes the ideation document
-2. Interactively gathers decisions from the user
-3. Creates a detailed specification using `/spec:create`
-4. **Detects and resolves open questions interactively**
-5. Validates it with `/spec:validate`
-6. Presents a summary with next steps
+#### /brainstorm:clarify
+Resolve open questions in a brainstorm or specification document interactively. This command:
+1. Reads the document and detects unanswered questions
+2. Presents each question with context and options
+3. Records answers in strikethrough format (audit trail)
+4. Re-validates and loops until all questions resolved
+5. Shows progress: "Question 3 of 12"
 
-**Interactive Question Resolution:**
-After creating the specification, the system automatically:
-- Detects unanswered questions in the "Open Questions" section
-- Presents each question with context and options
-- Records answers in strikethrough format (audit trail)
-- Re-validates and loops until all questions resolved
-- Shows progress: "Question 3 of 12"
+**Key Features:**
 - Supports multi-select for questions requiring multiple choices
 - Detects external edits to prevent data loss
 - Backward compatible (skips if no questions exist)
 - Re-entrant (skips already-answered questions)
 - Save-as-you-go for recoverability
 
-**Usage:** `/ideate-to-spec doc/specs/<slug>/01-ideation.md`
+**Usage:** `/brainstorm:clarify doc/specs/<slug>/01-brainstorm.md`
 
-**Example with Questions:**
+**Example:**
 ```bash
-/ideate-to-spec doc/specs/my-feature/01-ideation.md
-# → Creates specification
+/brainstorm:clarify doc/specs/my-feature/01-brainstorm.md
 # → System detects 5 open questions
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 # Question 1 of 5
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 # Package Manager Support
 # → User selects: npm, yarn, pnpm (all three)
-# → Spec updated with strikethrough answer
+# → Document updated with strikethrough answer
 # → Continues with questions 2-5
 # → Final summary shows 5 questions resolved
 ```
@@ -365,18 +361,70 @@ After:
 
 This format provides a complete audit trail showing both the original question and the final decision.
 
-#### /spec:feedback
-Process ONE specific piece of post-implementation feedback from testing or usage. This command:
-1. Validates prerequisites (implementation must exist)
-2. Prompts for detailed feedback description
-3. Explores relevant code with targeted investigation
-4. Guides through interactive decisions (implement/defer/out-of-scope)
-5. Updates spec changelog for "implement now" decisions
-6. Logs all decisions in `05-feedback.md`
+#### /brainstorm:spec
+Transform a brainstorm document into a validated, implementation-ready specification. This command:
+1. Reads and synthesizes the brainstorm document
+2. Interactively gathers decisions from the user
+3. Creates a detailed specification using `/spec:create`
+4. Validates it with `/spec:validate`
+5. Presents a summary with next steps
+
+**Usage:** `/brainstorm:spec doc/specs/<slug>/01-brainstorm.md`
+
+**Note:** Run `/brainstorm:clarify` first to resolve any open questions before creating the specification.
+
+#### /feedback:add
+Quick capture of feedback items after manual testing. This command:
+1. Locates the specification (auto-selects most recent if not specified)
+2. Creates or loads `05-feedback.md` file
+3. Loops to capture multiple feedback items
+4. Saves each item immediately (save-as-you-go)
+5. Presents summary and next steps
+
+**Usage:** `/feedback:add` or `/feedback:add doc/specs/my-feature/02-specification.md`
+
+**Example:**
+```bash
+/feedback:add
+# → Auto-selects most recent specification
+# → "What feedback do you have?"
+# → User enters: "Login button should be more prominent"
+# → FB-1 added.
+# → "What feedback do you have?" (loop continues)
+# → User selects "Done"
+# → Summary: 3 feedback item(s) added
+# → Next: Run /feedback:resolve to analyze and resolve
+```
+
+#### /feedback:resolve
+Batch analyze and resolve all pending feedback items. This command:
+1. Locates the feedback file (auto-selects most recent if not specified)
+2. Loads all pending items from `05-feedback.md`
+3. Analyzes all items in parallel using domain experts
+4. Presents each item with analysis for user decision (implement/defer/out-of-scope)
+5. Updates specification with approved changes
+6. Logs resolutions in `05-feedback.md`
 
 Integrates with incremental `/spec:decompose` and resume `/spec:execute` for seamless iteration.
 
-**Usage:** `/spec:feedback doc/specs/my-feature/02-specification.md`
+**Usage:** `/feedback:resolve` or `/feedback:resolve doc/specs/my-feature/05-feedback.md`
+
+**Example:**
+```bash
+/feedback:resolve
+# → Auto-selects most recent feedback file
+# → "3 pending feedback item(s)"
+# → Analyzes all items in parallel
+# → Presents FB-1 with analysis
+# → User selects: "Implement"
+# → Presents FB-2 with analysis
+# → User selects: "Defer" (reason: "Not enough time")
+# → Presents FB-3 with analysis
+# → User selects: "Out of scope"
+# → Updates specification with FB-1 changes
+# → Summary: 1 implement, 1 defer, 1 out of scope
+# → Next: Run /spec:decompose to create new tasks
+```
 
 #### /spec:doc-update
 Review all documentation to identify what needs to be updated based on a new specification file. Launches parallel documentation expert agents to review each doc file for:
@@ -409,7 +457,7 @@ Implements tasks with **session resume capability**. Reads implementation summar
 - Work on large features across multiple sessions without re-doing completed tasks
 - Return to implementation after testing/feedback cycles
 - Maintain a complete history of all sessions (Session 1, Session 2, etc.)
-- Seamlessly integrate feedback workflow: implement → test → `/spec:feedback` → `/spec:decompose` (incremental) → `/spec:execute` (resume)
+- Seamlessly integrate feedback workflow: implement → test → `/feedback:add` → `/feedback:resolve` → `/spec:decompose` (incremental) → `/spec:execute` (resume)
 
 #### /spec:migrate
 Migrates existing specs from flat structure to feature-directory structure.
@@ -422,15 +470,19 @@ This repository implements a complete end-to-end workflow for feature developmen
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                    IDEATION PHASE                               │
+│                   BRAINSTORM PHASE                              │
 └─────────────────────────────────────────────────────────────────┘
                               │
                               ▼
-                   /ideate <task-brief>
+                 /brainstorm:start <task-brief>
                    (Custom Command)
                               │
-                    Creates ideation doc
-                    with research & analysis
+                   Creates brainstorm doc
+                   with research & analysis
+                              │
+                              ▼
+               /brainstorm:clarify <brainstorm-doc>
+                   (Resolve open questions)
                               │
                               ▼
 ┌─────────────────────────────────────────────────────────────────┐
@@ -438,7 +490,7 @@ This repository implements a complete end-to-end workflow for feature developmen
 └─────────────────────────────────────────────────────────────────┘
                               │
                               ▼
-          /ideate-to-spec <ideation-doc>
+          /brainstorm:spec <brainstorm-doc>
           (Custom, calls /spec:create & /spec:validate)
                               │
               Creates validated specification
@@ -472,13 +524,17 @@ This repository implements a complete end-to-end workflow for feature developmen
 └─────────────────────────────────────────────────────────────────┘
                               │
                               ▼
-           /spec:feedback <spec-file>
-           (Custom Command - one item at a time)
+              /feedback:add (capture items)
                               │
-            Process feedback item:
-            • Code exploration
-            • Optional research
-            • Interactive decisions
+              Loop to add multiple items
+              (save-as-you-go)
+                              │
+                              ▼
+             /feedback:resolve (batch analyze)
+                              │
+              For each pending item:
+              • Parallel analysis
+              • User decision
                               │
                    ┌──────────┴──────────┬────────────┐
                    │                     │            │
@@ -486,14 +542,12 @@ This repository implements a complete end-to-end workflow for feature developmen
                    │                     │            │
         Update spec changelog       Log for later    Log only
                    │                     │            │
-                   ▼                     │            │
-       /spec:decompose (incremental)    │            │
-                   │                     │            │
-       /spec:execute (resume)           │            │
-                   │                     │            │
                    └──────────┬──────────┴────────────┘
                               │
-                   More feedback items? (repeat)
+                              ▼
+       /spec:decompose (incremental - if any "implement")
+                              │
+       /spec:execute (resume)
                               │
                               ▼
 ┌─────────────────────────────────────────────────────────────────┐
@@ -514,53 +568,65 @@ This repository implements a complete end-to-end workflow for feature developmen
 
 ### Key Workflow Steps
 
-1. **Ideation** → Comprehensive investigation and research
-2. **Specification** → Validated, implementation-ready spec with interactive question resolution
-3. **Decomposition** → Tasks broken down in `03-tasks.md`
-4. **Implementation** → Iterative execution with task status tracking
-5. **Feedback** → Process post-implementation feedback with structured decisions (implement/defer/out-of-scope)
-6. **Completion** → Documentation updates and git workflow
+1. **Brainstorm** → Comprehensive investigation and research
+2. **Clarify** → Resolve open questions interactively
+3. **Specification** → Validated, implementation-ready spec
+4. **Decomposition** → Tasks broken down in `03-tasks.md`
+5. **Implementation** → Iterative execution with task status tracking
+6. **Feedback** → Process post-implementation feedback with structured decisions (implement/defer/out-of-scope)
+7. **Completion** → Documentation updates and git workflow
 
 ## Usage Examples
 
 ### Complete Workflow Example
 
 ```bash
-# Step 1: Start with ideation
-/ideate Add user authentication with JWT tokens
-# → Creates: doc/specs/add-user-auth-jwt/01-ideation.md
+# Step 1: Start with brainstorming
+/brainstorm:start Add user authentication with JWT tokens
+# → Creates: doc/specs/add-user-auth-jwt/01-brainstorm.md
 
-# Step 2: Transform to validated specification
-/ideate-to-spec doc/specs/add-user-auth-jwt/01-ideation.md
+# Step 2: Resolve any open questions
+/brainstorm:clarify doc/specs/add-user-auth-jwt/01-brainstorm.md
+# → Interactively resolves all open questions
+
+# Step 3: Transform to validated specification
+/brainstorm:spec doc/specs/add-user-auth-jwt/01-brainstorm.md
 # → Creates: doc/specs/add-user-auth-jwt/02-specification.md (validated & complete)
 
-# Step 3: Break down into tasks
+# Step 4: Break down into tasks
 /spec:decompose doc/specs/add-user-auth-jwt/02-specification.md
 # → Creates: doc/specs/add-user-auth-jwt/03-tasks.md
 
-# Step 4: Start implementation
+# Step 5: Start implementation
 /spec:execute doc/specs/add-user-auth-jwt/02-specification.md
 # → Implements tasks, updates status in 03-tasks.md
 
-# Step 5: Continue implementing (loop back to step 4 if needed)
+# Step 6: Continue implementing (loop back to step 5 if needed)
 /spec:execute doc/specs/add-user-auth-jwt/02-specification.md
 # → Resume mode: skips completed work
 
-# Step 6: Manual testing (discover feedback items)
+# Step 7: Manual testing (discover feedback items)
 # Test the implemented feature manually
 
-# Step 7: Process feedback (repeat for each feedback item)
-/spec:feedback doc/specs/add-user-auth-jwt/02-specification.md
-# → Interactive workflow with implement/defer/out-of-scope decisions
+# Step 8: Capture feedback items
+/feedback:add doc/specs/add-user-auth-jwt/02-specification.md
+# → Loop to capture multiple feedback items
+# → Each item saved immediately
 
-# Step 8: If "Implement Now" was chosen, run incremental decompose
+# Step 9: Resolve feedback (batch analyze and decide)
+/feedback:resolve doc/specs/add-user-auth-jwt/05-feedback.md
+# → Analyzes all pending items in parallel
+# → Interactive decisions: implement/defer/out-of-scope
+# → Updates spec with approved changes
+
+# Step 10: If any "Implement" decisions, run incremental decompose
 /spec:decompose doc/specs/add-user-auth-jwt/02-specification.md
 # → Incremental mode: preserves completed tasks, creates only new ones
 
-# Step 9: Resume implementation for new tasks
+# Step 11: Resume implementation for new tasks
 /spec:execute doc/specs/add-user-auth-jwt/02-specification.md
 
-# Step 10: Update documentation and commit
+# Step 12: Update documentation and commit
 /spec:doc-update doc/specs/add-user-auth-jwt/02-specification.md
 # git add . && git commit -m "feat: add user authentication"
 # git push
@@ -568,7 +634,7 @@ This repository implements a complete end-to-end workflow for feature developmen
 # All documents for this feature are now in: doc/specs/add-user-auth-jwt/
 ```
 
-### Quick Start (Skip Ideation)
+### Quick Start (Skip Brainstorming)
 
 If you already know what you need:
 
@@ -576,7 +642,7 @@ If you already know what you need:
 # Start directly with spec creation
 /spec:create Add user authentication with JWT tokens
 
-# Then follow steps 3-11 above
+# Then follow steps 4-12 above
 ```
 
 ### Migrating Existing Specs
@@ -590,7 +656,7 @@ If you have specs in the old flat structure:
 # This will:
 # - Move specs/*.md to doc/specs/<slug>/02-specification.md
 # - Move specs/*-tasks.md to doc/specs/<slug>/03-tasks.md
-# - Move docs/ideation/*.md to doc/specs/<slug>/01-ideation.md
+# - Move docs/ideation/*.md to doc/specs/<slug>/01-brainstorm.md
 # - Generate migration report
 ```
 

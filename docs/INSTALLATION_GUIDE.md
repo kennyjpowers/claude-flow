@@ -108,19 +108,22 @@ claudeflow setup --global
 - ✅ Different projects use different workflows and you don't want to force yours on them
 
 **Example scenario**:
-> "I use the /ideate → /spec workflow on all my personal and work projects. I want it available everywhere without setting it up per-project."
+> "I use the /brainstorm → /spec workflow on all my personal and work projects. I want it available everywhere without setting it up per-project."
 
 **Result**:
 ```
 ~/.claude/
 ├── commands/
-│   ├── ideate.md
-│   ├── ideate-to-spec.md
+│   ├── brainstorm/
+│   │   ├── start.md
+│   │   └── to-spec.md
+│   ├── feedback/
+│   │   ├── add.md
+│   │   └── resolve.md
 │   └── spec/
 │       ├── create.md
 │       ├── decompose.md
 │       ├── execute.md
-│       ├── feedback.md
 │       ├── doc-update.md
 │       └── migrate.md
 └── settings.json
@@ -143,22 +146,25 @@ claudeflow setup --project
 - ✅ You want to version control the configuration
 
 **Example scenario**:
-> "My team wants to use the /ideate → /spec workflow for all features. We want everyone on the team to have the same commands and follow the same process."
+> "My team wants to use the /brainstorm → /spec workflow for all features. We want everyone on the team to have the same commands and follow the same process."
 
 **Result**:
 ```
 your-project/
 ├── .claude/
 │   ├── commands/
-│   │   ├── ideate.md
-│   │   ├── ideate-to-spec.md
+│   │   ├── brainstorm/
+│   │   │   ├── start.md
+│   │   │   └── to-spec.md
+│   │   ├── feedback/
+│   │   │   ├── add.md
+│   │   │   └── resolve.md
 │   │   └── spec/
-│       ├── create.md
-│       ├── decompose.md
-│       ├── execute.md
-│       ├── feedback.md
-│       ├── doc-update.md
-│       └── migrate.md
+│   │       ├── create.md
+│   │       ├── decompose.md
+│   │       ├── execute.md
+│   │       ├── doc-update.md
+│   │       └── migrate.md
 │   └── settings.json
 ├── .gitignore  (updated to ignore settings.local.json)
 ├── CLAUDE.md   (project-specific context for AI)
@@ -241,7 +247,7 @@ Project settings override global settings, so team conventions take precedence.
 
 6. **Start using commands**
    - Open any project in Claude Code
-   - Type `/ideate` to see the command available
+   - Type `/brainstorm:start` to see the command available
    - All custom commands work everywhere!
 
 ### Project Installation (Step-by-Step)
@@ -305,7 +311,7 @@ Project settings override global settings, so team conventions take precedence.
    ```
 
    **Workflow:**
-   - Start features with `/ideate <description>`
+   - Start features with `/brainstorm:start <description>`
    - Follow the complete workflow documented in CLAUDE.md
    ```
 
@@ -435,7 +441,7 @@ npm outdated -g @33strategies/claudeflow
 - [ ] Check all checks pass
 - [ ] Commands available in all projects
 - [ ] Customize `~/.claude/settings.json` if desired
-- [ ] Test a command in Claude Code (try `/ideate`)
+- [ ] Test a command in Claude Code (try `/brainstorm:start`)
 
 ### For Project/Team Installation
 
@@ -700,7 +706,6 @@ sudo npm install -g @33strategies/claudeflow
 - **Main README:** [README.md](../README.md) - Overview and quick start
 - **Design Rationale:** [docs/DESIGN_RATIONALE.md](DESIGN_RATIONALE.md) - Why this approach works
 - **Setup Guide:** [docs/SETUP_GUIDE.md](SETUP_GUIDE.md) - Detailed configuration
-- **Feedback Workflow:** [docs/guides/feedback-workflow-guide.md](guides/feedback-workflow-guide.md) - Post-implementation feedback
 - **GitHub Issues:** https://github.com/kennyjpowers/claude-flow.git/issues - Report problems
 - **Package Page:** https://www.npmjs.com/package/@33strategies/claudeflow - npm registry
 

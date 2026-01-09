@@ -11,58 +11,69 @@ This directory contains custom commands and settings distributed via the **claud
 
 claudeflow provides a complete feature development workflow:
 
-1. **Ideation** - Structured investigation before coding
-2. **Specification** - Transform ideation into validated specs
+1. **Brainstorm** - Structured investigation before coding
+2. **Clarify & Specify** - Transform brainstorm into validated specs
 3. **Decomposition** - Break specs into actionable tasks
 4. **Implementation** - Execute tasks with session continuity
-5. **Feedback** - Process post-implementation feedback
+5. **Feedback** - Add and resolve post-implementation feedback
 6. **Documentation** - Update docs based on changes
 
 ## Available Custom Commands
 
-### /ideate
-Structured ideation workflow that enforces complete investigation for any code-change task (bug fix or feature). Creates comprehensive ideation documentation.
+### /brainstorm:start
+Structured brainstorming workflow that enforces complete investigation for any code-change task (bug fix or feature). Creates comprehensive brainstorm documentation.
 
-**Usage**: `/ideate Fix chat UI auto-scroll bug when messages exceed viewport height`
+**Usage**: `/brainstorm:start Fix chat UI auto-scroll bug when messages exceed viewport height`
 
-### /ideate-to-spec
-Transform an ideation document into a validated, implementation-ready specification. Bridges the gap between ideation and implementation with automatic open questions resolution.
+### /brainstorm:clarify
+Interactive clarification phase for brainstorm documents. Extracts decisions from brainstorm clarifications and prepares for specification creation.
 
 **Features:**
-- Extracts decisions from ideation clarifications
-- Builds detailed spec via `/spec:create`
+- Extracts decisions from brainstorm clarifications
 - **Automatically resolves open questions interactively**
-- Validates completeness via `/spec:validate`
-- Loops until all questions answered
-- Preserves audit trail in spec file
-
-**Usage**: `/ideate-to-spec doc/specs/<slug>/01-ideation.md`
-
-**Interactive Question Resolution:**
-When the generated specification contains open questions, the system:
-- Parses the "Open Questions" section
 - Presents questions one at a time with progress ("Question 3 of 12")
 - Shows context and available options for each question
 - Supports multi-select questions (e.g., "Which package managers?")
-- Updates spec with strikethrough answers (preserves original context)
-- Re-validates after answering questions
-- Loops until all questions resolved
+- Updates brainstorm doc with strikethrough answers (preserves original context)
 - Skips already-answered questions (re-entrant support)
 
-### /spec:feedback
-Process ONE specific piece of post-implementation feedback with a structured workflow. After manual testing reveals issues or improvement opportunities, this command:
+**Usage**: `/brainstorm:clarify doc/specs/<slug>/01-brainstorm.md`
+
+### /brainstorm:spec
+Transform a brainstorm document into a validated, implementation-ready specification. Bridges the gap between brainstorming and implementation.
+
+**Features:**
+- Builds detailed spec via `/spec:create`
+- Validates completeness via `/spec:validate`
+- Loops until all validation issues resolved
+- Preserves audit trail in spec file
+
+**Usage**: `/brainstorm:spec doc/specs/<slug>/01-brainstorm.md`
+
+**Note:** For a complete workflow, run `/brainstorm:clarify` first to resolve open questions, then `/brainstorm:spec` to generate the specification.
+
+### /feedback:add
+Add ONE specific piece of post-implementation feedback. After manual testing reveals issues or improvement opportunities, this command:
 
 1. Validates prerequisites (implementation must exist)
 2. Collects detailed feedback description
 3. Explores relevant code with targeted investigation
 4. Optionally consults research-expert for solution approaches
-5. Guides through interactive decisions (implement now/defer/out-of-scope)
-6. Updates spec changelog for "implement now" decisions
-7. Logs all decisions in `05-feedback.md`
+5. Logs feedback in `05-feedback.md`
+
+**Usage**: `/feedback:add doc/specs/add-user-auth/02-specification.md`
+
+### /feedback:resolve
+Resolve pending feedback items with structured decisions. For each unresolved feedback item:
+
+1. Presents feedback with context
+2. Guides through interactive decisions (implement now/defer/out-of-scope)
+3. Updates spec changelog for "implement now" decisions
+4. Updates feedback status in `05-feedback.md`
 
 Seamlessly integrates with incremental `/spec:decompose` and resume `/spec:execute` for feedback iteration cycles.
 
-**Usage**: `/spec:feedback doc/specs/add-user-auth/02-specification.md`
+**Usage**: `/feedback:resolve doc/specs/add-user-auth/02-specification.md`
 
 ### /spec:doc-update
 Review all documentation to identify what needs to be updated based on a new specification file. Launches parallel documentation expert agents.

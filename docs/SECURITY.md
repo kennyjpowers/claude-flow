@@ -63,6 +63,11 @@ All releases are built and published via GitHub Actions. You can verify:
 
 claudeflow has minimal dependencies to reduce attack surface:
 
+**v2.0.0 Security Benefits:**
+- Removed ClaudeKit dependency - reduced attack surface
+- Only one runtime dependency (update-notifier)
+- Lower Node.js requirement (20+) while maintaining security
+
 **Runtime dependencies:**
 - `update-notifier` - Notify users of available updates
 
@@ -273,6 +278,11 @@ claudeflow checks for updates weekly and displays notifications:
 - **npm Security Best Practices:** https://docs.npmjs.com/packages-and-modules/securing-your-code
 
 ## Changelog
+
+### v2.0.0 (2026-01)
+- Removed ClaudeKit dependency - reduced attack surface
+- Only one runtime dependency (update-notifier)
+- Lower Node.js requirement (20+) while maintaining security
 
 ### v1.2.0 (2025-11-21)
 - Initial security documentation
