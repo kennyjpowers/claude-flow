@@ -1,3 +1,29 @@
+# [2.0.0](https://github.com/kennyjpowers/claude-flow/compare/v1.2.0...v2.0.0) (2026-01-09)
+
+
+* feat!: remove ClaudeKit dependency, become standalone BREAKING CHANGE: Removed ClaudeKit and STM dependencies. Ideate commands migrated to brainstorm:* commands. Spec:feedback command migrated to feedback:* commands.Task tracking now via 03-tasks.md. Node.js requirement lowered to 20+. Specs directory changed from specs/ to doc/specs/. ([003e005](https://github.com/kennyjpowers/claude-flow/commit/003e005f10097275954dc57678169fb5bf70aaa1))
+
+
+### Bug Fixes
+
+* decompose, execute, refine ([1b795c2](https://github.com/kennyjpowers/claude-flow/commit/1b795c2fc0de76c98638c3f478f32c33090a047d))
+* make calling subcommands more explicit ([f505d3f](https://github.com/kennyjpowers/claude-flow/commit/f505d3fa9732d9ca4e378eeaf4721d58daa5c464))
+* next steps after brainstorm:spec ([9ee4538](https://github.com/kennyjpowers/claude-flow/commit/9ee4538ff5adfd190ccdf1563c0b5ea5cdcb7c3f))
+* use AskUserQuestion tool and try to enforce no extra docs or unintended code changes are made ([6f1c417](https://github.com/kennyjpowers/claude-flow/commit/6f1c417ff53d6bc8dc24a6f265f54cf8759c6804))
+* use Node 22 for semantic-release compatibility ([fb68fb5](https://github.com/kennyjpowers/claude-flow/commit/fb68fb5be2728148eaa7035452a344c23c9c40eb))
+
+
+### Features
+
+* major workflow refactor ([12e6a23](https://github.com/kennyjpowers/claude-flow/commit/12e6a231dda0d74cfb26bc1f9c36b7871d623698))
+* moved spec-create and spec-validate to skills instead of commands ([f617952](https://github.com/kennyjpowers/claude-flow/commit/f61795289386255b90d10d054999fc84b7c7c01b))
+* prep for v2 release ([d01755a](https://github.com/kennyjpowers/claude-flow/commit/d01755ad9ebd0eb9711ea155ce470dc569ea5ebf))
+
+
+### BREAKING CHANGES
+
+* Removed ClaudeKit and STM dependencies. Ideate commands migrated to brainstorm:* commands. Spec:feedback command migrated to feedback:* commands.Task tracking now via 03-tasks.md. Node.js requirement lowered to 20+. Specs directory changed from specs/ to doc/specs/.
+
 ## [2.0.0] - 2026-01-08
 
 ### Breaking Changes
